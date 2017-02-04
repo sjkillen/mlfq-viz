@@ -29494,11 +29494,21 @@
 
 	"use strict";
 
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	function default_1() {
 	    console.log("Hey world!");
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = default_1;
+
+	var Job = function Job() {
+	    _classCallCheck(this, Job);
+	};
+
+	var Scheduler = function Scheduler() {
+	    _classCallCheck(this, Scheduler);
+	};
 
 /***/ }
 /******/ ]);
