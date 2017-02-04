@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "target": "es6",
+        "alwaysStrict": true,
+        "strictNullChecks": false,
+        "jsx": "preserve"
+    },
+    "files": [
+        "src/mlfq.ts"
+    ],
+    "include": [
+        "src/**/*.ts",
+        "./*.ts",
+        "node_modules/hangertypes/**/*.ts",
+        "typings/**/*.ts",
+        "typings/**/*.d.ts"
+    ],
+    "exclude": [
+        "**/*.spec.ts"
+    ]
+}
