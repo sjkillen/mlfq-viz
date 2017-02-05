@@ -2,6 +2,8 @@
  * Creates an instance of the mlfq scheduler
  */
 
+import Scheduler from "./mlfq";
+
 import random from "random-seed";
 
 export default
