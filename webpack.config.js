@@ -3,18 +3,18 @@
 const path = require("path");
 
 const webpack = require("webpack"),
-      HtmlWebpackPlugin = require("html-webpack-plugin"),
-      ExtractTextPlugin = require("extract-text-webpack-plugin");
+  HtmlWebpackPlugin = require("html-webpack-plugin"),
+  ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 
 const BANNER = require("./banner"),
-      PACKAGE = require("./package.json");
+  PACKAGE = require("./package.json");
 
 
 const srcPath = path.join(__dirname, "src");
 
 module.exports = {
   entry: ["babel-polyfill", path.join(srcPath, "main.jsx")],
-
   output: {
     path: path.join(__dirname, "dist"),
     filename: "bundle.js"
@@ -28,7 +28,7 @@ module.exports = {
     loaders: [
       {
         test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-        loader: 'file-loader'
+        loader: "file-loader"
       },
       {
         test: /\.ts[x]?$/,
@@ -64,13 +64,13 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.BannerPlugin(BANNER, {entryOnly: true}),
+    new webpack.BannerPlugin(BANNER, { entryOnly: true }),
     new HtmlWebpackPlugin({
       template: "src/index.hbs",
       title: PACKAGE.name
     }),
     new webpack.ProvidePlugin({
-        React: "react"
+      React: "react"
     }),
     new ExtractTextPlugin("[name].css")
     // new webpack.optimize.UglifyJsPlugin(),
