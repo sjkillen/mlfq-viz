@@ -2,13 +2,21 @@
  * Handles application routing and places views
  */
 
-import mlfq from "../mlfq"
+import ScatterplotMatrix from "./ScatterplotMatrix";
 
-mlfq();
+import { Component } from "react";
+import { BrowserRouter, Route, Switch, browserHistory } from "react-router-dom";
+
 
 export default
-function Navigation(props) {
+class Navigation extends Component {
+   render(props) {
       return (
-         <div>Hello world!</ div>
+         <BrowserRouter basename="/dist">
+            <Switch>
+               <Route path="/" component={ScatterplotMatrix} />
+            </Switch>
+         </BrowserRouter>
       );
+   }
 }
