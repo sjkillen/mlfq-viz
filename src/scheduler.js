@@ -24,5 +24,6 @@ new Scheduler({
     ioFrequencyRange: [0, 5],
     jobRuntimeRange: [10, 100],
     numJobsRange: [100, 1000],
-    jobCreateTimeRange: [0, 3000]
+    jobCreateTimeRange: [0, 3000],
+    ioLengthRange: [10, 10]
 });
