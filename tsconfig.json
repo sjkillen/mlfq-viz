@@ -3,6 +3,7 @@
         "module": "commonjs",
         "noImplicitAny": true,
         "removeComments": true,
+        "moduleResolution": "node",
         "preserveConstEnums": true,
         "target": "es6",
         "alwaysStrict": true,
