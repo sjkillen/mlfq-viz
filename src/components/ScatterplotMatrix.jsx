@@ -15,8 +15,8 @@ class ScatterplotMatrix extends Component {
         this.svgWidth = 500;
         this.svgHeight = 500;
         scheduler.generateJobs();
-        scheduler.play(1000, s => {
-            debugger;
+        scheduler.play(0, s => {
+
         });
         this.jobs = scheduler.futureJobs;
     }

@@ -74,7 +74,7 @@ class Job {
     * Boost the job's priority and reset its time quantum
     * @param quantum to use
     */
-   boostPriority(quantum: number) {
+   setQuantum(quantum: number) {
       this.running.quantumLeft = quantum;
       this.running.priority = 0;
    }
@@ -127,10 +127,13 @@ class Job {
     * @param globalTick number of ticks since the simulation started
     */
    shouldStart(globalTick: number): boolean {
-      if (this.init.createTime === globalTick)
+      if (this.init.createTime === globalTick) {
          return true;
-      if (this.init.createTime < globalTick)
+      }
+      if (this.init.createTime < globalTick) {
+            debugger;
          throw new Error("Job missed start");
+      }
       return false;
    }
    /**
@@ -254,12 +257,13 @@ export default
     * Returns whether simulation is finished
     */
    simulationFinished(): boolean {
-      if (this.futureJobs.length || this.ioJobs.length)
+      if (this.futureJobs.length || this.ioJobs.length || this.cpuJob)
          return false;
       for (const queue of this.queues) {
          if (queue.jobs.length)
             return false;
       }
+      console.log("MLFQ Simulation completed");
       return true;
    }
 
@@ -268,13 +272,13 @@ export default
     */
    boostJobs() {
       this.queues[0].jobs = Array.prototype.concat(
-         this.queues.map(q => q.jobs)
+         ...this.queues.map(q => q.jobs)
       );
       for (let i = 1; i < this.queues.length; i++) {
          this.queues[i].jobs = [];
       }
       for (const job of this.queues[0].jobs) {
-         job.boostPriority(this.queues[0].timeQuantum);
+         job.setQuantum(this.queues[0].timeQuantum);
       }
    }
    /**
@@ -332,12 +336,17 @@ export default
     * @param globalTick scheduler tick
     */
    startJobs(globalTick: number) {
+         console.log(globalTick)
       for (let i = 0; i < this.futureJobs.length; i++) {
          const job = this.futureJobs[i];
          if (job.shouldStart(globalTick)) {
             this.futureJobs.splice(i, 1);
-            job.boostPriority(this.queues[0].timeQuantum);
-            this.queues[0].jobs.push(job);
+            job.setQuantum(this.queues[0].timeQuantum);
+            this.queues[0].jobs.push(job);            
+            (job as any).iTried = false;
+         } else {
+               //TODO remove
+               (job as any).iTried = globalTick;
          }
       }
    }
@@ -355,6 +364,7 @@ export default
          this.doIO();
          this.finishIO();
          this.startJobs(this.globalTick);
+         this.processCpuJob();
          this.globalTick++;
       } else {
          this.stop();
@@ -372,16 +382,23 @@ export default
          chosen = this.popNextJob();
       if (chosen) {
          chosen.doWork(this.globalTick, this.random);
-         if (chosen.isFinished())
+         if (chosen.isFinished()) {
             this.finishedJobs.push(chosen);
-         else if (chosen.quantumExpired()) {
-            const lowerPriority = chosen.running.priority === this.numQueues ? this.numQueues : chosen.running.priority + 1;
-            chosen.lowerPriority(lowerPriority, this.queues[lowerPriority].timeQuantum);
+            this.cpuJob = undefined;
          }
-         else if (chosen.doingIO())
-            this.ioJobs.push(chosen);
-         else
+         else if (chosen.quantumExpired()) {
+            const lastQueue = this.numQueues - 1;
+            const lowerPriority = chosen.running.priority === (lastQueue) ? lastQueue : chosen.running.priority + 1;
+            chosen.lowerPriority(lowerPriority, this.queues[lowerPriority].timeQuantum);
             this.queues[chosen.running.priority].jobs.push(chosen);
+            this.cpuJob = undefined;
+         }
+         else if (chosen.doingIO()) {
+            this.ioJobs.push(chosen);
+            this.cpuJob = undefined;
+         } else {
+               this.cpuJob = chosen;
+         }
       } else {
          // IDLE
       }
