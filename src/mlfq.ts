@@ -94,9 +94,9 @@ class Job {
          this.running.ioLeft > 0) {
          throw new Error("Job was not meant to be run");
       }
-      if (this.running.serviceTime === this.init.createTime) {
+      if (this.running.serviceTime === this.init.runTime) {
          this.perf.turnaroundTime = globalTick - this.init.createTime;
-      } else if (this.running.serviceTime > this.init.createTime) {
+      } else if (this.running.serviceTime > this.init.runTime) {
             throw new Error("job missed finish");
       } else if (!this.quantumExpired()) {
          this.maybeStartIO(rand);
