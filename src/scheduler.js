@@ -20,11 +20,11 @@ const scheduler = new Scheduler({
             }
         };
     }()),
-    ioFrequencyRange: [0, 10],
-    jobRuntimeRange: [3, 300],
+    ioFrequencyRange: [0, 1],
+    jobRuntimeRange: [3, 10],
     numJobsRange: [100, 500],
-    jobCreateTimeRange: [0, 1000],
-    ioLengthRange: [3, 300]
+    jobCreateTimeRange: [0, 100],
+    ioLengthRange: [3, 30]
 });
 window.scheduler = scheduler; // TODO remove
 export default scheduler;

@@ -61,6 +61,7 @@ class Job {
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
    };
+
    /**
     * Lowers the job's priority and reset its time quantum
     * @param priority to set as
@@ -94,8 +95,10 @@ class Job {
          this.running.ioLeft > 0) {
          throw new Error("Job was not meant to be run");
       }
-      if (this.running.serviceTime === this.init.createTime) {
+      if (this.running.serviceTime === this.init.runTime) {
          this.perf.turnaroundTime = globalTick - this.init.createTime;
+      } else if (this.running.serviceTime > this.init.runTime) {
+            throw new Error("job missed finish");
       } else if (!this.quantumExpired()) {
          this.maybeStartIO(rand);
       }
@@ -210,13 +213,13 @@ export default
    private config: Configuration;
 
    // jobs that have not yet entered a queue
-   private futureJobs: Job[];
+   private futureJobs: Set<Job>;
 
    // jobs that have been completed
-   private finishedJobs: Job[];
+   private finishedJobs: Set<Job>;
 
    // jobs doing io
-   private ioJobs: Job[];
+   private ioJobs: Set<Job>;
 
    // How often, in real ms, to tick the scheduler
    private speed: number;
@@ -231,8 +234,9 @@ export default
     * and a global boost time
     */
    constructor(config: Configuration) {
-      this.finishedJobs = [];
-      this.ioJobs = [];
+      this.finishedJobs = new Set;
+      this.futureJobs = new Set;
+      this.ioJobs = new Set;
       this.numQueues = config.timeQuantums.length;
       this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
       this.configure(config);
@@ -257,7 +261,7 @@ export default
     * Returns whether simulation is finished
     */
    simulationFinished(): boolean {
-      if (this.futureJobs.length || this.ioJobs.length || this.cpuJob)
+      if (this.futureJobs.size || this.ioJobs.size || this.cpuJob)
          return false;
       for (const queue of this.queues) {
          if (queue.jobs.length)
@@ -304,10 +308,9 @@ export default
     * Put jobs that have finished IO back in their queues
     */
    finishIO() {
-      for (let i = 0; i < this.ioJobs.length; i++) {
-         const job = this.ioJobs[i];
+      for (const job of this.ioJobs) {
          if (!job.doingIO()) {
-            this.ioJobs.splice(i, 1);
+            this.ioJobs.delete(job);
             this.queues[job.running.priority].jobs.push(job);
          }
       }
@@ -336,17 +339,11 @@ export default
     * @param globalTick scheduler tick
     */
    startJobs(globalTick: number) {
-         console.log(globalTick)
-      for (let i = 0; i < this.futureJobs.length; i++) {
-         const job = this.futureJobs[i];
+      for (const job of this.futureJobs) {
          if (job.shouldStart(globalTick)) {
-            this.futureJobs.splice(i, 1);
+            this.futureJobs.delete(job);
             job.setQuantum(this.queues[0].timeQuantum);
-            this.queues[0].jobs.push(job);            
-            (job as any).iTried = false;
-         } else {
-               //TODO remove
-               (job as any).iTried = globalTick;
+            this.queues[0].jobs.push(job);
          }
       }
    }
@@ -383,7 +380,7 @@ export default
       if (chosen) {
          chosen.doWork(this.globalTick, this.random);
          if (chosen.isFinished()) {
-            this.finishedJobs.push(chosen);
+            this.finishedJobs.add(chosen);
             this.cpuJob = undefined;
          }
          else if (chosen.quantumExpired()) {
@@ -394,7 +391,7 @@ export default
             this.cpuJob = undefined;
          }
          else if (chosen.doingIO()) {
-            this.ioJobs.push(chosen);
+            this.ioJobs.add(chosen);
             this.cpuJob = undefined;
          } else {
                this.cpuJob = chosen;
@@ -408,7 +405,7 @@ export default
     * Generate jobs based on the scheduler's config
     */
    generateJobs() {
-      this.futureJobs = [];
+      this.futureJobs = new Set;
       const {
          numJobsRange,
          jobCreateTimeRange,
@@ -419,7 +416,7 @@ export default
       const ran = this.random.range.bind(this.random);
       const numJobs = ran(numJobsRange);
       for (let i = 0; i < numJobs; i++) {
-         this.futureJobs.push(new Job({
+         this.futureJobs.add(new Job({
             createTime: ran(jobCreateTimeRange),
             runTime: ran(jobRuntimeRange),
             ioFreq: ran(ioFrequencyRange),
