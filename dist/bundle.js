@@ -29662,11 +29662,11 @@
 	            }
 	        };
 	    }(),
-	    ioFrequencyRange: [0, 10],
-	    jobRuntimeRange: [3, 300],
+	    ioFrequencyRange: [0, 1],
+	    jobRuntimeRange: [3, 10],
 	    numJobsRange: [100, 500],
-	    jobCreateTimeRange: [0, 1000],
-	    ioLengthRange: [3, 300]
+	    jobCreateTimeRange: [0, 100],
+	    ioLengthRange: [3, 30]
 	});
 	window.scheduler = scheduler; // TODO remove
 	exports.default = scheduler;
@@ -29707,6 +29707,8 @@
 	            }
 	            if (this.running.serviceTime === this.init.createTime) {
 	                this.perf.turnaroundTime = globalTick - this.init.createTime;
+	            } else if (this.running.serviceTime > this.init.createTime) {
+	                throw new Error("job missed finish");
 	            } else if (!this.quantumExpired()) {
 	                this.maybeStartIO(rand);
 	            }
@@ -29790,8 +29792,8 @@
 	    function Scheduler(config) {
 	        _classCallCheck(this, Scheduler);
 
-	        this.finishedJobs = [];
-	        this.ioJobs = [];
+	        this.finishedJobs = new Set();
+	        this.ioJobs = new Set();
 	        this.numQueues = config.timeQuantums.length;
 	        this.queues = config.timeQuantums.map(function (q) {
 	            return { timeQuantum: q, jobs: [] };
@@ -29816,7 +29818,7 @@
 	    }, {
 	        key: "simulationFinished",
 	        value: function simulationFinished() {
-	            if (this.futureJobs.length || this.ioJobs.length || this.cpuJob) return false;
+	            if (this.futureJobs.size || this.ioJobs.size || this.cpuJob) return false;
 	            var _iteratorNormalCompletion = true;
 	            var _didIteratorError = false;
 	            var _iteratorError = undefined;
@@ -29905,17 +29907,6 @@
 	    }, {
 	        key: "finishIO",
 	        value: function finishIO() {
-	            for (var i = 0; i < this.ioJobs.length; i++) {
-	                var job = this.ioJobs[i];
-	                if (!job.doingIO()) {
-	                    this.ioJobs.splice(i, 1);
-	                    this.queues[job.running.priority].jobs.push(job);
-	                }
-	            }
-	        }
-	    }, {
-	        key: "doIO",
-	        value: function doIO() {
 	            var _iteratorNormalCompletion3 = true;
 	            var _didIteratorError3 = false;
 	            var _iteratorError3 = undefined;
@@ -29924,7 +29915,10 @@
 	                for (var _iterator3 = this.ioJobs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 	                    var job = _step3.value;
 
-	                    job.doIO();
+	                    if (!job.doingIO()) {
+	                        this.ioJobs.delete(job);
+	                        this.queues[job.running.priority].jobs.push(job);
+	                    }
 	                }
 	            } catch (err) {
 	                _didIteratorError3 = true;
@@ -29942,6 +29936,34 @@
 	            }
 	        }
 	    }, {
+	        key: "doIO",
+	        value: function doIO() {
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
+
+	            try {
+	                for (var _iterator4 = this.ioJobs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var job = _step4.value;
+
+	                    job.doIO();
+	                }
+	            } catch (err) {
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+	                        _iterator4.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
 	        key: "stop",
 	        value: function stop() {
 	            this.running = false;
@@ -29951,16 +29973,32 @@
 	    }, {
 	        key: "startJobs",
 	        value: function startJobs(globalTick) {
-	            console.log(globalTick);
-	            for (var i = 0; i < this.futureJobs.length; i++) {
-	                var job = this.futureJobs[i];
-	                if (job.shouldStart(globalTick)) {
-	                    this.futureJobs.splice(i, 1);
-	                    job.setQuantum(this.queues[0].timeQuantum);
-	                    this.queues[0].jobs.push(job);
-	                    job.iTried = false;
-	                } else {
-	                    job.iTried = globalTick;
+	            var _iteratorNormalCompletion5 = true;
+	            var _didIteratorError5 = false;
+	            var _iteratorError5 = undefined;
+
+	            try {
+	                for (var _iterator5 = this.futureJobs[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                    var job = _step5.value;
+
+	                    if (job.shouldStart(globalTick)) {
+	                        this.futureJobs.delete(job);
+	                        job.setQuantum(this.queues[0].timeQuantum);
+	                        this.queues[0].jobs.push(job);
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError5 = true;
+	                _iteratorError5 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+	                        _iterator5.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError5) {
+	                        throw _iteratorError5;
+	                    }
 	                }
 	            }
 	        }
@@ -29990,7 +30028,7 @@
 	            if (chosen) {
 	                chosen.doWork(this.globalTick, this.random);
 	                if (chosen.isFinished()) {
-	                    this.finishedJobs.push(chosen);
+	                    this.finishedJobs.add(chosen);
 	                    this.cpuJob = undefined;
 	                } else if (chosen.quantumExpired()) {
 	                    var lastQueue = this.numQueues - 1;
@@ -29999,7 +30037,7 @@
 	                    this.queues[chosen.running.priority].jobs.push(chosen);
 	                    this.cpuJob = undefined;
 	                } else if (chosen.doingIO()) {
-	                    this.ioJobs.push(chosen);
+	                    this.ioJobs.add(chosen);
 	                    this.cpuJob = undefined;
 	                } else {
 	                    this.cpuJob = chosen;
@@ -30009,7 +30047,7 @@
 	    }, {
 	        key: "generateJobs",
 	        value: function generateJobs() {
-	            this.futureJobs = [];
+	            this.futureJobs = new Set();
 	            var _config = this.config,
 	                numJobsRange = _config.numJobsRange,
 	                jobCreateTimeRange = _config.jobCreateTimeRange,
@@ -30020,7 +30058,7 @@
 	            var ran = this.random.range.bind(this.random);
 	            var numJobs = ran(numJobsRange);
 	            for (var i = 0; i < numJobs; i++) {
-	                this.futureJobs.push(new Job({
+	                this.futureJobs.add(new Job({
 	                    createTime: ran(jobCreateTimeRange),
 	                    runTime: ran(jobRuntimeRange),
 	                    ioFreq: ran(ioFrequencyRange),
@@ -30031,29 +30069,29 @@
 	    }, {
 	        key: "popNextJob",
 	        value: function popNextJob() {
-	            var _iteratorNormalCompletion4 = true;
-	            var _didIteratorError4 = false;
-	            var _iteratorError4 = undefined;
+	            var _iteratorNormalCompletion6 = true;
+	            var _didIteratorError6 = false;
+	            var _iteratorError6 = undefined;
 
 	            try {
-	                for (var _iterator4 = this.queues[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                    var queue = _step4.value;
+	                for (var _iterator6 = this.queues[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                    var queue = _step6.value;
 
 	                    if (queue.jobs.length > 0) {
 	                        return queue.jobs.shift();
 	                    }
 	                }
 	            } catch (err) {
-	                _didIteratorError4 = true;
-	                _iteratorError4 = err;
+	                _didIteratorError6 = true;
+	                _iteratorError6 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-	                        _iterator4.return();
+	                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
+	                        _iterator6.return();
 	                    }
 	                } finally {
-	                    if (_didIteratorError4) {
-	                        throw _iteratorError4;
+	                    if (_didIteratorError6) {
+	                        throw _iteratorError6;
 	                    }
 	                }
 	            }
@@ -49924,24 +49962,36 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	/**
+	 * Print a summary of the scheduler
+	 * @global getStatus
+	 */
 	function getStatus() {
-	   console.log("CPU: " + (_scheduler2.default.cpuJob ? "YES" : "NO") + "\n      Futures: " + _scheduler2.default.futureJobs.length + "\n      Finished: " + _scheduler2.default.finishedJobs.length);
+	   console.log("CPU: " + (_scheduler2.default.cpuJob ? "YES" : "NO") + "\nFutures: " + _scheduler2.default.futureJobs.size + "\nFinished: " + _scheduler2.default.finishedJobs.size + "\nIO: " + _scheduler2.default.ioJobs.size + "\n");
 	   for (var i = 0; i < _scheduler2.default.numQueues; i++) {
 	      console.log("Queue " + i + ": " + _scheduler2.default.queues[i].jobs.length);
 	   }
 	} /**
 	   * Adds some useful globals for debugging
-	   * Don't include in production
+	   * No need to include in production
 	   */
 
 	window.getStatus = getStatus;
 
+	/**
+	 * Tell what state(s) a job is in
+	 * useful for determining whether a job is accidentily in multiple
+	 * states
+	 * @global getJobStates
+	 * @param {Job} job to test
+	 * @returns {string[]} states
+	 */
 	function getJobStates(job) {
 	   var states = [];
-	   if (_scheduler2.default.futureJobs.indexOf(job) !== -1) {
+	   if (_scheduler2.default.futureJobs.has(job)) {
 	      states.push("Future");
 	   }
-	   if (_scheduler2.default.finishedJobs.indexOf(job) !== -1) {
+	   if (_scheduler2.default.finishedJobs.has(job)) {
 	      states.push("Finished");
 	   }
 	   if (_scheduler2.default.cpuJob === job) {
