@@ -61,6 +61,7 @@ class Job {
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
    };
+
    /**
     * Lowers the job's priority and reset its time quantum
     * @param priority to set as
@@ -234,6 +235,7 @@ export default
     */
    constructor(config: Configuration) {
       this.finishedJobs = new Set;
+      this.futureJobs = new Set;
       this.ioJobs = new Set;
       this.numQueues = config.timeQuantums.length;
       this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));

@@ -14,7 +14,7 @@ const BANNER = require("./banner"),
 const srcPath = path.join(__dirname, "src");
 
 module.exports = {
-  entry: ["babel-polyfill", path.join(srcPath, "main.jsx"), path.join(srcPath, "debug.js")],
+  entry: ["babel-polyfill", path.join(srcPath, "debug.js"), path.join(srcPath, "main.jsx")],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "bundle.js"
