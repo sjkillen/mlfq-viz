@@ -8,7 +8,7 @@ import random from "random-seed";
 
 const scheduler = new Scheduler({
     timeQuantums: [1, 2, 3, 4],
-    boostTime: 10,
+    boostTime: 50,
     random: (function(){
         const gen = random.create();
         return {
@@ -20,11 +20,11 @@ const scheduler = new Scheduler({
             }
         };
     }()),
-    ioFrequencyRange: [0, 0],
-    jobRuntimeRange: [3, 10],
-    numJobsRange: [5, 10],
-    jobCreateTimeRange: [0, 100],
-    ioLengthRange: [, 0]
+    ioFrequencyRange: [0, 1000],
+    jobRuntimeRange: [1, 100],
+    numJobsRange: [100, 100],
+    jobCreateTimeRange: [0, 1000],
+    ioLengthRange: [0, 50]
 });
 window.scheduler = scheduler; // TODO remove
 export default scheduler;

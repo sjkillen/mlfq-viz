@@ -11,7 +11,6 @@ import { immutInstance } from "../util";
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
-      scheduler.random.seed("SPENCER");
       scheduler.generateJobs();
       scheduler.play(0, scheduler => {
          console.log("tick");

@@ -171,8 +171,8 @@ class Job {
       this.running = {
          priority: 0,
          serviceTime: 0,
-         quantumLeft: -1,
-         ioLeft: -1
+         quantumLeft: 0,
+         ioLeft: 0
       };
    }
 }
