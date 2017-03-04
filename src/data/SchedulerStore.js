@@ -6,14 +6,18 @@ import { ReduceStore } from "flux/utils";
 import scheduler from "../scheduler";
 import { updateScheduler, actions } from "./SchedulerActions";
 import dispatcher from "./dispatcher";
+import { immutInstance } from "../util";
+
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
+      scheduler.random.seed("SPENCER");
       scheduler.generateJobs();
       scheduler.play(0, scheduler => {
-         updateScheduler(scheduler);
+         console.log("tick");
+         updateScheduler(immutInstance(scheduler));
       });
-      return scheduler;
+      return immutInstance(scheduler);
    }
    reduce(state, action) {
       switch (action.type) {
