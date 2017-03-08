@@ -21,6 +21,7 @@ interface Random {
  * Config to create a job
  */
 interface JobConfig {
+   id: number;
    createTime: number;
    runTime: number;
    ioFreq: number;
@@ -33,6 +34,8 @@ interface JobConfig {
 class Job {
    // Values the job is created with
    init: {
+      // unique job id
+      id: number;
       // Time when job was created
       createTime: number;
       // Total time job needs to spend on CPU to finish
@@ -98,7 +101,7 @@ class Job {
       if (this.running.serviceTime === this.init.runTime) {
          this.perf.turnaroundTime = globalTick - this.init.createTime;
       } else if (this.running.serviceTime > this.init.runTime) {
-            throw new Error("job missed finish");
+         throw new Error("job missed finish");
       } else if (!this.quantumExpired()) {
          this.maybeStartIO(rand);
       }
@@ -134,7 +137,6 @@ class Job {
          return true;
       }
       if (this.init.createTime < globalTick) {
-            debugger;
          throw new Error("Job missed start");
       }
       return false;
@@ -154,8 +156,9 @@ class Job {
    doingIO(): boolean {
       return this.running.ioLeft > 0;
    }
-   constructor({ createTime, runTime, ioFreq, ioLength }: JobConfig) {
+   constructor({ createTime, runTime, ioFreq, ioLength, id }: JobConfig) {
       this.init = {
+         id,
          createTime,
          runTime,
          ioFreq,
@@ -168,8 +171,8 @@ class Job {
       this.running = {
          priority: 0,
          serviceTime: 0,
-         quantumLeft: -1,
-         ioLeft: -1
+         quantumLeft: 0,
+         ioLeft: 0
       };
    }
 }
@@ -213,13 +216,13 @@ export default
    private config: Configuration;
 
    // jobs that have not yet entered a queue
-   private futureJobs: Set<Job>;
+   private futureJobs: Job[];
 
    // jobs that have been completed
-   private finishedJobs: Set<Job>;
+   private finishedJobs: Job[];
 
    // jobs doing io
-   private ioJobs: Set<Job>;
+   private ioJobs: Job[];
 
    // How often, in real ms, to tick the scheduler
    private speed: number;
@@ -234,9 +237,9 @@ export default
     * and a global boost time
     */
    constructor(config: Configuration) {
-      this.finishedJobs = new Set;
-      this.futureJobs = new Set;
-      this.ioJobs = new Set;
+      this.finishedJobs = [];
+      this.futureJobs = [];
+      this.ioJobs = [];
       this.numQueues = config.timeQuantums.length;
       this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
       this.configure(config);
@@ -261,7 +264,7 @@ export default
     * Returns whether simulation is finished
     */
    simulationFinished(): boolean {
-      if (this.futureJobs.size || this.ioJobs.size || this.cpuJob)
+      if (this.futureJobs.length || this.ioJobs.length || this.cpuJob)
          return false;
       for (const queue of this.queues) {
          if (queue.jobs.length)
@@ -308,9 +311,10 @@ export default
     * Put jobs that have finished IO back in their queues
     */
    finishIO() {
-      for (const job of this.ioJobs) {
+      for (let i = this.ioJobs.length - 1; i >= 0; i--) {
+         const job = this.ioJobs[i];
          if (!job.doingIO()) {
-            this.ioJobs.delete(job);
+            this.ioJobs.splice(i, 1);
             this.queues[job.running.priority].jobs.push(job);
          }
       }
@@ -339,9 +343,10 @@ export default
     * @param globalTick scheduler tick
     */
    startJobs(globalTick: number) {
-      for (const job of this.futureJobs) {
+      for (let i = this.futureJobs.length - 1; i >= 0; i--) {
+         const job = this.futureJobs[i];
          if (job.shouldStart(globalTick)) {
-            this.futureJobs.delete(job);
+            this.futureJobs.splice(i, 1);
             job.setQuantum(this.queues[0].timeQuantum);
             this.queues[0].jobs.push(job);
          }
@@ -380,7 +385,7 @@ export default
       if (chosen) {
          chosen.doWork(this.globalTick, this.random);
          if (chosen.isFinished()) {
-            this.finishedJobs.add(chosen);
+            this.finishedJobs.push(chosen);
             this.cpuJob = undefined;
          }
          else if (chosen.quantumExpired()) {
@@ -391,10 +396,10 @@ export default
             this.cpuJob = undefined;
          }
          else if (chosen.doingIO()) {
-            this.ioJobs.add(chosen);
+            this.ioJobs.push(chosen);
             this.cpuJob = undefined;
          } else {
-               this.cpuJob = chosen;
+            this.cpuJob = chosen;
          }
       } else {
          // IDLE
@@ -405,7 +410,7 @@ export default
     * Generate jobs based on the scheduler's config
     */
    generateJobs() {
-      this.futureJobs = new Set;
+      this.futureJobs = [];
       const {
          numJobsRange,
          jobCreateTimeRange,
@@ -416,7 +421,8 @@ export default
       const ran = this.random.range.bind(this.random);
       const numJobs = ran(numJobsRange);
       for (let i = 0; i < numJobs; i++) {
-         this.futureJobs.add(new Job({
+         this.futureJobs.push(new Job({
+            id: i,
             createTime: ran(jobCreateTimeRange),
             runTime: ran(jobRuntimeRange),
             ioFreq: ran(ioFrequencyRange),
