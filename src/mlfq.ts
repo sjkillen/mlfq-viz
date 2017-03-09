@@ -58,9 +58,15 @@ class Job {
       priority: number;
       // Time job has spent on the CPU
       serviceTime: number;
+      // Whether the job has finished yet
+      isFinished: boolean;
       // Value that starts = to time quantum and deplets as job is run
       // Forces a context switch and resets when it reaches 0
       quantumLeft: number;
+      // Amount of time quantum a job has when it is first assigned a new time quantum
+      quantumFull: number;
+      // Total time a job has waited for
+      waitingTime: number;
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
    };
@@ -72,6 +78,7 @@ class Job {
     */
    lowerPriority(priority: number, quantum: number) {
       this.running.quantumLeft = quantum;
+      this.running.quantumFull = quantum;
       this.running.priority = priority;
    }
    /**
@@ -80,8 +87,17 @@ class Job {
     */
    setQuantum(quantum: number) {
       this.running.quantumLeft = quantum;
+      this.running.quantumFull = quantum;
       this.running.priority = 0;
    }
+
+   /**
+    * Increment the job's waiting time
+    */
+   wait() {
+      this.running.waitingTime++;
+   }
+
    /**
     * Simulate this job on the CPU
     * May start IO
@@ -170,9 +186,12 @@ class Job {
       };
       this.running = {
          priority: 0,
+         isFinished: false,
          serviceTime: 0,
          quantumLeft: 0,
-         ioLeft: 0
+         quantumFull: 0,
+         ioLeft: 0,
+         waitingTime: 0
       };
    }
 }
@@ -263,7 +282,7 @@ export default
    /**
     * Returns whether simulation is finished
     */
-   simulationFinished(): boolean {
+   get simulationFinished(): boolean {
       if (this.futureJobs.length || this.ioJobs.length || this.cpuJob)
          return false;
       for (const queue of this.queues) {
@@ -354,10 +373,26 @@ export default
    }
 
    /**
+    * Get all the jobs in the scheduler
+    * @return a new array containing every job
+    */
+   get allJobs(): Job[] {
+      const sorted = (this.cpuJob ? [this.cpuJob] : ([] as Job[])).concat(
+         ...this.ioJobs,
+         ...this.futureJobs,
+         ...this.finishedJobs,
+         ...this.queues.map(q => q.jobs))
+         .sort((a, b) => {
+            return a.init.id > b.init.id ? 1 : -1;
+         });
+      return sorted;
+   }
+
+   /**
     * Process the jobs in the scheduler
     */
    processJobs() {
-      if (!this.simulationFinished()) {
+      if (!this.simulationFinished) {
          this.boostLeft--;
          if (this.boostLeft <= 0) {
             this.boostJobs();
@@ -367,6 +402,8 @@ export default
          this.finishIO();
          this.startJobs(this.globalTick);
          this.processCpuJob();
+         this.initCpuJob();
+         this.waitJobs();
          this.globalTick++;
       } else {
          this.stop();
@@ -374,32 +411,51 @@ export default
    }
 
    /**
+    * Increment the waiting timer of all jobs that are waiting in
+    * a queue
+    */
+   waitJobs() {
+      for (const queue of this.queues) {
+         for (const job of queue.jobs) {
+            if (job !== this.cpuJob) {
+               job.wait();
+            }
+         }
+      }
+   }
+
+
+   /**
+    * Loads the next job onto the CPU
+    * unless there's one already there
+    */
+   initCpuJob() {
+      if (!this.cpuJob)
+         this.cpuJob = this.popNextJob();
+   }
+
+   /**
     * Process a single job on the cpu
     */
    processCpuJob() {
-      let chosen: Job | undefined;
-      if (this.cpuJob)
-         chosen = this.cpuJob;
-      else
-         chosen = this.popNextJob();
-      if (chosen) {
-         chosen.doWork(this.globalTick, this.random);
-         if (chosen.isFinished()) {
-            this.finishedJobs.push(chosen);
+      if (this.cpuJob) {
+         this.cpuJob.doWork(this.globalTick, this.random);
+         if (this.cpuJob.isFinished()) {
+            this.finishedJobs.push(this.cpuJob);
             this.cpuJob = undefined;
          }
-         else if (chosen.quantumExpired()) {
+         else if (this.cpuJob.quantumExpired()) {
             const lastQueue = this.numQueues - 1;
-            const lowerPriority = chosen.running.priority === (lastQueue) ? lastQueue : chosen.running.priority + 1;
-            chosen.lowerPriority(lowerPriority, this.queues[lowerPriority].timeQuantum);
-            this.queues[chosen.running.priority].jobs.push(chosen);
+            const lowerPriority = this.cpuJob.running.priority === (lastQueue) ? lastQueue : this.cpuJob.running.priority + 1;
+            this.cpuJob.lowerPriority(lowerPriority, this.queues[lowerPriority].timeQuantum);
+            this.queues[this.cpuJob.running.priority].jobs.push(this.cpuJob);
             this.cpuJob = undefined;
          }
-         else if (chosen.doingIO()) {
-            this.ioJobs.push(chosen);
+         else if (this.cpuJob.doingIO()) {
+            this.ioJobs.push(this.cpuJob);
             this.cpuJob = undefined;
          } else {
-            this.cpuJob = chosen;
+            this.cpuJob = this.cpuJob;
          }
       } else {
          // IDLE
@@ -420,7 +476,7 @@ export default
       } = this.config;
       const ran = this.random.range.bind(this.random);
       const numJobs = ran(numJobsRange);
-      for (let i = 0; i < numJobs; i++) {
+      for (let i = 1; i <= numJobs; i++) {
          this.futureJobs.push(new Job({
             id: i,
             createTime: ran(jobCreateTimeRange),
