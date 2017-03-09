@@ -3,14 +3,16 @@
  */
 
 import SchedulerPanelContainer from "../containers/SchedulerPanelContainer";
-import navBar from "./NavBar";
+import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory } from 'react-router'
+
 class App extends Component {
   render() {
     return (
       <Router history={hashHistory}>
-        <Route path='/' component={SchedulerPanelContainer} />
+        <Route path='/' component={TableView} />
+        <Route path='/Scheduler' component={SchedulerPanelContainer} />
         <Route path='/Henry' component={HenrysComponent} />
       </Router>
     )
