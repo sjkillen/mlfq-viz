@@ -20,6 +20,32 @@ export default Container.createFunctional(TableView, () => [SchedulerStore], () 
  * Called every state change
  */
 function TableView(scheduler) {
+   let summaryTable = <span />;
+   if (scheduler.simulationFinished) {
+      summaryTable = (
+         <table>
+            <tbody>
+               <tr>
+                  <th>Job Id</th>
+                  <th>Response Time</th>
+                  <th>Turnaround Time</th>
+                  <th>Avg Priority</th>
+               </tr>
+               {scheduler.allJobs.map(job => {
+                  return (
+                     <tr key={job.init.id}>
+                        <td>{job.init.id}</td>
+                        <td>{job.perf.responseTime}</td>
+                        <td>{job.perf.turnaroundTime}</td>
+                        <td>???</td>
+                     </tr>
+                  );
+               })}
+            </tbody>
+         </table>
+      );
+   }
+
    return (
       <span className="TableView">
          <table style={{
@@ -46,8 +72,8 @@ function TableView(scheduler) {
                })}
             </tbody>
          </table>
-         <div ref={(el) => update(el, scheduler)}>
-         </div>
+         <div ref={(el) => update(el, scheduler)} />
+         {summaryTable}
       </span>
    );
 }
@@ -59,7 +85,7 @@ function update(tableContainer, scheduler) {
    const container = d3.select(tableContainer);
 
    /**
-    * Initial Job Table
+    * Runtime job Table
     */
    {
       container.append("h3").text(`${scheduler.globalTick} CPU cycle${scheduler.globalTick === 1 ? " has" : "s have"} past`);
@@ -78,7 +104,7 @@ function update(tableContainer, scheduler) {
          }
       });
 
-      headers.append("th").text("Job id");
+      headers.append("th").text("Job Id");
       rows.append("td").text(d => d.init.id);
 
       headers.append("th").text("Current Priority");
@@ -93,9 +119,10 @@ function update(tableContainer, scheduler) {
       headers.append("th").text("Time Quantum");
       rows.append("td").text(d => `${d.running.quantumLeft} / ${d.running.quantumFull}`);
 
-      headers.append("th").text("IO Left");
-      rows.append("td").text(d => d.running.ioLeft);
+      headers.append("th").text("Doing IO");
+      rows.append("td").text(d => d.running.ioLeft ? "YES" : "NO");
    }
+
 
    if (scheduler.simulationFinished) {
       container.append("h1").text(`Simulation finished after ${scheduler.globalTick} cycles`);
