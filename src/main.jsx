@@ -4,6 +4,6 @@
 
 import { render } from "react-dom";
 
-import Navigation from "./views/Navigation";
+import TableView from "./views/TableView";
 
-render(<Navigation />, document.getElementById("root"));
+render(<TableView />, document.getElementById("root"));
