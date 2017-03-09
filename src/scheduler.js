@@ -23,7 +23,7 @@ const scheduler = new Scheduler({
     ioFrequencyRange: [100, 1000],
     jobRuntimeRange: [1, 10],
     numJobsRange: [1, 1],
-    jobCreateTimeRange: [0, 3],
+    jobCreateTimeRange: [1, 3],
     ioLengthRange: [0, 10]
 });
 export default scheduler;
