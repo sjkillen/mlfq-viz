@@ -303,8 +303,10 @@ export default
       for (let i = 1; i < this.queues.length; i++) {
          this.queues[i].jobs = [];
       }
-      for (const job of this.queues[0].jobs) {
-         job.setQuantum(this.queues[0].timeQuantum);
+      for (const job of this.allJobs) {
+         if (!job.isFinished()) {
+            job.setQuantum(this.queues[0].timeQuantum);
+         }
       }
    }
    /**
