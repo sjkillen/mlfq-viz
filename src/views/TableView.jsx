@@ -66,7 +66,7 @@ function TableView(scheduler) {
       <span className="TableView">
          <table style={{
             position: "fixed",
-            left: "700px",
+            left: "900px",
             top: "100px"
          }}>
             <tbody>
@@ -86,7 +86,7 @@ function TableView(scheduler) {
          </table>
          <table style={{
             position: "fixed",
-            left: "700px",
+            left: "900px",
             bottom: "100px"
          }}>
             <tbody>
