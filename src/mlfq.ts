@@ -115,7 +115,7 @@ class Job {
          throw new Error("Job was not meant to be run");
       }
       if (this.running.serviceTime === this.init.runTime) {
-         this.perf.turnaroundTime = globalTick - this.init.createTime;
+         this.perf.turnaroundTime = globalTick - this.init.createTime + 1;
       } else if (this.running.serviceTime > this.init.runTime) {
          throw new Error("job missed finish");
       } else if (!this.quantumExpired()) {
@@ -262,7 +262,7 @@ export default
       this.numQueues = config.timeQuantums.length;
       this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
       this.configure(config);
-      this.globalTick = 0;
+      this.globalTick = 1;
    }
 
    /**
@@ -405,7 +405,8 @@ export default
          this.initCpuJob();
          this.waitJobs();
          this.globalTick++;
-      } else {
+      }
+      if (this.simulationFinished) {
          this.stop();
       }
    }
