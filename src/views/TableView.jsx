@@ -23,26 +23,46 @@ function TableView(scheduler) {
    let summaryTable = <span />;
    if (scheduler.simulationFinished) {
       summaryTable = (
-         <table>
-            <tbody>
-               <tr>
-                  <th>Job Id</th>
-                  <th>Response Time</th>
-                  <th>Turnaround Time</th>
-                  <th>Avg Priority</th>
-               </tr>
-               {scheduler.allJobs.map(job => {
-                  return (
-                     <tr key={job.init.id}>
-                        <td>{job.init.id}</td>
-                        <td>{job.perf.responseTime}</td>
-                        <td>{job.perf.turnaroundTime}</td>
-                        <td>???</td>
-                     </tr>
-                  );
-               })}
-            </tbody>
-         </table>
+         <span>
+            <table>
+               <tbody>
+                  <tr>
+                     <th>Job Id</th>
+                     <th>Response Time</th>
+                     <th>Turnaround Time</th>
+                     <th>Avg Priority</th>
+                  </tr>
+                  {scheduler.allJobs.map(job => {
+                     return (
+                        <tr key={job.init.id}>
+                           <td>{job.init.id}</td>
+                           <td>{job.perf.responseTime}</td>
+                           <td>{job.perf.turnaroundTime}</td>
+                           <td>???</td>
+                        </tr>
+                     );
+                  })}
+               </tbody>
+            </table>
+            <table>
+               <tbody>
+                  <tr>
+                     <th>Scheduler Fairness</th>
+                     <th>CPU Utilization</th>
+                     <th>Throughput</th>
+                  </tr>
+                  {scheduler.allJobs.map(job => {
+                     return (
+                        <tr key={job.init.id}>
+                           <td>???</td>
+                           <td>???</td>
+                           <td>???</td>
+                        </tr>
+                     );
+                  })}
+               </tbody>
+            </table>
+         </span>
       );
    }
 
