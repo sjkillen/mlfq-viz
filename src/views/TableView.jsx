@@ -51,15 +51,11 @@ function TableView(scheduler) {
                      <th>CPU Utilization</th>
                      <th>Throughput</th>
                   </tr>
-                  {scheduler.allJobs.map(job => {
-                     return (
-                        <tr key={job.init.id}>
-                           <td>???</td>
-                           <td>???</td>
-                           <td>???</td>
-                        </tr>
-                     );
-                  })}
+                  <tr>
+                     <td>???</td>
+                     <td>???</td>
+                     <td>???</td>
+                  </tr>
                </tbody>
             </table>
          </span>
@@ -70,7 +66,27 @@ function TableView(scheduler) {
       <span className="TableView">
          <table style={{
             position: "fixed",
-            left: "600px",
+            left: "700px",
+            top: "100px"
+         }}>
+            <tbody>
+               <tr>
+                  <th>Priority Level</th>
+                  <th>Time Quantum</th>
+               </tr>
+               {scheduler.queues.map((queue, i) => {
+                  return (
+                     <tr key={i}>
+                        <td>Queue {i}</td>
+                        <td>{queue.timeQuantum}</td>
+                     </tr>
+                  );
+               })}
+            </tbody>
+         </table>
+         <table style={{
+            position: "fixed",
+            left: "700px",
             bottom: "100px"
          }}>
             <tbody>
@@ -109,6 +125,9 @@ function update(tableContainer, scheduler) {
     */
    {
       container.append("h3").text(`${scheduler.globalTick} CPU cycle${scheduler.globalTick === 1 ? " has" : "s have"} past`);
+      container.append("h4")
+         .attr("style", scheduler.boostLeft === scheduler.boostTime ? "color: orange" : "")
+         .text(`Boost timer is ${scheduler.boostLeft} / ${scheduler.boostTime}`);
       const table = container.append("table"),
          headers = table.append("tr");
 
@@ -118,10 +137,15 @@ function update(tableContainer, scheduler) {
       const rows = join.enter()
          .append("tr");
 
+
       rows.attr("style", d => {
-         if (scheduler.cpuJob) {
-            return scheduler.cpuJob.init.id === d.init.id ? "background: green" : "";
+         if (d.running.serviceTime === d.init.runTime) {
+            return "background: tomato";
          }
+         if (scheduler.cpuJob && scheduler.cpuJob.init.id === d.init.id) {
+            return "background: lightgreen";
+         }
+         return d.init.createTime >= scheduler.globalTick ? "background: lightblue" : "";
       });
 
       headers.append("th").text("Job Id");
@@ -141,6 +165,12 @@ function update(tableContainer, scheduler) {
 
       headers.append("th").text("Doing IO");
       rows.append("td").text(d => d.running.ioLeft ? "YES" : "NO");
+
+      headers.append("th").text("Created");
+      rows.append("td").text(d => d.init.createTime >= scheduler.globalTick ? "NO" : "YES");
+
+      headers.append("th").text("Finished");
+      rows.append("td").text(d => d.running.serviceTime === d.init.runTime  ? "YES" : "NO");
    }
 
 
