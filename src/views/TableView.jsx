@@ -152,7 +152,14 @@ function update(tableContainer, scheduler) {
       rows.append("td").text(d => d.init.id);
 
       headers.append("th").text("Current Priority");
-      rows.append("td").text(d => d.running.priority);
+      rows.append("td")
+      .attr("style", "font-weight: bold")
+      .text(d => `Queue ${d.running.priority}`);
+
+      headers.append("th").text("Time Quantum");
+      rows.append("td")
+      .attr("style", "font-weight: bold")
+      .text(d => `${d.running.quantumLeft} / ${d.running.quantumFull}`);
 
       headers.append("th").text("Service Time");
       rows.append("td").text(d => d.running.serviceTime);
@@ -160,8 +167,6 @@ function update(tableContainer, scheduler) {
       headers.append("th").text("Waiting Time");
       rows.append("td").text(d => d.running.waitingTime);
 
-      headers.append("th").text("Time Quantum");
-      rows.append("td").text(d => `${d.running.quantumLeft} / ${d.running.quantumFull}`);
 
       headers.append("th").text("Doing IO");
       rows.append("td").text(d => d.running.ioLeft ? "YES" : "NO");
