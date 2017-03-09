@@ -17,9 +17,7 @@
   },
   "homepage": "https://github.com/Spensaur-K/mlfq-viz#readme",
   "dependencies": {
-<<<<<<< HEAD
     "dotenv": "^4.0.0",
-=======
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-polyfill": "^6.20.0",
@@ -54,7 +52,6 @@
   "dependencies": {
 
     "webpack": "^1.14.0",
->>>>>>> origin/master
     "express": "^4.15.2",
     "flux": "^3.1.2",
     "immutable": "^3.8.1",
