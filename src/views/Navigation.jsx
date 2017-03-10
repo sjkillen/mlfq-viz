@@ -15,7 +15,6 @@ class App extends Component {
       <Router history={hashHistory}>
         <Route path="/" component={Header}>
           <IndexRoute component={TableView}/>
-          <Route path="/header" component={Header} />
           <Route path='/Scheduler' component={SchedulerPanelContainer} />
           <Route path='/Henry' component={HenrysComponent} />
         </Route>
