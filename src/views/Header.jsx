@@ -8,12 +8,11 @@ import * as d3 from "d3";
 
 const LArrow = {
     height: "25%",
-    marginTop: "100px"
+    width: "16.66%"
 }
 const RArrow = {
     height: "25%",
-    marginTop: "50px",
-    marginLeft: "90%"
+    width: "16.66%"
 }
 
 
@@ -22,11 +21,11 @@ class Header extends Component{
   render() {
     return (
         <div>
-         <svg ref={(el) => update(el)} className="image">
-         </svg>
-
         <Link to={"Scheduler"}>
             <img src="leftArrow.png" style={LArrow}/>
+        </Link>
+        <div style={{width:"66.66%", overflow: "scroll", height:"300px"}}>{this.props.children}</div>
+        <Link to={"Scheduler"}>
             <img src="RightArrow.png" style={RArrow}/>
         </Link>
         </div>
@@ -34,13 +33,6 @@ class Header extends Component{
   }
 };
 
-
-
-function update(svgElement) {
-   if (!svgElement) return;
-   const width = 1800, height = 500;
-
-}
 
 
 
