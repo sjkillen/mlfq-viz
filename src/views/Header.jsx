@@ -55,7 +55,7 @@ class Header extends Component{
     return (
         <div>
         
-            <div style={NavBar}>
+            <div>
                 <ButtonGroup className="bootstrap" style={myStyle}>
                     <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="" style={myStyle}>
                         <MenuItem eventKey="1" className="" style={dropdownStyle}>GETTING STARTED</MenuItem>
@@ -66,8 +66,12 @@ class Header extends Component{
                         <MenuItem eventKey="6" className="" style={dropdownStyle}>PERSISTENT TIME QUANTUMS</MenuItem>
                         <MenuItem eventKey="7" className="" style={dropdownStyle}>THE BOOST TIMER</MenuItem>
                     </DropdownButton>
-                    <Button className="bootstrap glyphicon glyphicon-chevron-right" style={myStyle}></Button>
-                    <Button className="bootstrap glyphicon glyphicon-chevron-left" style={myStyle}></Button>
+                    <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle} ></Button>
+                    <div style={{color:"white", display:"inline-block", width:"35px", textAlign:"center"}}>
+                        {10}
+                    </div>
+                    
+                    <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle}></Button>
                 </ButtonGroup>
             </div>
 
