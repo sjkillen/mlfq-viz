@@ -23,59 +23,66 @@ function SchedulerPanel(scheduler) {
    );
 }
 
+/**
+ * Performs the d3 lifecycle for jobs
+ */
+function jobLife(svg, scheduler, scales) {
+   const jobJoin = svg
+      .selectAll("circle")
+      .data([].concat(scheduler.allJobs), d => d.init.id)
+      .call(drawJob, scheduler, scales);
+   jobJoin.enter()
+      .append("circle")
+      .call(drawJob, scheduler, scales);
+   jobJoin.exit()
+      .attr("fill", "black")
+      .attr("cy", svg.attr("height") - 50);
+   return jobJoin;
+}
+
+/**
+ * Generate all the needed scales
+ */
+function getScales(svg, scheduler) {
+   const service = d3.scaleLinear()
+         .domain([0, 1])
+         .range([0, svg.attr("height")]);
+
+   return {
+      future: d3.scaleLinear().domain([
+         0,
+         scheduler.config.jobCreateTimeRange[1]
+      ]).range([0, svg.attr("width")]),
+      service,
+      size: d3.scaleLinear()
+         .domain([0, scheduler.numQueues])
+         .range([30, 4]),
+      jobHeight: d => service(d.running.serviceTime / d.init.runTime)
+   };
+}
+
+/**
+ * Draw the scheduler's queues and the jobs inside them
+ * @param element to draw the queues inside
+ * @param scheduler
+ */
+function drawJob(selection, scheduler, scales) {
+   return selection
+      .attr("cx", d => scales.future(d.init.createTime))
+      .attr("r", d => scales.size(d.running.priority) + "px")
+      .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
+      .attr("style", "transition:cy 0.1s linear")
+      .attr("cy", scales.jobHeight);
+}
 
 function update(svgElement, scheduler) {
    if (!svgElement) return;
-   const width = 1800, height = 500;
-
-   const futureScale = d3.scaleLinear().domain([
-      0,
-      scheduler.config.jobCreateTimeRange[1]
-   ]).range([0, width]);
-
-
-   const serviceScale = d3.scaleLinear()
-      .domain([0, 1])
-      .range([0, height]);
-
-   const sizeScale = d3.scaleLinear()
-      .domain([0, scheduler.numQueues])
-      .range([30, 4]);
-
-   const axis = d3.axisBottom(futureScale);
-
-   const jobHeight = d => serviceScale(d.running.serviceTime / d.init.runTime);
-
+   const width = 600, height = 500;
    const svg = d3.select(svgElement)
       .attr("height", height)
       .attr("width", width);
-   svg.append("g")
-      .attr("transform", `translate(0, ${height - 20})`)
-      .call(axis);
-   const join = svg
-      .selectAll("circle")
-      .data([].concat(scheduler.futureJobs, ...scheduler.ioJobs, ...scheduler.queues.map(q => q.jobs)), d => console.log(d.init.id))
-      .attr("cx", d => futureScale(d.init.createTime))
-      .attr("r", d => sizeScale(d.running.priority) + "px")
-      .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
-      .attr("style", "transition:cy 0.1s linear")
-      .attr("cy", jobHeight);
-   join.enter()
-      .append("circle")
-      .attr("r", d => sizeScale(d.running.priority) + "px")
-      .attr("cx", d => futureScale(d.init.createTime))
-      .attr("cy", jobHeight)
-      .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
-      .attr("style", "transition:cy 0.1s linear");
-   join.exit()
-      .attr("fill", "black")
-      .attr("cy", height - 50);
-  /* svg.select("line").remove();
 
-   svg.append("line")
-      .attr("x1", futureScale(scheduler.globalTick))
-      .attr("x2", futureScale(scheduler.globalTick))
-      .attr("y1", 0)
-      .attr("y2", height)
-      .attr("style", "stroke:rgb(200,220,255);stroke-width:8");*/
+   const scales = getScales(svg, scheduler);
+
+   svg.call(jobLife, scheduler, scales);
 }
