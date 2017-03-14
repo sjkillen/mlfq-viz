@@ -6,6 +6,8 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
+import "./SchedulerPanel.scss";
+
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
@@ -44,35 +46,41 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-   const service = d3.scaleLinear()
-         .domain([0, 1])
-         .range([0, svg.attr("height")]);
-
+   debugger;
    return {
-      future: d3.scaleLinear().domain([
-         0,
-         scheduler.config.jobCreateTimeRange[1]
-      ]).range([0, svg.attr("width")]),
-      service,
-      size: d3.scaleLinear()
-         .domain([0, scheduler.numQueues])
-         .range([30, 4]),
-      jobHeight: d => service(d.running.serviceTime / d.init.runTime)
+      /**
+       * Scales x values to fit within queues
+       */
+      queue: d3.scaleBand().domain(scheduler.queues.map((q, i) => i))
+         .range([0, svg.attr("width")]),
+      // Takes job's queue position and outputs its y position
+      queueOrder: d3.scaleLinear().domain([
+         0, d3.max(scheduler.queues.map(q => q.jobs.length))
+      ]).range([0, svg.attr("height")]),
+      jobSize: () => "30px"
    };
+}
+
+/**
+ * Get the position of a job in it's queue
+ */
+function getJobPosition(job, scheduler) {
+   return scheduler.queues[job.running.priority].jobs.indexOf(job);
 }
 
 /**
  * Draw the scheduler's queues and the jobs inside them
  * @param element to draw the queues inside
  * @param scheduler
+ * @param scales from getScales
  */
 function drawJob(selection, scheduler, scales) {
    return selection
-      .attr("cx", d => scales.future(d.init.createTime))
-      .attr("r", d => scales.size(d.running.priority) + "px")
+      .attr("cx", d => scales.queue(d.running.priority))
+      .attr("r", d => 30 + "px")
       .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
-      .attr("style", "transition:cy 0.1s linear")
-      .attr("cy", scales.jobHeight);
+      .attr("style", "transition:cx 0.1s linear, cy 0.1s linear")
+      .attr("cy", d => scales.queueOrder(getJobPosition(d, scheduler)));
 }
 
 function update(svgElement, scheduler) {
