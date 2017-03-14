@@ -76,7 +76,7 @@ class Header extends Component {
                     <img src="leftArrow.png" style={LArrow} />
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"Henry"}>
+                <Link to={"SPLOM"}>
                     <img src="RightArrow.png" style={RArrow} />
                 </Link>
             </div>

@@ -1,7 +1,7 @@
 /**
  * Handles application routing and places views
  */
-
+import SPLOMPanel from "../views/SPLOMPanel";
 import SchedulerPanel from "../views/SchedulerPanel";
 import TableView from "./TableView";
 import React, { Component } from "react";
@@ -15,11 +15,10 @@ class App extends Component {
         <Route path="/" component={Header}>
           <IndexRoute component={TableView} />
           <Route path="/Scheduler" component={SchedulerPanel} />
-          <Route path="/Henry" component={HenrysComponent} />
+          <Route path="/SPLOM" component={SPLOMPanel} />
         </Route>
       </Router>
     );
   }
 }
-const HenrysComponent = () => <div>Hello Henry! make sure to import your component!</div>;
 export default App;
