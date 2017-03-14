@@ -2,15 +2,19 @@
  * Render the Scheduler Panel
  */
 
-
 import React, { Component } from "react";
 import * as d3 from "d3";
+import { Container } from "flux/utils";
+import SchedulerStore from "../data/SchedulerStore";
 
+export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
+   return SchedulerStore.getScheduler();
+});
 
 /**
  * Called every state change
  */
-export default function SchedulerPanel(scheduler) {
+function SchedulerPanel(scheduler) {
    return (
       <span className="SchedulerPanel">
          <svg ref={(el) => update(el, scheduler)} className="image">
@@ -50,7 +54,7 @@ function update(svgElement, scheduler) {
       .call(axis);
    const join = svg
       .selectAll("circle")
-      .data([].concat(scheduler.futureJobs, ...scheduler.ioJobs, ...scheduler.queues.map(q => q.jobs)), d => d.init.id)
+      .data([].concat(scheduler.futureJobs, ...scheduler.ioJobs, ...scheduler.queues.map(q => q.jobs)), d => console.log(d.init.id))
       .attr("cx", d => futureScale(d.init.createTime))
       .attr("r", d => sizeScale(d.running.priority) + "px")
       .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
@@ -66,7 +70,6 @@ function update(svgElement, scheduler) {
    join.exit()
       .attr("fill", "black")
       .attr("cy", height - 50);
-      debugger;
   /* svg.select("line").remove();
 
    svg.append("line")
