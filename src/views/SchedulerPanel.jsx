@@ -66,7 +66,7 @@ function update(svgElement, scheduler) {
    join.exit()
       .attr("fill", "black")
       .attr("cy", height - 50);
-      debugger;
+
   /* svg.select("line").remove();
 
    svg.append("line")
