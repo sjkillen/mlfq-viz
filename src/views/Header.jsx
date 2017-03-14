@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { Link } from "react-router";
 import ScatterplotMatrix from "./ScatterplotMatrix";
@@ -18,7 +17,6 @@ const RArrow = {
     bottom: "50%",
     top: "30%"
 };
-
 const content = {
     width: "66.66%",
     overflow: "scroll",

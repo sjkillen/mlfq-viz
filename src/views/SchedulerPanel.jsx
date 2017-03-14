@@ -54,7 +54,7 @@ function update(svgElement, scheduler) {
       .call(axis);
    const join = svg
       .selectAll("circle")
-      .data([].concat(scheduler.futureJobs, ...scheduler.ioJobs, ...scheduler.queues.map(q => q.jobs)), d => d.init.id)
+      .data([].concat(scheduler.futureJobs, ...scheduler.ioJobs, ...scheduler.queues.map(q => q.jobs)), d => console.log(d.init.id))
       .attr("cx", d => futureScale(d.init.createTime))
       .attr("r", d => sizeScale(d.running.priority) + "px")
       .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
@@ -70,7 +70,6 @@ function update(svgElement, scheduler) {
    join.exit()
       .attr("fill", "black")
       .attr("cy", height - 50);
-      debugger;
   /* svg.select("line").remove();
 
    svg.append("line")
