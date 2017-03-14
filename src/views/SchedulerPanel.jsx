@@ -2,15 +2,19 @@
  * Render the Scheduler Panel
  */
 
-
 import React, { Component } from "react";
 import * as d3 from "d3";
+import { Container } from "flux/utils";
+import SchedulerStore from "../data/SchedulerStore";
 
+export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
+   return SchedulerStore.getScheduler();
+});
 
 /**
  * Called every state change
  */
-export default function SchedulerPanel(scheduler) {
+function SchedulerPanel(scheduler) {
    return (
       <span className="SchedulerPanel">
          <svg ref={(el) => update(el, scheduler)} className="image">
