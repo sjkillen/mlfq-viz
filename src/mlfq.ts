@@ -165,7 +165,10 @@ class Job {
     * Check if the job is finished
     */
    isFinished(): boolean {
-      return this.perf.turnaroundTime !== -1;
+      if (this.perf.turnaroundTime !== -1) {
+         this.running.isFinished = true;
+      }
+      return this.running.isFinished;
    }
    /**
     * Simulate this job doing IO
@@ -324,7 +327,6 @@ export default
          if (queue.jobs.length)
             return false;
       }
-      console.log("MLFQ Simulation completed");
       return true;
    }
 
@@ -392,6 +394,7 @@ export default
       this.running = false;
       clearTimeout(this.tickIntervalId);
       this.tickIntervalId = -1;
+      console.log("MLFQ Simulation completed");
    }
 
    /**

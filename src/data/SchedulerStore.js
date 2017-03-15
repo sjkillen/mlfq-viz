@@ -17,7 +17,6 @@ class SchedulerStore extends ReduceStore {
       }
       scheduler.generateJobs();
       scheduler.play(100, scheduler => {
-         console.log("tick");
          updateScheduler(state(scheduler));
       });
       return state(scheduler);

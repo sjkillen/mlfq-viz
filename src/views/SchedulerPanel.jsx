@@ -8,7 +8,6 @@ import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
 
-
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
 });
@@ -31,7 +30,7 @@ function SchedulerPanel(scheduler) {
 function jobLife(svg, scheduler, scales) {
    const jobJoin = svg
       .selectAll("circle")
-      .data([].concat(scheduler.allJobs), d => d.init.id)
+      .data(scheduler.allJobs, d => d.init.id)
       .call(drawJob, scheduler, scales);
    jobJoin.enter()
       .append("circle")
@@ -46,26 +45,45 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-   debugger;
+   const maxQueueHeight = scheduler.allJobs.length;
+   const marginBottom = 100;
+   const marginSides = 100;
+   const svgHeight = svg.attr("height");
+   //Scales x values to fit within queues
+   const height = d3.scaleBand()
+      .domain(d3.range(maxQueueHeight))
+      .range([svgHeight - marginBottom, 0]);
+   const radius = height.bandwidth() / 2;
+   const queue = d3.scaleBand()
+      .domain(d3.range(scheduler.numQueues))
+      .range([marginSides, (scheduler.numQueues * radius * 2) + marginSides]);
    return {
-      /**
-       * Scales x values to fit within queues
-       */
-      queue: d3.scaleBand().domain(scheduler.queues.map((q, i) => i))
-         .range([0, svg.attr("width")]),
+      queue,
+      radius,
+      cpu: {
+         x: marginSides + radius * 2.5,
+         y: svgHeight - marginBottom + radius * 2.5
+      },
+      finished: () => 0,
       // Takes job's queue position and outputs its y position
-      queueOrder: d3.scaleLinear().domain([
-         0, d3.max(scheduler.queues.map(q => q.jobs.length))
-      ]).range([0, svg.attr("height")]),
-      jobSize: () => "30px"
+      queueOrder: height
    };
 }
 
 /**
  * Get the position of a job in it's queue
+ * @param job 
+ * @param scheduler 
+ * @returns the position of the job in it's queue or Infinity if job is not in queue
  */
 function getJobPosition(job, scheduler) {
-   return scheduler.queues[job.running.priority].jobs.indexOf(job);
+   const position = scheduler.queues[job.running.priority].jobs.map(
+      j => j.init.id)
+      .indexOf(job.init.id);
+   if (position === -1) {
+      return Infinity;
+   }
+   return position;
 }
 
 /**
@@ -76,11 +94,37 @@ function getJobPosition(job, scheduler) {
  */
 function drawJob(selection, scheduler, scales) {
    return selection
-      .attr("cx", d => scales.queue(d.running.priority))
-      .attr("r", d => 30 + "px")
-      .attr("fill", d => d.running.ioLeft > 0 ? "yellow" : "red")
+      .attr("r", d => scales.radius + "px")
+      .attr("fill", d => {
+         if (scheduler.cpuJob && d.init.id === scheduler.cpuJob.init.id) {
+            return "yellow";
+         }
+         if (d.running.isFinished) {
+            return "black";
+         }
+         return "red";
+      })
       .attr("style", "transition:cx 0.1s linear, cy 0.1s linear")
-      .attr("cy", d => scales.queueOrder(getJobPosition(d, scheduler)));
+      .attr("cx", d => {
+         const pos = getJobPosition(d, scheduler);
+         if (Number.isFinite(pos)) {
+            return scales.queue(d.running.priority)
+         } else if (d.running.isFinished) {
+            return 0;
+         } else {
+            return scales.cpu.x;
+         }
+      })
+      .attr("cy", d => {
+         const y = scales.queueOrder(getJobPosition(d, scheduler));
+         if (Number.isFinite(y)) {
+            return y;
+         } else if (d.running.isFinished) {
+            return scales.cpu.y;
+         } else {
+            return scales.cpu.y;
+         }
+      });
 }
 
 function update(svgElement, scheduler) {
@@ -88,7 +132,8 @@ function update(svgElement, scheduler) {
    const width = 600, height = 500;
    const svg = d3.select(svgElement)
       .attr("height", height)
-      .attr("width", width);
+      .attr("width", width)
+      .attr("style", `transform: translate(-${width / 2}px, 0)`);
 
    const scales = getScales(svg, scheduler);
 
