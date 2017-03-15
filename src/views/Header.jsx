@@ -26,24 +26,20 @@ const RArrow = {
 }
 
 const content = {
-    width:"80.00%", 
-    overflow: "scroll", 
+    width:"80.00%",  
     height:"95%",
-    marginLeft: "16.6%",
-    marginRight: "16.6%",
 }
 
 const NavBar = {
-    width: "100%",
+    width: "70%",
     position: "fixed",
     backgroundColor: "Black",
-    margin: 0
-
+    margin: 0,
+    marginLeft: "-20"
 };
 
 const myStyle = {
     backgroundColor: "black",
-
 }
 
 const dropdownStyle = {
@@ -78,12 +74,12 @@ class Header extends Component{
                 </ButtonGroup>
             </div>
 
-            <Link to={"Scheduler"}>
-                <img src={pathLArrow} style={LArrow}/>
+            <Link to={"Scheduler"} className="Nav">
+                <img src={pathLArrow}  className="myLArrow"/>
             </Link>
             <div style={content}>{this.props.children}</div>
-            <Link to={"Henry"}>
-                <img src={pathRArrow} style={RArrow}/>
+            <Link to={"Henry"} className="Nav">
+                <img src={pathRArrow} className="myRArrow"/>
             </Link>
         </div>
         
