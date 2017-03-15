@@ -3,7 +3,7 @@
  */
 
 import { render } from "react-dom";
-import Navigation from "./views/Navigation";
+import Navigation from "./views/TableView";
 
 
 render(<Navigation />, document.getElementById("root"));

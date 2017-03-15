@@ -98,11 +98,13 @@ function drawJob(selection, scheduler, scales) {
       .attr("fill", d => {
          if (scheduler.cpuJob && d.init.id === scheduler.cpuJob.init.id) {
             return "yellow";
-         }
-         if (d.running.isFinished) {
+         } else if (d.running.isFinished) {
             return "black";
+         } else if (d.running.ioLeft > 0) {
+            return "orange";
+         } else {
+            return "red";
          }
-         return "red";
       })
       .attr("style", "transition:cx 0.1s linear, cy 0.1s linear")
       .attr("cx", d => {
@@ -111,6 +113,8 @@ function drawJob(selection, scheduler, scales) {
             return scales.queue(d.running.priority)
          } else if (d.running.isFinished) {
             return 0;
+         } else if (d.running.ioLeft > 0) {
+            return scales.cpu.x - 50;
          } else {
             return scales.cpu.x;
          }
@@ -121,6 +125,8 @@ function drawJob(selection, scheduler, scales) {
             return y;
          } else if (d.running.isFinished) {
             return scales.cpu.y;
+         } else if (d.running.ioLeft > 0) {
+            return scales.cpu.y + 20;
          } else {
             return scales.cpu.y;
          }

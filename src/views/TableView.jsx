@@ -38,7 +38,7 @@ function TableView(scheduler) {
                            <td>{job.init.id}</td>
                            <td>{job.perf.responseTime}</td>
                            <td>{job.perf.turnaroundTime}</td>
-                           <td>???</td>
+                           <td>{job.running.AvgPriority}</td>
                         </tr>
                      );
                   })}
