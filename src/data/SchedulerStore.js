@@ -16,8 +16,7 @@ class SchedulerStore extends ReduceStore {
             return immutInstance(s).toMap().merge({ allJobs, simulationFinished });
       }
       scheduler.generateJobs();
-      scheduler.play(100, scheduler => {
-         console.log("tick");
+      scheduler.play(1000, scheduler => {
          updateScheduler(state(scheduler));
       });
       return state(scheduler);

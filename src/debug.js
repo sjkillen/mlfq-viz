@@ -33,10 +33,10 @@ window.getStatus = getStatus;
  */
 export function getJobStates(job) {
    const states = [];
-   if (scheduler.futureJobs.has(job)) {
+   if (scheduler.futureJobs.indexOf(job) !== -1) {
       states.push("Future");
    }
-   if (scheduler.finishedJobs.has(job)) {
+   if (scheduler.finishedJobs.indexOf(job) !== -1) {
       states.push("Finished");
    }
    if (scheduler.cpuJob === job) {
@@ -53,3 +53,11 @@ export function getJobStates(job) {
    return states;
 }
 window.getJobStates = getJobStates;
+
+/**
+ * Get the id of a job
+ */
+export function jid(job) {
+      return job.init.id;
+}
+window.jid = jid;
