@@ -6,16 +6,19 @@ import * as d3 from "d3";
 import {Button, ButtonGroup,  DropdownButton, MenuItem} from "react-bootstrap"
 import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
+const pathLArrow = require ("./Images/leftArrow.png");
+const pathRArrow = require ("./Images/RightArrow.png");
+
 
 const LArrow = {
-    width: "16.66%",
+    width: "10.00%",
     position: "fixed",
     left:"0",
     bottom:"50%",
     top:"30%"
 }
 const RArrow = {
-    width: "16.66%",
+    width: "10.00%",
     position: "fixed",
     right:"0",
     bottom:"50%",
@@ -23,9 +26,9 @@ const RArrow = {
 }
 
 const content = {
-    width:"66.66%", 
+    width:"80.00%", 
     overflow: "scroll", 
-    height:"500px",
+    height:"95%",
     marginLeft: "16.6%",
     marginRight: "16.6%",
 }
@@ -76,11 +79,11 @@ class Header extends Component{
             </div>
 
             <Link to={"Scheduler"}>
-                <img src="leftArrow.png" style={LArrow}/>
+                <img src={pathLArrow} style={LArrow}/>
             </Link>
             <div style={content}>{this.props.children}</div>
             <Link to={"Henry"}>
-                <img src="RightArrow.png" style={RArrow}/>
+                <img src={pathRArrow} style={RArrow}/>
             </Link>
         </div>
         

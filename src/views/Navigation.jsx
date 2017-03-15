@@ -7,6 +7,7 @@ import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory,  } from 'react-router'
 import Header from "./Header"
+import ParallelAxisContainer from "../containers/ParallelAxisContainer"
 
 class App extends Component {
   render() {
@@ -17,6 +18,7 @@ class App extends Component {
           <IndexRoute component={TableView}/>
           <Route path='/Scheduler' component={SchedulerPanelContainer} />
           <Route path='/Henry' component={HenrysComponent} />
+          <Route path='/ParallelAxis' component={ParallelAxisContainer} />
         </Route>
       </Router>
     )
