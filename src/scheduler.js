@@ -21,7 +21,7 @@ const scheduler = new Scheduler({
         };
     }()),
     ioFrequencyRange: [-1, -1],
-    jobRuntimeRange: [100, 200],
+    jobRuntimeRange: [10, 20],
     numJobsRange: [3, 4],
     jobCreateTimeRange: [3, 8],
     ioLengthRange: [1, 3]
