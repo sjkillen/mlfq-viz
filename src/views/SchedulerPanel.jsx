@@ -46,7 +46,6 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-   debugger;
    return {
       /**
        * Scales x values to fit within queues
