@@ -3,9 +3,49 @@
 }
 
 .myBtn {
-
     border: 5px;
     border-right-color: white;
     border-left-color: white;
     width:30px;
 }
+
+
+.myRArrow {
+    width: 10.00%;
+    position: fixed;
+    right:0;
+    bottom:50%;
+    top:30%;
+
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite;
+}
+
+.myLArrow{
+    width: 10.00%;
+    position: fixed;
+    left:0;
+    bottom:50%;
+    top:30%;
+
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite;
+}
+    //safari
+    @-webkit-keyframes pulse {
+        0%   { width: 10%;}
+        50%  {width: 10.2%;}
+        100% {width: 10%;}
+    }
+
+    @keyframes pulse {       
+        0%   { width: 10%;}
+        50%  {width: 10.2%;}
+        100% {width: 10%;}
+    }

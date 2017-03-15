@@ -2,43 +2,22 @@ import React, { Component } from "react";
 import { Link } from "react-router";
 import ScatterplotMatrix from "./ScatterplotMatrix";
 import * as d3 from "d3";
-import { Button, ButtonGroup, DropdownButton, MenuItem } from "react-bootstrap";
-import "../style/bootstrap/bootstrap.scss";
-import "../style/Nav.scss";
+import {Button, ButtonGroup,  DropdownButton, MenuItem} from "react-bootstrap"
+import '../style/bootstrap/bootstrap.scss';
+import '../style/Nav.scss';
+const pathLArrow = require ("./Images/leftArrow.png");
+const pathRArrow = require ("./Images/RightArrow.png");
 
-const LArrow = {
-    width: "16.66%",
-    position: "fixed",
-    left: "0",
-    bottom: "50%",
-    top: "30%"
-};
-const RArrow = {
-    width: "16.66%",
-    position: "fixed",
-    right: "0",
-    bottom: "50%",
-    top: "30%"
-};
+
+
 const content = {
-    width: "66.66%",
-    overflow: "scroll",
-    height: "500px",
-    marginLeft: "16.6%",
-    marginRight: "16.6%"
-};
-const NavBar = {
-    width: "100%",
-    position: "fixed",
-    backgroundColor: "Black",
-    margin: 0
-
-};
+    width:"80.00%",  
+    height:"95%",
+}
 
 const myStyle = {
     backgroundColor: "black",
-
-};
+}
 
 const dropdownStyle = {
     backgroundColor: "black",
@@ -51,7 +30,6 @@ class Header extends Component {
     render() {
         return (
             <div>
-
                 <div>
                     <ButtonGroup className="bootstrap" style={myStyle}>
                         <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="" style={myStyle}>
@@ -72,16 +50,15 @@ class Header extends Component {
                     </ButtonGroup>
                 </div>
 
-                <Link to={"Scheduler"}>
-                    <img src="leftArrow.png" style={LArrow} />
+                <Link to={"Scheduler"} className="Nav">
+                    <img src={pathLArrow} className="myLArrow" />
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"SPLOM"}>
-                    <img src="RightArrow.png" style={RArrow} />
+                <Link to={"SPLOM"} className="Nav">
+                    <img src={pathRArrow} className="myRArrow" />
                 </Link>
             </div>
         );
     }
-};
-
+}
 export default Header;
