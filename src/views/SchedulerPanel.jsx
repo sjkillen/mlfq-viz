@@ -45,13 +45,14 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-   const maxQueueHeight = 6;
+   const maxQueueHeight = scheduler.allJobs.length;
    const marginBottom = 100;
    const marginSides = 100;
+   const svgHeight = svg.attr("height");
    //Scales x values to fit within queues
    const height = d3.scaleBand()
       .domain(d3.range(maxQueueHeight))
-      .range([svg.attr("height") - marginBottom, 0]);
+      .range([svgHeight - marginBottom, 0]);
    const radius = height.bandwidth() / 2;
    const queue = d3.scaleBand()
       .domain(d3.range(scheduler.numQueues))
@@ -59,6 +60,11 @@ function getScales(svg, scheduler) {
    return {
       queue,
       radius,
+      cpu: {
+         x: marginSides + radius * 2.5,
+         y: svgHeight - marginBottom + radius * 2.5
+      },
+      finished: () => 0,
       // Takes job's queue position and outputs its y position
       queueOrder: height
    };
@@ -88,7 +94,6 @@ function getJobPosition(job, scheduler) {
  */
 function drawJob(selection, scheduler, scales) {
    return selection
-      .attr("cx", d => scales.queue(d.running.priority))
       .attr("r", d => scales.radius + "px")
       .attr("fill", d => {
          if (scheduler.cpuJob && d.init.id === scheduler.cpuJob.init.id) {
@@ -100,10 +105,25 @@ function drawJob(selection, scheduler, scales) {
          return "red";
       })
       .attr("style", "transition:cx 0.1s linear, cy 0.1s linear")
+      .attr("cx", d => {
+         const pos = getJobPosition(d, scheduler);
+         if (Number.isFinite(pos)) {
+            return scales.queue(d.running.priority)
+         } else if (d.running.isFinished) {
+            return 0;
+         } else {
+            return scales.cpu.x;
+         }
+      })
       .attr("cy", d => {
-         let i = getJobPosition(d, scheduler);
-         i = scales.queueOrder(i);
-         return Number.isFinite(i) ? i : 0;
+         const y = scales.queueOrder(getJobPosition(d, scheduler));
+         if (Number.isFinite(y)) {
+            return y;
+         } else if (d.running.isFinished) {
+            return scales.cpu.y;
+         } else {
+            return scales.cpu.y;
+         }
       });
 }
 
@@ -112,7 +132,8 @@ function update(svgElement, scheduler) {
    const width = 600, height = 500;
    const svg = d3.select(svgElement)
       .attr("height", height)
-      .attr("width", width);
+      .attr("width", width)
+      .attr("style", `transform: translate(-${width / 2}px, 0)`);
 
    const scales = getScales(svg, scheduler);
 
