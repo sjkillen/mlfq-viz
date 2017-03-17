@@ -20,9 +20,10 @@ const scheduler = new Scheduler({
             }
         };
     }()),
+    speed: 200,
     ioFrequencyRange: [-1, -1],
     jobRuntimeRange: [10, 20],
-    numJobsRange: [3, 3],
+    numJobsRange: [3, 15],
     jobCreateTimeRange: [1, 10],
     ioLengthRange: [10, 30]
 });
