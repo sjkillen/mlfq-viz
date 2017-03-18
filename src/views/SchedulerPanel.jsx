@@ -127,9 +127,14 @@ function drawJob(selection, scheduler, scales) {
                   const pos = getJobPosition(d, scheduler);
                   const y = scales.queueOrder(pos);
                   const job = d3.select(this);
-                  if (Number.isFinite(pos)) {
-                        job.call(anim.queueMove, scheduler, scales, y);
-                  } else if (d.running.isFinished) {
+                  
+                  switch (d.prevState + "|" + d.state) {
+                        case "waiting|waiting":
+                        debugger
+                              job.call(anim.queueMove, scheduler, scales, y);
+                              return;
+                  }
+                  if (d.running.isFinished) {
                         job.attr("cy", scales.cpu.y);
                         job.attr("cx", 0);
                   } else if (d.running.ioLeft > 0) {

@@ -61,7 +61,7 @@ function setStates(scheduler, prevStates) {
    if (scheduler.cpuJob) {
       set([scheduler.cpuJob], "cpu");
    }
-   return immut(prevStates);
+   return immut(prevJobStates);
 }
 
 export default new SchedulerStore(dispatcher);
