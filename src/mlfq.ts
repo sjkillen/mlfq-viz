@@ -69,25 +69,13 @@ class Job {
             waitingTime: number;
             // Amount of ticks left to complete io, 0 if job isn't performing io
             ioLeft: number;
-            // AvgPriority is calculated by sum of (probability a jobs enter a queue * priority )
-            AvgPriority: number;
-            // Priority List keeps track of times a job changes priority
-            priorityList: number[];
-            // Number of times a job enter a queue
-            totalReturningQueueTime: number;
+            // Average priority over job's lifetime
+            avgPriority: number;
+            // All the priorities a job has had over it's lifetime
+            priorities: number[];
 
       };
 
-
-      /**
-       * GET avarage priority of a job
-       * @param none
-       */
-      getAvgPriority() {
-            return;
-      }
-
-      /**
       /**
        * Lowers the job's priority and reset its time quantum
        * @param priority to set as
@@ -109,25 +97,17 @@ class Job {
       }
 
       /**
-       * Increment the job's waiting time
+       * Increment the job's waiting time and recalculate it's average priority
        */
       wait() {
             this.running.waitingTime++;
-
             // Initialize priority count if needed
-            if (this.running.priorityList[this.running.priority] === undefined) {
-                  this.running.priorityList[this.running.priority] = 0;
+            if (!this.running.priorities[this.running.priority]) {
+                  this.running.priorities[this.running.priority] = 0;
             }
-            // Update priority list and total returning queue time
-            this.running.priorityList[this.running.priority]++;
-            this.running.totalReturningQueueTime++;
-
-            // Calculate avg priority
-            let temp_AvgPriority = 0;
-            for (let _i = 0; _i < this.running.priorityList.length; _i++) {
-                  temp_AvgPriority += this.running.priorityList[_i] * (_i + 1) / this.running.totalReturningQueueTime;
-            }
-            this.running.AvgPriority = Math.round(temp_AvgPriority * 10) / 10;
+            this.running.priorities[this.running.priority]++;
+            const sum = this.running.priorities.reduce((sum, val, i) => sum + val * i, 0);
+            this.running.avgPriority = this.running.waitingTime > 0 ? sum / this.running.waitingTime : 0;
       }
 
       /**
@@ -227,9 +207,8 @@ class Job {
                   quantumFull: 0,
                   ioLeft: 0,
                   waitingTime: 0,
-                  AvgPriority: 0,
-                  priorityList: [],
-                  totalReturningQueueTime: 0
+                  avgPriority: 0,
+                  priorities: [],
             };
       }
 }
