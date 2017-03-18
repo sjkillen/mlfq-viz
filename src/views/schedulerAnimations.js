@@ -39,7 +39,24 @@ export function queueToCPU(job, scheduler, scales) {
  */
 export function queueMove(job, scheduler, scales, y) {
    const time = scheduler.speed;
-   return job.transition(linear(time, 1))
+   return job
+      .transition(linear(time, 1))
       .attr("cy", y)
-      .attr("cx", d => scales.jobQueue(d.running.priority));
+      .attr("cx", d => scales.jobQueue(d.running.priority))
+}
+
+/**
+ * Animate a job finishing and leaving the simulation
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function finishJob(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job
+      .attr("opacity", 1)
+      .transition(linear(time, 1))
+      .attr("cy", scales.cpu.y)
+      .attr("cx", 0)
+      .attr("opacity", 0)
 }

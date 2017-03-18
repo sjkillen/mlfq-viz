@@ -130,14 +130,13 @@ function drawJob(selection, scheduler, scales) {
                   
                   switch (d.prevState + "|" + d.state) {
                         case "waiting|waiting":
-                        debugger
                               job.call(anim.queueMove, scheduler, scales, y);
                               return;
+                        case "cpu|finished":
+                              job.call(anim.finishJob, scheduler, scales);
+                              return;
                   }
-                  if (d.running.isFinished) {
-                        job.attr("cy", scales.cpu.y);
-                        job.attr("cx", 0);
-                  } else if (d.running.ioLeft > 0) {
+                  if (d.running.ioLeft > 0) {
                         job.attr("cy", scales.cpu.y + 20);
                         job.attr("cx", scales.cpu.x - 50);
                   } else {// ON CPU
@@ -148,9 +147,6 @@ function drawJob(selection, scheduler, scales) {
 
 /**
  * Draw the queues to hold jobs
- * @param {*} svg 
- * @param {*} width 
- * @param {*} height 
  */
 function queues(svg, scheduler, scales) {
       const join = svg.selectAll("rect").data(scheduler.queues);
@@ -163,6 +159,9 @@ function queues(svg, scheduler, scales) {
       join.exit().remove();
 }
 
+/**
+ * Update the drawing
+ */
 function update(svgElement, scheduler) {
       if (!svgElement) return;
       const svg = d3.select(svgElement)
