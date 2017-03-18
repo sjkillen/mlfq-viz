@@ -7,6 +7,7 @@ import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
+import * as anim from "./schedulerAnimations";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
       return SchedulerStore.getScheduler();
@@ -64,12 +65,12 @@ function getScales(svg, scheduler) {
       const jobQueue = queue.paddingInner(jobPad);
       return {
             // x Position a queue needs to be draw
-            queue: p => queue(p) - (queueWidth + queuePad) / 2 ,
+            queue: p => queue(p) - (queueWidth + queuePad) / 2,
             // x Position a job in queue needs to be drawn
             jobQueue: queue,
             queueWidth: queueWidth + queuePad,
             queueBottom: jobHeight(0) + radius + queuePad,
-            queueTop: jobHeight(maxQueueHeight-1) - radius,
+            queueTop: jobHeight(maxQueueHeight - 1) - radius,
             radius,
             width,
             height,
@@ -119,31 +120,22 @@ function drawJob(selection, scheduler, scales) {
                         return "red";
                   }
             })
-            .attr("style", "transition:cx 0.1s linear, cy 0.1s linear")
-            .attr("cx", d => {
+            .each(function (d) {
                   const pos = getJobPosition(d, scheduler);
+                  const y = scales.queueOrder(pos);
+                  const job = d3.select(this);
                   if (Number.isFinite(pos)) {
-                        return scales.jobQueue(d.running.priority);
+                        job.call(anim.queueMove, scheduler, scales, y);
                   } else if (d.running.isFinished) {
-                        return 0;
+                        job.attr("cy", scales.cpu.y);
+                        job.attr("cx", 0);
                   } else if (d.running.ioLeft > 0) {
-                        return scales.cpu.x - 50;
-                  } else {
-                        return scales.cpu.x;
+                        job.attr("cy", scales.cpu.y + 20);
+                        job.attr("cx", scales.cpu.x - 50);
+                  } else {// ON CPU
+                        job.call(anim.queueToCPU, scheduler, scales);
                   }
             })
-            .attr("cy", d => {
-                  const y = scales.queueOrder(getJobPosition(d, scheduler));
-                  if (Number.isFinite(y)) {
-                        return y;
-                  } else if (d.running.isFinished) {
-                        return scales.cpu.y;
-                  } else if (d.running.ioLeft > 0) {
-                        return scales.cpu.y + 20;
-                  } else {
-                        return scales.cpu.y;
-                  }
-            });
 }
 
 /**
