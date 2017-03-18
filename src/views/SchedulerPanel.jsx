@@ -110,14 +110,17 @@ function drawJob(selection, scheduler, scales) {
       return selection
             .attr("r", d => scales.radius + "px")
             .attr("fill", d => {
-                  if (scheduler.cpuJob && d.init.id === scheduler.cpuJob.init.id) {
-                        return "yellow";
-                  } else if (d.running.isFinished) {
-                        return "black";
-                  } else if (d.running.ioLeft > 0) {
-                        return "orange";
-                  } else {
-                        return "red";
+                  switch (d.state) {
+                        case "cpu":
+                              return "yellow";
+                        case "future":
+                              return "white";
+                        case "finished":
+                              return "black";
+                        case "io":
+                              return "orange";
+                        case "waiting":
+                              return "red";
                   }
             })
             .each(function (d) {
