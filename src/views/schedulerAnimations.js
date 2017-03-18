@@ -60,3 +60,25 @@ export function finishJob(job, scheduler, scales) {
       .attr("cx", 0)
       .attr("opacity", 0)
 }
+
+/**
+ * Place a job back in queue from cpu
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ * @param y position to move job to in queue
+ */
+export function requeueJob(job, scheduler, scales, y) {
+   const time = scheduler.speed;
+   return job
+      .transition(linear(time, 0.2))
+      .attr("cy", scales.cpu.y + 50)
+      .transition(linear(time, 0.2))
+      .attr("cx", scales.queueJobReturnPipe)
+      .transition(linear(time, 0.2))
+      .attr("cy", scales.queueTop)
+      .transition(linear(time, 0.2))
+      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .transition(linear(time, 0.2))
+      .attr("cy", y)
+}

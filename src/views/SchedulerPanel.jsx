@@ -73,6 +73,7 @@ function getScales(svg, scheduler) {
             queueTop: jobHeight(maxQueueHeight - 1) - radius,
             radius,
             width,
+            queueJobReturnPipe: queue(scheduler.numQueues) + 50,
             height,
             cpu: {
                   x: marginSides + radius * 2.5,
@@ -134,6 +135,9 @@ function drawJob(selection, scheduler, scales) {
                               return;
                         case "cpu|finished":
                               job.call(anim.finishJob, scheduler, scales);
+                              return;
+                        case "cpu|waiting":
+                              job.call(anim.requeueJob, scheduler, scales, y);
                               return;
                   }
                   if (d.running.ioLeft > 0) {
