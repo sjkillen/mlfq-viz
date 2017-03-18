@@ -373,7 +373,7 @@ export default
             if (this.numQueues !== config.timeQuantums.length) {
                   this.boostJobs();
                   const firstQueue = this.queues[0].jobs;
-                  this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
+                  this.queues = config.timeQuantums.map((q, i) => ({ timeQuantum: q, jobs: [], priority: i }));
                   this.queues[0].jobs = firstQueue;
             }
             this.numQueues = timeQuantums.length;

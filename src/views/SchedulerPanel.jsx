@@ -37,7 +37,7 @@ function jobLife(svg, scheduler, scales) {
             .call(drawJob, scheduler, scales);
       jobJoin.exit()
             .attr("fill", "black")
-            .attr("cy", svg.attr("height") - 50);
+            .attr("cy", scales.height - 50);
       return jobJoin;
 }
 
@@ -48,27 +48,34 @@ function getScales(svg, scheduler) {
       const maxQueueHeight = scheduler.allJobs.length;
       const marginBottom = 100;
       const marginSides = 100;
-      const svgHeight = svg.attr("height");
+      const width = 700;
+      const height = 700;
+      const queuePad = 5;
+      const jobPad = 5;
       //Scales x values to fit within queues
       const jobHeight = d3.scaleBand()
             .domain(d3.range(maxQueueHeight))
-            .range([svgHeight - marginBottom, 0]);
+            .range([height - marginBottom, 0]);
       const queueWidth = jobHeight.bandwidth();
       const radius = queueWidth / 2;
       const queue = d3.scaleBand()
             .domain(d3.range(scheduler.numQueues))
             .range([marginSides, (scheduler.numQueues * queueWidth) + marginSides])
-      const jobQueue = queue.paddingInner(5);
+      const jobQueue = queue.paddingInner(jobPad);
       return {
-            queue,
-            jobQueue,
-            queueWidth,
+            // x Position a queue needs to be draw
+            queue: p => queue(p) - (queueWidth + queuePad) / 2 ,
+            // x Position a job in queue needs to be drawn
+            jobQueue: queue,
+            queueWidth: queueWidth + queuePad,
+            queueBottom: jobHeight(0) + radius + queuePad,
+            queueTop: jobHeight(maxQueueHeight-1) - radius,
             radius,
-            width: 700,
-            height: 700,
+            width,
+            height,
             cpu: {
                   x: marginSides + radius * 2.5,
-                  y: svgHeight - marginBottom + radius * 2.5
+                  y: height - marginBottom + radius * 2.5
             },
             finished: () => 0,
             // Takes job's queue position and outputs its y position
@@ -116,7 +123,7 @@ function drawJob(selection, scheduler, scales) {
             .attr("cx", d => {
                   const pos = getJobPosition(d, scheduler);
                   if (Number.isFinite(pos)) {
-                        return scales.jobQueue(d.running.priority)
+                        return scales.jobQueue(d.running.priority);
                   } else if (d.running.isFinished) {
                         return 0;
                   } else if (d.running.ioLeft > 0) {
@@ -146,13 +153,13 @@ function drawJob(selection, scheduler, scales) {
  * @param {*} height 
  */
 function queues(svg, scheduler, scales) {
-      const join = svg.selectAll("rect").data([scheduler.queues]);
+      const join = svg.selectAll("rect").data(scheduler.queues);
       join.enter()
             .append("rect")
-            .attr("width", 500)
-            .attr("height", 500)
-            .attr("x", 0)
-            .attr("y", 0)
+            .attr("width", scales.queueWidth)
+            .attr("height", scales.queueBottom - scales.queueTop)
+            .attr("x", d => scales.queue(d.priority))
+            .attr("y", scales.queueTop)
       join.exit().remove();
 }
 
