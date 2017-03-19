@@ -8,6 +8,7 @@ import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
 import * as anim from "./schedulerAnimations";
+import { selectJob } from "../data/SchedulerActions";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
       return SchedulerStore.getScheduler();
@@ -35,6 +36,8 @@ function jobLife(svg, scheduler, scales) {
             .call(drawJob, scheduler, scales);
       jobJoin.enter()
             .append("circle")
+            .classed("job", true)
+            .on("click", selectJob)
             .call(drawJob, scheduler, scales);
       jobJoin.exit()
             .attr("fill", "black")
@@ -86,13 +89,33 @@ function getScales(svg, scheduler) {
 }
 
 /**
+ * Get the array that contains a job
+ */
+function getJobHolster(job, scheduler) {
+      switch (job.state) {
+            case "waiting":
+            case "cpu":
+                  return scheduler.queues[job.running.priority].jobs;
+            case "future":
+                  return scheduler.futureJobs;
+            case "io":
+                  return scheduler.ioJobs;
+            case "finished":
+                  return scheduler.finishedJobs;
+            default:
+                  throw new Error("no holster");
+      }
+}
+
+/**
  * Get the position of a job in it's queue
  * @param job 
  * @param scheduler 
- * @returns the position of the job in it's queue or Infinity if job is not in queue
+ * @returns the position of the job in it's queue (future, io, waiting, cpu)
  */
 function getJobPosition(job, scheduler) {
-      const position = scheduler.queues[job.running.priority].jobs.map(
+      const holster = getJobHolster(job, scheduler);
+      const position = holster.map(
             j => j.init.id)
             .indexOf(job.init.id);
       if (position === -1) {
@@ -111,6 +134,9 @@ function drawJob(selection, scheduler, scales) {
       return selection
             .attr("r", d => scales.radius + "px")
             .attr("fill", d => {
+                  if (d.init.id === scheduler.selectedJobId) {
+                        return "blue";
+                  }
                   switch (d.state) {
                         case "cpu":
                               return "yellow";
@@ -130,6 +156,12 @@ function drawJob(selection, scheduler, scales) {
                   const job = d3.select(this);
 
                   switch (d.prevState + "|" + d.state) {
+                        case "future|future": 
+                              job.call(anim.waitInFuture, scheduler, scales);
+                              return;
+                        case "future|waiting":
+                              job.call(anim.enterSimulation, scheduler, scales, y);
+                              return;
                         case "waiting|waiting":
                               job.call(anim.queueMove, scheduler, scales, y);
                               return;
