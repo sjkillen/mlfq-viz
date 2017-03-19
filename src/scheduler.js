@@ -24,17 +24,17 @@ const scheduler = new Scheduler({
     speed: 200,
     generation: [
         {
-            ioFrequencyRange: [70, 100],
+            ioFrequencyRange: [80, 100],
             jobRuntimeRange: [Infinity, Infinity],
             numJobsRange: [3, 5],
-            jobCreateTimeRange: [1, 200],
+            jobCreateTimeRange: [100, 100],
             ioLengthRange: [5, 5]
         },
         {
             ioFrequencyRange: [-1, -1],
             jobRuntimeRange: [Infinity, Infinity],
             numJobsRange: [25, 30],
-            jobCreateTimeRange: [1, 200],
+            jobCreateTimeRange: [1, 1],
             ioLengthRange: [0, 0]
         }
     ]
