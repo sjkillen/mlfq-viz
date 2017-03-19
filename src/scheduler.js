@@ -7,9 +7,10 @@ import Scheduler from "./mlfq";
 import random from "random-seed";
 
 const scheduler = new Scheduler({
-    timeQuantums: [5, 6, 7, 8, 9, 10, 11],
-    boostTime: 2000,
-    random: (function(){
+    timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
+    boostTime: Infinity,
+    resetTQsOnIO: true,
+    random: (function () {
         const gen = random.create();
         return {
             seed(seed) {
@@ -20,11 +21,22 @@ const scheduler = new Scheduler({
             }
         };
     }()),
-    speed: 1500,
-    ioFrequencyRange: [-1, -1],
-    jobRuntimeRange: [10, 20],
-    numJobsRange: [10, 15],
-    jobCreateTimeRange: [1, 10],
-    ioLengthRange: [10, 30]
+    speed: 200,
+    generation: [
+        {
+            ioFrequencyRange: [70, 100],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [3, 5],
+            jobCreateTimeRange: [1, 200],
+            ioLengthRange: [5, 5]
+        },
+        {
+            ioFrequencyRange: [-1, -1],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [25, 30],
+            jobCreateTimeRange: [1, 200],
+            ioLengthRange: [0, 0]
+        }
+    ]
 });
 export default scheduler;

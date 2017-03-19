@@ -55,9 +55,10 @@ export function finishJob(job, scheduler, scales) {
    const time = scheduler.speed;
    return job
       .attr("opacity", 1)
-      .transition(linear(time, 1))
-      .attr("cy", scales.cpu.y)
-      .attr("cx", 0)
+      .transition(linear(time, 0.5))
+      .attr("cy", scales.requeue.lowerPipeJob)
+      .transition(linear(time, 0.5))
+      .attr("cx", scales.dead.exit)
       .attr("opacity", 0)
 }
 
@@ -72,11 +73,11 @@ export function requeueJob(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
       .transition(linear(time, 0.2))
-      .attr("cy", scales.cpu.y + 10)
+      .attr("cy", scales.requeue.lowerPipeJob)
       .transition(linear(time, 0.2))
-      .attr("cx", scales.queueJobReturnPipe)
+      .attr("cx", scales.requeue.sidePipeJob)
       .transition(linear(time, 0.2))
-      .attr("cy", scales.queueTop)
+      .attr("cy", scales.requeue.upperPipeJob)
       .transition(linear(time, 0.2))
       .attr("cx", d => scales.jobQueue(d.running.priority))
       .transition(linear(time, 0.2))
@@ -97,6 +98,26 @@ export function enterSimulation(job, scheduler, scales, y) {
       .attr("cy", y - scales.height)
       .transition(linear(time, 1))
       .attr("cy", y)
+}
+
+/**
+ * Enter the simulation from the future jobs and go directly to the CPU
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function enterSimulationToCPU(job, scheduler, scales) {
+   const time = scheduler.speed;
+   const y = scales.queueOrder(0);
+   return job
+      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .attr("cy", y - scales.height)
+      .transition(linear(time, 1 / 3))
+      .attr("cy", y)
+      .transition(linear(time, 1 / 3))
+      .attr("cy", scales.cpu.y)
+      .transition(linear(time, 1 / 3))
+      .attr("cx", scales.cpu.x);
 }
 
 /**

@@ -49,23 +49,36 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-      const maxQueueHeight = scheduler.allJobs.length;
-      const marginBottom = 100;
+      const maxQueueHeight = scheduler.allJobs.length > 8 ? 8 : scheduler.allJobs.length;
+      const marginBottom = 200;
+      const marginTop = 150;
       const marginSides = 100;
       const width = 700;
       const height = 700;
       const queuePad = 5;
       const jobPad = 5;
-      //Scales x values to fit within queues
       const jobHeight = d3.scaleBand()
             .domain(d3.range(maxQueueHeight))
-            .range([height - marginBottom, 0]);
+            .range([height - marginBottom, marginTop]);
       const queueWidth = jobHeight.bandwidth();
       const radius = queueWidth / 2;
+      const queueTop = jobHeight(maxQueueHeight - 1) - radius;
       const queue = d3.scaleBand()
             .domain(d3.range(scheduler.numQueues))
             .range([marginSides, (scheduler.numQueues * queueWidth) + marginSides])
       const jobQueue = queue.paddingInner(jobPad);
+      const cpu = {
+            x: marginSides + radius * 2.5,
+            y: height - marginBottom + radius * 2.5
+      };
+      const requeue = {
+            upperPipeJob: queueTop - radius,
+            sidePipeJob: queue(scheduler.numQueues - 1) + queueWidth,
+            lowerPipeJob: cpu.y + radius * 2
+      };
+      const dead = {
+            exit: requeue.sidePipeJob + radius * 3
+      }
       return {
             // x Position a queue needs to be draw
             queue: p => queue(p) - (queueWidth + queuePad) / 2,
@@ -73,15 +86,13 @@ function getScales(svg, scheduler) {
             jobQueue: queue,
             queueWidth: queueWidth + queuePad,
             queueBottom: jobHeight(0) + radius + queuePad,
-            queueTop: jobHeight(maxQueueHeight - 1) - radius,
+            queueTop,
             radius,
             width,
-            queueJobReturnPipe: queue(scheduler.numQueues -1) + 50,
             height,
-            cpu: {
-                  x: marginSides + radius * 2.5,
-                  y: height - marginBottom + radius * 2.5
-            },
+            cpu,
+            dead,
+            requeue,
             finished: () => 0,
             // Takes job's queue position and outputs its y position
             queueOrder: jobHeight
@@ -158,11 +169,14 @@ function drawJob(selection, scheduler, scales) {
                   const job = d3.select(this);
 
                   switch (d.prevState + "|" + d.state) {
-                        case "future|future": 
+                        case "future|future":
                               job.call(anim.waitInFuture, scheduler, scales);
                               return;
                         case "future|waiting":
                               job.call(anim.enterSimulation, scheduler, scales, y);
+                              return;
+                        case "future|cpu":
+                              job.call(anim.enterSimulationToCPU, scheduler, scales, y);
                               return;
                         case "waiting|waiting":
                               job.call(anim.queueMove, scheduler, scales, y);
