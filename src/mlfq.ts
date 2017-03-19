@@ -65,7 +65,9 @@ class Job {
       quantumLeft: number;
       // Amount of time quantum a job has when it is first assigned a new time quantum
       quantumFull: number;
-      // Total time a job has waited for
+      // Total time a job has waited for in queue
+      totalWaitingTime: number;
+      // Current time job has waited in queue, resets on cpu
       waitingTime: number;
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
@@ -97,9 +99,17 @@ class Job {
    }
 
    /**
+    * Reset a job's time quantum to full without changing priority
+    */
+    resetTQ() {
+       this.running.quantumLeft = this.running.quantumFull;
+    }
+
+   /**
     * Increment the job's waiting time and recalculate it's average priority
     */
    wait() {
+      this.running.totalWaitingTime++;
       this.running.waitingTime++;
       // Initialize priority count if needed
       if (!this.running.priorities[this.running.priority]) {
@@ -107,7 +117,7 @@ class Job {
       }
       this.running.priorities[this.running.priority]++;
       const sum = this.running.priorities.reduce((sum, val, i) => sum + val * i, 0);
-      this.running.avgPriority = this.running.waitingTime > 0 ? sum / this.running.waitingTime : 0;
+      this.running.avgPriority = this.running.totalWaitingTime > 0 ? sum / this.running.totalWaitingTime : 0;
    }
 
    /**
@@ -117,6 +127,7 @@ class Job {
     * @param rand random library to use for IO
     */
    doWork(globalTick: number, rand: Random) {
+      this.running.waitingTime = 0;
       if (this.perf.responseTime === -1)
          this.perf.responseTime = globalTick - this.init.createTime;
       this.running.serviceTime++;
@@ -206,6 +217,7 @@ class Job {
          quantumLeft: 0,
          quantumFull: 0,
          ioLeft: 0,
+         totalWaitingTime: 0,
          waitingTime: 0,
          avgPriority: 0,
          priorities: [],
@@ -218,14 +230,17 @@ class Job {
  */
 interface Configuration {
    timeQuantums: number[];
+   resetTQsOnIO: boolean;
    boostTime: number;
    random: Random;
    speed: number;
-   ioFrequencyRange: [number, number];
-   ioLengthRange: [number, number];
-   jobRuntimeRange: [number, number];
-   numJobsRange: [number, number];
-   jobCreateTimeRange: [number, number];
+   generation: {
+      ioFrequencyRange: [number, number];
+      ioLengthRange: [number, number];
+      jobRuntimeRange: [number, number];
+      numJobsRange: [number, number];
+      jobCreateTimeRange: [number, number];
+   }[];
 }
 
 
@@ -485,6 +500,9 @@ export default
             this.cpuJob = undefined;
          }
          else if (this.cpuJob.doingIO()) {
+            if (this.config.resetTQsOnIO) {
+               this.cpuJob.resetTQ();
+            }
             this.ioJobs.push(this.cpuJob);
             this.cpuJob = undefined;
          } else {
@@ -500,24 +518,28 @@ export default
     */
    generateJobs() {
       this.futureJobs = [];
-      const {
-         numJobsRange,
-         jobCreateTimeRange,
-         ioFrequencyRange,
-         ioLengthRange,
-         jobRuntimeRange
-      } = this.config;
-      const ran = this.random.range.bind(this.random);
-      const numJobs = ran(numJobsRange);
-      for (let i = 1; i <= numJobs; i++) {
-         this.futureJobs.push(new Job({
-            id: i,
-            createTime: ran(jobCreateTimeRange),
-            runTime: ran(jobRuntimeRange),
-            ioFreq: ran(ioFrequencyRange),
-            ioLength: ran(ioLengthRange),
-         }));
-      }
+      let id = 1;
+      this.config.generation.forEach(generate => {
+         const {
+            numJobsRange,
+            jobCreateTimeRange,
+            ioFrequencyRange,
+            ioLengthRange,
+            jobRuntimeRange
+         } = generate;
+         const ran = this.random.range.bind(this.random);
+         const numJobs = ran(numJobsRange);
+         const limit = numJobs + id;
+         for (id; id <= limit; id++) {
+            this.futureJobs.push(new Job({
+               id,
+               createTime: ran(jobCreateTimeRange),
+               runTime: ran(jobRuntimeRange),
+               ioFreq: ran(ioFrequencyRange),
+               ioLength: ran(ioLengthRange),
+            }));
+         }
+      });
    }
 
    /**
