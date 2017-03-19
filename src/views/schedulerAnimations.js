@@ -11,7 +11,7 @@ import * as d3 from "d3";
  * @param {float(0, 1)} fraction multiplied by duration
  */
 function linear(duration, fraction) {
-   d3.transition()
+   return d3.transition()
       .ease(d3.easeLinear)
       .duration(duration * fraction);
 }
@@ -72,11 +72,11 @@ export function requeueJob(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
       .transition(linear(time, 0.2))
-      .attr("cy", scales.cpu.y + 50)
+      .attr("cy", scales.cpu.y + 10)
       .transition(linear(time, 0.2))
       .attr("cx", scales.queueJobReturnPipe)
       .transition(linear(time, 0.2))
-      .attr("cy", scales.queueTop)
+      .attr("cy", 0)
       .transition(linear(time, 0.2))
       .attr("cx", d => scales.jobQueue(d.running.priority))
       .transition(linear(time, 0.2))

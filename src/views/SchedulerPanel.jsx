@@ -73,7 +73,7 @@ function getScales(svg, scheduler) {
             queueTop: jobHeight(maxQueueHeight - 1) - radius,
             radius,
             width,
-            queueJobReturnPipe: queue(scheduler.numQueues) + 50,
+            queueJobReturnPipe: queue(scheduler.numQueues -1) + 50,
             height,
             cpu: {
                   x: marginSides + radius * 2.5,
@@ -128,10 +128,13 @@ function drawJob(selection, scheduler, scales) {
                   const pos = getJobPosition(d, scheduler);
                   const y = scales.queueOrder(pos);
                   const job = d3.select(this);
-                  
+
                   switch (d.prevState + "|" + d.state) {
                         case "waiting|waiting":
                               job.call(anim.queueMove, scheduler, scales, y);
+                              return;
+                        case "waiting|cpu":
+                              job.call(anim.queueToCPU, scheduler, scales);
                               return;
                         case "cpu|finished":
                               job.call(anim.finishJob, scheduler, scales);
@@ -143,8 +146,6 @@ function drawJob(selection, scheduler, scales) {
                   if (d.running.ioLeft > 0) {
                         job.attr("cy", scales.cpu.y + 20);
                         job.attr("cx", scales.cpu.x - 50);
-                  } else {// ON CPU
-                        job.call(anim.queueToCPU, scheduler, scales);
                   }
             })
 }
