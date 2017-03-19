@@ -76,9 +76,38 @@ export function requeueJob(job, scheduler, scales, y) {
       .transition(linear(time, 0.2))
       .attr("cx", scales.queueJobReturnPipe)
       .transition(linear(time, 0.2))
-      .attr("cy", 0)
+      .attr("cy", scales.queueTop)
       .transition(linear(time, 0.2))
       .attr("cx", d => scales.jobQueue(d.running.priority))
       .transition(linear(time, 0.2))
       .attr("cy", y)
+}
+
+/**
+ * Enter the simulation from the future jobs
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ * @param y position to move job to in queue
+ */
+export function enterSimulation(job, scheduler, scales, y) {
+   const time = scheduler.speed;
+   return job
+      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .attr("cy", y - scales.height)
+      .transition(linear(time, 1))
+      .attr("cy", y)
+}
+
+/**
+ * Job that is waiting to enter the simulation
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function waitInFuture(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job
+      .attr("cx", -30)
+      .attr("cy", -30)
 }
