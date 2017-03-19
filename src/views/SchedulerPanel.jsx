@@ -151,6 +151,8 @@ function drawJob(selection, scheduler, scales) {
                   }
             })
             .each(function (d) {
+                  // Job animations get messed up if redrawn mid animation
+                  if (!scheduler.changed) return;
                   const pos = getJobPosition(d, scheduler);
                   const y = scales.queueOrder(pos);
                   const job = d3.select(this);
