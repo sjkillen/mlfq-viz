@@ -25,7 +25,17 @@ const dropdownStyle = {
     color: "white",
 };
 
+
+
 class Header extends Component {
+    
+    lArrow() {
+        return {display: this.props.location.pathname === "/Scheduler" ? "none" : ""}
+    }
+
+    rArrow() {
+        return {display: this.props.location.pathname === "/Scheduler" ? "" : "none"}
+    }
 
     render() {
         return (
@@ -47,15 +57,18 @@ class Header extends Component {
                         </div>
 
                         <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle}></Button>
+                        
+                    
                     </ButtonGroup>
                 </div>
 
-                <Link to={"Scheduler"} className="Nav">
-                    <img src={pathLArrow} className="myLArrow" />
+                <Link to={"Scheduler"} className="Nav" style = {this.lArrow()}>
+                    <img src={pathLArrow} className="myLArrow"/>
+                    
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"SPLOM"} className="Nav">
-                    <img src={pathRArrow} className="myRArrow" />
+                <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()}>
+                    <img src={pathRArrow} className="myRArrow"/>
                 </Link>
             </div>
         );
