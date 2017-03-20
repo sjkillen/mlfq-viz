@@ -29,7 +29,7 @@ function SPLOMPanel(scheduler) {
 function update(svgElement,scheduler) {
    if (!svgElement) return;
    //SIZES
-   var newScale = initSPLOMScale(1000,1000,4).getScale(); 
+   var newScale = initSPLOMScale(1000,1000,4); 
     
    const SPLOMAttr = {
         getX(d) {
@@ -59,46 +59,22 @@ function update(svgElement,scheduler) {
         var chartGroup = svg.append("g")
                             .classed("group"+1, true)
                             .attr("transform","translate("+(padding+shiftX)+","+(padding+shiftY)+")");
-        //DRAW X AXIS
-        chartGroup.append("g")
-            .attr("class","axis x")
-            .attr("transform","translate("+((padding/2))+","+((size+padding/2))+")")
-            .call(xAxis)
-
-        //DRAW Y AXIS
-        chartGroup.append("g")
-            .attr("class","axis y")
-            .attr("transform","translate("+(padding)+","+(padding)+")")
-            .call(yAxis)
-
-        //PLOT GRAPH
-        /*chartGroup.append("g").selectAll("circle")
-            .data(scheduler.allJobs)
-            .enter()
-            .append("circle")
-            .attr("r", 3)
-            .attr("cx", d => x(d.running.AvgPriority*10+padding))
-            .attr("cy", d => y(d.running.waitingTime*10+padding))*/
-   //     }
-  //  }
+                            */
 }
+
+
+/**
+ * Generate a scatterPlot
+ * @param svg element
+ * @param scheduler
+ * @param accessor - to access the data
+ * @param scale - scale for the axis
+ */
 function scatterPlot(svg,scheduler,accessor,scale) {
-       const NumberOfGraph = 1;
-    const width = 1000, height = 1000;
-   const padding = ((height/NumberOfGraph)*0.15);
-   const size = ((height/NumberOfGraph)*0.85);   
-     var x = d3.scaleLinear()
-                    .range([padding / 2, size - padding / 2])
-                    .domain([0,4]);
-
-    var y = d3.scaleLinear()
-                .range([size - padding / 2, padding / 2])
-                .domain([0,4]);
      //MAKING Y AXIS        
-    var yAxis = d3.axisLeft(y);
+    var yAxis = d3.axisLeft(scale.xScale.domain([0,10]));
     //MAKING X AXIS  
-    var xAxis = d3.axisBottom(x);
-
+    var xAxis = d3.axisBottom(scale.yScale.domain([10,0]));
 
     const jobJoin = svg.selectAll("g.axis")
                        .data([0])
@@ -107,34 +83,23 @@ function scatterPlot(svg,scheduler,accessor,scale) {
     //Making x Axis
     jobEnter.append("g")
             .classed("axis x",true)
-            .attr("transform", `translate(${100},${500})`)
+            .attr("transform", `translate(${scale.padding/2},${(scale.size+(scale.padding/2))})`)
             .call(xAxis)
 
      // Making y Axis      
      jobEnter.append("g")
             .classed("axis y",true)
-            .attr("transform",`translate(${100},${100})`)
+            .attr("transform",`translate(${scale.padding/2},${scale.padding/2})`)
             .call(yAxis)
 
-    scatterPlotDots(svg,scheduler,accessor)
+    scatterPlotDots(svg,scheduler,accessor,scale)
 }
 /**
  * Plotting dots on graph
  * @param svg
  * @param scheduler 
  */
-function scatterPlotDots(svg,scheduler,accessor){
-    const NumberOfGraph = 1;
-    const width = 1000, height = 1000;
-    const padding = ((height/NumberOfGraph)*0.15),size = ((height/NumberOfGraph)*0.85);   
-    const x = d3.scaleLinear()
-                    .range([padding / 2, size - padding / 2])
-                    .domain([0,4]);
-
-    const y = d3.scaleLinear()
-                .range([size - padding / 2, padding / 2])
-                .domain([0,4]);
-
+function scatterPlotDots(svg,scheduler,accessor,scale){
     const update = svg.selectAll("circle.job")
                       .classed("job",true)
                       .data(scheduler.finishedJobs)
@@ -144,32 +109,32 @@ function scatterPlotDots(svg,scheduler,accessor){
     enter.append("circle")  
          .classed("job",true)
          .attr("r", 3)
-         .attr("cx", d => x(accessor.getX(d)))
-         .attr("cy", d => y(accessor.getY(d)))
+         .attr("cx", d => scale.xScale(accessor.getX(d)))
+         .attr("cy", d => scale.yScale(accessor.getY(d)))
 
 }   
 
 /**
  * Generate all the needed scales
  */
-function initSPLOMScale(Width,Height,NumberOfGraph) {
-    const scale = {
-        width: Width,
-        height: Height,
-        
-    };
-   /* scale.width = Width;
-    scale.height = Height;
-    scale.padding = ((Height/NumberOfGraph)*0.15);
-    scale.size = ((Height/NumberOfGraph)*0.85);
-    scale.NumberOfGraph = NumberOfGraph;
-    scale.xScale = d3.scaleLinear()
-                    .range([scale.padding / 2, scale.size - scale.padding / 2])
-                    .domain([0,4]);
-    scale.yScale = d3.scaleLinear()
-                    .range([scale.size - scale.padding / 2, scale.padding / 2])
-                    .domain([0,4]);*/
-    function getScale(){
-        return scale;
+function initSPLOMScale(width,height,numberOfGraph) {
+    const padding = ((height/numberOfGraph)*0.15);
+    const size = ((height/numberOfGraph)*0.85);
+   
+    const xScale = d3.scaleLinear()
+                    .range([padding / 2, size - padding / 2]);
+                   // .domain([0,4]);
+    const yScale = d3.scaleLinear()
+                    .range([size - padding / 2, padding / 2]);
+                    //.domain([0,4]);
+    return {
+        width,
+        height,
+        padding,
+        size,
+        numberOfGraph,
+        //SCALE FOR DATA INPUT
+        xScale: xScale,
+        yScale: yScale
     }
 }
