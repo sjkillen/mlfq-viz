@@ -150,6 +150,25 @@ function getJobHolster(job, scheduler) {
 }
 
 /**
+ * Get the array that contains a job
+ */
+function getJobHolster(job, scheduler) {
+      switch (job.state) {
+            case "waiting":
+            case "cpu":
+                  return scheduler.queues[job.running.priority].jobs;
+            case "future":
+                  return scheduler.futureJobs;
+            case "io":
+                  return scheduler.ioJobs;
+            case "finished":
+                  return scheduler.finishedJobs;
+            default:
+                  throw new Error("no holster");
+      }
+}
+
+/**
  * Get the position of a job in it's queue
  * @param job 
  * @param scheduler 
