@@ -213,7 +213,6 @@ function drawJob(selection, scheduler, scales) {
                job.call(anim.requeueJob, scheduler, scales, y);
                return;
             case "cpu|io":
-            case "io|io":
                job.call(anim.enterIO, scheduler, scales);
                return;
             case "io|waiting":
@@ -223,7 +222,6 @@ function drawJob(selection, scheduler, scales) {
                job.call(anim.leaveIOToCPU, scheduler, scales);
                return;
          }
-         alert("NO ANIMATION FOR: " + d.prevState + "|" + d.state);
       })
 }
 
@@ -299,6 +297,12 @@ function cpu(svg, scheduler, scales) {
       .attr("x", scales.cpu.tickTextX)
       .attr("y", scales.cpu.y)
       .text(scheduler.globalTick)
+   
+   enter.append("circle")
+      .classed("slot", true)
+      .attr("cx", scales.cpu.x)
+      .attr("cy", scales.cpu.y)
+      .attr("r", scales.radius)
 
    update.selectAll(".tick")
       .text(scheduler.globalTick)
