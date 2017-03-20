@@ -10,25 +10,6 @@ import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
 import Scheduler from "../mlfq";
 
-/**
- * MUST BE FOR EVERY REDUCE CASE EXCEPT UPDATE_SCHEDULER
- * (SEE SELECT_JOB)
- * Since view animations depend on scheduler.speed
- * to know how long they must last, if an action fires
- * mid animation the animation timer will also reset
- * 
- * This function adjusts scheduler.speed (only for views)
- * to fix this problem
- * 
- * @param state from reduce function
- */
-function adjustSpeed(state) {
-      const timeDelta = performance.now() - state.get("lastUpdate");
-      const newSpeed = state.getIn(["scheduler", "speed"]) - timeDelta;
-      debugger;
-      return state.setIn(["scheduler", "speed"], newSpeed);
-}
-
 class SchedulerStore extends ReduceStore {
    getInitialState() {
       scheduler.generateJobs();
