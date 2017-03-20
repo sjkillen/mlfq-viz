@@ -65,29 +65,19 @@ class Job {
       quantumLeft: number;
       // Amount of time quantum a job has when it is first assigned a new time quantum
       quantumFull: number;
-      // Total time a job has waited for
+      // Total time a job has waited for in queue
+      totalWaitingTime: number;
+      // Current time job has waited in queue, resets on cpu
       waitingTime: number;
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
-      // AvgPriority is calculated by sum of (probability a jobs enter a queue * priority )
-      AvgPriority: number;
-      // Priority List keeps track of times a job changes priority
-      priorityList: number[];
-      // Number of times a job enter a queue
-      totalReturningQueueTime: number;
+      // Average priority over job's lifetime
+      avgPriority: number;
+      // All the priorities a job has had over it's lifetime
+      priorities: number[];
 
    };
 
-
-   /**
-    * GET avarage priority of a job
-    * @param none
-    */
-   getAvgPriority() {
-      return;
-   }
-
-   /**
    /**
     * Lowers the job's priority and reset its time quantum
     * @param priority to set as
@@ -109,25 +99,25 @@ class Job {
    }
 
    /**
-    * Increment the job's waiting time
+    * Reset a job's time quantum to full without changing priority
+    */
+    resetTQ() {
+       this.running.quantumLeft = this.running.quantumFull;
+    }
+
+   /**
+    * Increment the job's waiting time and recalculate it's average priority
     */
    wait() {
+      this.running.totalWaitingTime++;
       this.running.waitingTime++;
-
       // Initialize priority count if needed
-      if (this.running.priorityList[this.running.priority] === undefined) {
-         this.running.priorityList[this.running.priority] = 0;
+      if (!this.running.priorities[this.running.priority]) {
+         this.running.priorities[this.running.priority] = 0;
       }
-      // Update priority list and total returning queue time
-      this.running.priorityList[this.running.priority]++;
-      this.running.totalReturningQueueTime++;
-
-      // Calculate avg priority
-      let temp_AvgPriority = 0;
-      for (let _i = 0; _i < this.running.priorityList.length; _i++) {
-         temp_AvgPriority += this.running.priorityList[_i] * (_i + 1) / this.running.totalReturningQueueTime;
-      }
-      this.running.AvgPriority = Math.round(temp_AvgPriority * 10) / 10;
+      this.running.priorities[this.running.priority]++;
+      const sum = this.running.priorities.reduce((sum, val, i) => sum + val * i, 0);
+      this.running.avgPriority = this.running.totalWaitingTime > 0 ? sum / this.running.totalWaitingTime : 0;
    }
 
    /**
@@ -137,6 +127,7 @@ class Job {
     * @param rand random library to use for IO
     */
    doWork(globalTick: number, rand: Random) {
+      this.running.waitingTime = 0;
       if (this.perf.responseTime === -1)
          this.perf.responseTime = globalTick - this.init.createTime;
       this.running.serviceTime++;
@@ -165,7 +156,10 @@ class Job {
     * Check if the job is finished
     */
    isFinished(): boolean {
-      return this.perf.turnaroundTime !== -1;
+      if (this.perf.turnaroundTime !== -1) {
+         this.running.isFinished = true;
+      }
+      return this.running.isFinished;
    }
    /**
     * Simulate this job doing IO
@@ -223,10 +217,10 @@ class Job {
          quantumLeft: 0,
          quantumFull: 0,
          ioLeft: 0,
+         totalWaitingTime: 0,
          waitingTime: 0,
-         AvgPriority: 0,
-         priorityList: [],
-         totalReturningQueueTime: 0
+         avgPriority: 0,
+         priorities: [],
       };
    }
 }
@@ -236,18 +230,23 @@ class Job {
  */
 interface Configuration {
    timeQuantums: number[];
+   resetTQsOnIO: boolean;
    boostTime: number;
    random: Random;
-   ioFrequencyRange: [number, number];
-   ioLengthRange: [number, number];
-   jobRuntimeRange: [number, number];
-   numJobsRange: [number, number];
-   jobCreateTimeRange: [number, number];
+   speed: number;
+   generation: {
+      ioFrequencyRange: [number, number];
+      ioLengthRange: [number, number];
+      jobRuntimeRange: [number, number];
+      numJobsRange: [number, number];
+      jobCreateTimeRange: [number, number];
+   }[];
 }
 
 
-class Queue {
+interface Queue {
    timeQuantum: number;
+   priority: number;
    jobs: Job[];
 }
 
@@ -261,7 +260,6 @@ export default
    // How often to boost job priorities
    boostTime: number;
    boostLeft: number;
-
    queues: Queue[];
    cpuJob: Job | undefined;
 
@@ -294,16 +292,29 @@ export default
       this.finishedJobs = [];
       this.futureJobs = [];
       this.ioJobs = [];
+      this.speed = config.speed;
       this.numQueues = config.timeQuantums.length;
-      this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
+      this.queues = config.timeQuantums.map((q, i) => ({
+         timeQuantum: q,
+         jobs: [],
+         priority: i
+      }));
       this.configure(config);
       this.globalTick = 1;
    }
 
    /**
+    * Reinitialize queues after queue num change
+    */
+   reshapeQueues() {
+      throw new Error("Not Implemented Yet");
+   }
+
+   /**
     * Runs the scheduler
     */
-   play(speed: number, update: { (data: Scheduler): void }) {
+   play(update: { (data: Scheduler): void }, speed: number | void) {
+      if (typeof speed === "undefined") speed = this.speed;
       if (this.running)
          throw new Error("Scheduler already running!");
       const tick = () => {
@@ -324,7 +335,6 @@ export default
          if (queue.jobs.length)
             return false;
       }
-      console.log("MLFQ Simulation completed");
       return true;
    }
 
@@ -357,7 +367,7 @@ export default
       if (this.numQueues !== config.timeQuantums.length) {
          this.boostJobs();
          const firstQueue = this.queues[0].jobs;
-         this.queues = config.timeQuantums.map(q => ({ timeQuantum: q, jobs: [] }));
+         this.queues = config.timeQuantums.map((q, i) => ({ timeQuantum: q, jobs: [], priority: i }));
          this.queues[0].jobs = firstQueue;
       }
       this.numQueues = timeQuantums.length;
@@ -392,6 +402,7 @@ export default
       this.running = false;
       clearTimeout(this.tickIntervalId);
       this.tickIntervalId = -1;
+      console.log("MLFQ Simulation completed");
    }
 
    /**
@@ -462,7 +473,6 @@ export default
       }
    }
 
-
    /**
     * Loads the next job onto the CPU
     * unless there's one already there
@@ -490,6 +500,9 @@ export default
             this.cpuJob = undefined;
          }
          else if (this.cpuJob.doingIO()) {
+            if (this.config.resetTQsOnIO) {
+               this.cpuJob.resetTQ();
+            }
             this.ioJobs.push(this.cpuJob);
             this.cpuJob = undefined;
          } else {
@@ -505,24 +518,28 @@ export default
     */
    generateJobs() {
       this.futureJobs = [];
-      const {
-         numJobsRange,
-         jobCreateTimeRange,
-         ioFrequencyRange,
-         ioLengthRange,
-         jobRuntimeRange
-      } = this.config;
-      const ran = this.random.range.bind(this.random);
-      const numJobs = ran(numJobsRange);
-      for (let i = 1; i <= numJobs; i++) {
-         this.futureJobs.push(new Job({
-            id: i,
-            createTime: ran(jobCreateTimeRange),
-            runTime: ran(jobRuntimeRange),
-            ioFreq: ran(ioFrequencyRange),
-            ioLength: ran(ioLengthRange),
-         }));
-      }
+      let id = 1;
+      this.config.generation.forEach(generate => {
+         const {
+            numJobsRange,
+            jobCreateTimeRange,
+            ioFrequencyRange,
+            ioLengthRange,
+            jobRuntimeRange
+         } = generate;
+         const ran = this.random.range.bind(this.random);
+         const numJobs = ran(numJobsRange);
+         const limit = numJobs + id;
+         for (id; id <= limit; id++) {
+            this.futureJobs.push(new Job({
+               id,
+               createTime: ran(jobCreateTimeRange),
+               runTime: ran(jobRuntimeRange),
+               ioFreq: ran(ioFrequencyRange),
+               ioLength: ran(ioLengthRange),
+            }));
+         }
+      });
    }
 
    /**

@@ -10,8 +10,4 @@ const express = require("express"),
 require('dotenv').config();
 
 app.use(express.static(path.join(__dirname, "./dist")));
-    console.log("Buidling Bundle...");
-webpack(require("./webpack.config"), () => {
-    console.log("Finished build");
-    app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
-});
+app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));

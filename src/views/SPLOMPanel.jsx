@@ -28,7 +28,6 @@ function update(svgElement, scheduler) {
    if (!svgElement) return;
    const width = 1800, height = 500;
 
-   console.log(scheduler);
    
    
 }
