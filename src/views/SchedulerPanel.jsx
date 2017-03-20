@@ -20,7 +20,10 @@ export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore]
 function SchedulerPanel(scheduler) {
    return (
       <span className="SchedulerPanel">
-         <svg ref={(el) => update(el, scheduler)} className="image">
+         <svg 
+            shapeRendering="geometricPrecision"
+            ref={(el) => update(el, scheduler)}
+            className="image">
          </svg>
       </span>
    );
@@ -31,7 +34,7 @@ function SchedulerPanel(scheduler) {
  */
 function jobLife(svg, scheduler, scales) {
    const jobJoin = svg
-      .selectAll("circle")
+      .selectAll("circle.job")
       .data(scheduler.allJobs, d => d.init.id)
       .call(drawJob, scheduler, scales);
    jobJoin.enter()
@@ -47,11 +50,11 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-   const maxQueueHeight = scheduler.allJobs.length > 8 ? 8 : scheduler.allJobs.length;
+   const maxQueueHeight = 7;
    const marginBottom = 200;
    const marginTop = 150;
-   const marginSides = 100;
-   const width = 700;
+   const marginSides = 400;
+   const width = 1200;
    const height = 700;
    const queuePad = 5;
    const jobPad = 5;
@@ -66,29 +69,59 @@ function getScales(svg, scheduler) {
       .range([marginSides, (scheduler.numQueues * queueWidth) + marginSides])
    const jobQueue = queue.paddingInner(jobPad);
    const cpu = {
-      x: marginSides + radius * 2.5,
-      y: height - marginBottom + radius * 2.5
+      x: marginSides + queueWidth * 2,
+      y: height - marginBottom + queueWidth * 2,
+      textX: marginSides + queueWidth * 3,
+      tickTextX: marginSides + queueWidth * 5.5
    };
+   const queueBottom = jobHeight(0) + radius + queuePad;
+   const queueHeight = queueBottom - queueTop;
+   const drawQueue = p => queue(p) - (queueWidth + queuePad) / 2;
    const requeue = {
       upperPipeJob: queueTop - radius,
       sidePipeJob: queue(scheduler.numQueues - 1) + queueWidth,
-      lowerPipeJob: cpu.y + radius * 2
+      lowerPipeJob: cpu.y + queueWidth + radius,
+      lowerWidth: queue(scheduler.numQueues - 1) + queueWidth * 2 - marginSides,
+      lowerHeight: queueWidth,
+      lowerLeft: drawQueue(0),
+      lowerUp: cpu.y + queueWidth,
+      middleUp: queueBottom,
+      upperUp: queueTop - queueWidth,
+      middleJobUp: queueBottom + radius,
+      rightLeftStart: queue(scheduler.numQueues - 1) + queueWidth - radius,
+      rightUpStart: queueTop,
+      leftJob: queue(0),
+      rightWidth: queueWidth,
+      rightHeight: queueHeight + queueWidth * 4,
+      leftHeight: (cpu.y + queueWidth) - queueBottom
    };
+   const io = {
+      up: requeue.middleUp,
+      left: requeue.lowerLeft - queueWidth * 5,
+      height: requeue.leftHeight + queueWidth,
+      width: queueWidth * 5,
+      textX: requeue.lowerLeft - queueWidth * 3,
+      textY: requeue.middleUp + queueWidth,
+      jobY: cpu.y,
+      jobX: requeue.lowerLeft - queueWidth * 3,
+   } 
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
    return {
       // x Position a queue needs to be draw
-      queue: p => queue(p) - (queueWidth + queuePad) / 2,
+      queue: drawQueue,
       // x Position a job in queue needs to be drawn
       jobQueue: queue,
       queueWidth: queueWidth + queuePad,
-      queueBottom: jobHeight(0) + radius + queuePad,
+      queueHeight,
+      queueBottom,
       queueTop,
       radius,
       width,
       height,
       cpu,
+      io,
       dead,
       requeue,
       finished: () => 0,
@@ -142,21 +175,12 @@ function getJobPosition(job, scheduler) {
 function drawJob(selection, scheduler, scales) {
    return selection
       .attr("r", d => scales.radius + "px")
-      .attr("fill", d => {
+      .attr("data-state", d => d.state)
+      .attr("data-selected", function(d) {
          if (d.init.id === scheduler.selectedJobId) {
-            return "blue";
-         }
-         switch (d.state) {
-            case "cpu":
-               return "yellow";
-            case "future":
-               return "white";
-            case "finished":
-               return "black";
-            case "io":
-               return "orange";
-            case "waiting":
-               return "red";
+            // Move job to front
+            this.parentNode.appendChild(this);
+            return true;
          }
       })
       .each(function (d) {
@@ -188,11 +212,18 @@ function drawJob(selection, scheduler, scales) {
             case "cpu|waiting":
                job.call(anim.requeueJob, scheduler, scales, y);
                return;
+            case "cpu|io":
+            case "io|io":
+               job.call(anim.enterIO, scheduler, scales);
+               return;
+            case "io|waiting":
+               job.call(anim.leaveIO, scheduler, scales, y);
+               return;
+            case "io|cpu":
+               job.call(anim.leaveIOToCPU, scheduler, scales);
+               return;
          }
-         if (d.running.ioLeft > 0) {
-            job.attr("cy", scales.cpu.y + 20);
-            job.attr("cx", scales.cpu.x - 50);
-         }
+         alert("NO ANIMATION FOR: " + d.prevState + "|" + d.state);
       })
 }
 
@@ -200,39 +231,115 @@ function drawJob(selection, scheduler, scales) {
  * Draw the queues to hold jobs
  */
 function queues(svg, scheduler, scales) {
-   const join = svg.selectAll("rect").data(scheduler.queues);
+   const join = svg.selectAll("rect.queue").data(scheduler.queues);
    join.enter()
       .append("rect")
+      .classed("queue", true)
       .attr("width", scales.queueWidth)
-      .attr("height", scales.queueBottom - scales.queueTop)
+      .attr("height", scales.queueHeight)
       .attr("x", d => scales.queue(d.priority))
       .attr("y", scales.queueTop)
    join.exit().remove();
 }
 
 /**
- * Draw the pipe that requeues jobs
+ * Draw the pipe that requeues jobs and the one from queue to cpu
  */
 function requeuePipe(svg, scheduler, scales) {
-   const join = svg.selectAll("rect").data([1]).enter()
+   const join = svg.selectAll("rect.requeue").data([1]).enter();
    join.append("rect")
-      .attr("width", scales.queueWidth)
-      .attr("height", scales.queueBottom - scales.queueTop)
-      .attr("x", d => scales.queue(d.priority))
-      .attr("y", scales.queueTop)
-   join.exit().remove();
+      .classed("requeue", true)
+      .attr("width", scales.requeue.lowerWidth)
+      .attr("height", scales.requeue.lowerHeight)
+      .attr("x", scales.requeue.lowerLeft)
+      .attr("y", scales.requeue.lowerUp)
+   join.append("rect")
+      .classed("requeue", true)
+      .attr("width", scales.requeue.lowerWidth)
+      .attr("height", scales.requeue.lowerHeight)
+      .attr("x", scales.requeue.lowerLeft)
+      .attr("y", scales.requeue.middleUp)
+   join.append("rect")
+      .classed("requeue", true)
+      .attr("width", scales.requeue.lowerWidth)
+      .attr("height", scales.requeue.lowerHeight)
+      .attr("x", scales.requeue.lowerLeft)
+      .attr("y", scales.requeue.upperUp)
+   join.append("rect")
+      .classed("requeue", true)
+      .attr("width", scales.requeue.rightWidth)
+      .attr("height", scales.requeue.rightHeight)
+      .attr("x", scales.requeue.rightLeftStart)
+      .attr("y", scales.requeue.rightUpStart)
+   join.append("rect")
+      .classed("requeue", true)
+      .attr("width", scales.requeue.rightWidth)
+      .attr("height", scales.requeue.leftHeight)
+      .attr("x", scales.requeue.lowerLeft)
+      .attr("y", scales.requeue.middleUp)
 }
 
+/**
+ * Draw the CPU
+ */
+function cpu(svg, scheduler, scales) {
+   const update = svg.selectAll("g.cpu").data([1])
+   const enter = update.enter()
+      .append("g")
+      .classed("cpu", true)
+
+   enter.append("text")
+      .classed("title", true)
+      .attr("x", scales.cpu.textX)
+      .attr("y", scales.cpu.y)
+      .text("CPU")
+   
+   enter.append("text")
+      .classed("tick", true)
+      .attr("x", scales.cpu.tickTextX)
+      .attr("y", scales.cpu.y)
+      .text(scheduler.globalTick)
+
+   update.selectAll(".tick")
+      .text(scheduler.globalTick)
+   
+}
+
+/**
+ * Draw the IO area for jobs in io
+ */
+function io(svg, scheduler, scales) {
+   const update = svg.selectAll("g.io").data([1])
+   const enter = update.enter()
+      .append("g")
+      .classed("io", true)
+
+   enter.append("rect")
+      .classed("box", true)
+      .attr("x", scales.io.left)
+      .attr("y", scales.io.up)
+      .attr("width", scales.io.width)
+      .attr("height", scales.io.height)
+
+   enter.append("text")
+      .classed("title", true)
+      .attr("x", scales.io.textX)
+      .attr("y", scales.io.textY)
+      .text("IO")
+}
 /**
  * Update the drawing
  */
 function update(svgElement, scheduler) {
    if (!svgElement) return;
-   const svg = d3.select(svgElement)
+   const svg = d3.select(svgElement);
    const scales = getScales(svg, scheduler);
    svg.attr("height", scales.height)
       .attr("width", scales.width)
       .attr("style", `transform: translate(-${scales.width / 2}px, 0)`);
-   svg.call(queues, scheduler, scales)
+   svg.call(requeuePipe, scheduler, scales);
+   svg.call(queues, scheduler, scales);
+   svg.call(cpu, scheduler, scales);
+   svg.call(io, scheduler, scales);
    svg.call(jobLife, scheduler, scales);
 }

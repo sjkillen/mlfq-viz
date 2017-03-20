@@ -1,9 +1,55 @@
+$border: 3px;
+
 svg {
    border: solid 1px black;
    position: absolute;
    left: 50%;
-
+   rect.queue {
+       fill: white;
+       stroke-width: $border;
+       stroke: black;
+   }
+   rect.requeue {
+       fill: #444;
+   }
+   .cpu {
+       text {
+           font-size: 50px;
+       }
+   }
+   .io {
+       .box {
+          fill: #555;;
+          stroke-width: $border;
+          stroke: black;
+       }
+       text {
+           font-size: 50px;
+       }
+   }
    circle.job {
        cursor: pointer;
+       stroke-width: 1;
+       stroke: black;
+       fill: white;
+       &[data-selected="true"] {
+           stroke-width: 8px;
+       }
+       /** DEBUG JOB STATES
+       &[data-state="cpu"] {
+           fill: yellow;
+       }
+       &[data-state="future"] {
+           fill: white;
+       }
+       &[data-state="finished"] {
+           fill: black;
+       }
+       &[data-state="io"] {
+           fill: orange;
+       }
+       &[data-state="waiting"] {
+           fill: red;
+       }**/
    }
 }

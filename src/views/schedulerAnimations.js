@@ -24,10 +24,14 @@ function linear(duration, fraction) {
  */
 export function queueToCPU(job, scheduler, scales) {
    const time = scheduler.speed;
-   return job.transition(linear(time, 0.5))
+   return job.transition(linear(time, 0.25))
+      .attr("cy", scales.requeue.middleJobUp)
+      .transition(linear(time, 0.25))
+      .attr("cx", scales.requeue.leftJob)
+      .transition(linear(time, 0.25))
       .attr("cy", scales.cpu.y)
-      .transition(linear(time, 0.5))
-      .attr("cx", scales.cpu.x);
+      .transition(linear(time, 0.25))
+      .attr("cx", scales.cpu.x)
 }
 
 /**
@@ -132,3 +136,67 @@ export function waitInFuture(job, scheduler, scales) {
       .attr("cx", -30)
       .attr("cy", -30)
 }
+
+/**
+ * Job that has left cpu and entered IO
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function enterIO(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job
+      .transition(linear(time, 1))
+      .attr("cx", scales.io.jobX)
+      .attr("cy", scales.io.jobY)
+}
+
+/**
+ * Job that has left io and reentered queue
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ * @param y position to move job to in queue
+ */
+export function leaveIO(job, scheduler, scales, y) {
+   const time = scheduler.speed;
+   return job
+      .transition(linear(time, 1/6))
+      .attr("cx", scales.requeue.leftJob)
+      .transition(linear(time, 1/6))
+      .attr("cy", scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1/6))
+      .attr("cx", scales.requeue.sidePipeJob)
+      .transition(linear(time, 1/6))
+      .attr("cy", scales.requeue.upperPipeJob)
+      .transition(linear(time, 1/6))
+      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .transition(linear(time, 1/6))
+      .attr("cy", y)
+}
+
+/**
+ * Job that has left io and was immediately put on cpu
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function leaveIOToCPU(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job
+      .transition(linear(time, 1/7))
+      .attr("cx", scales.requeue.leftJob)
+      .transition(linear(time, 1/7))
+      .attr("cy", scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1/7))
+      .attr("cx", scales.requeue.sidePipeJob)
+      .transition(linear(time, 1/7))
+      .attr("cy", scales.requeue.upperPipeJob)
+      .transition(linear(time, 1/7))
+      .attr("cx", scales.jobQueue(0))
+      .transition(linear(time, 1/7))
+      .attr("cy", scales.cpu.y)
+      .transition(linear(time, 1/7))
+      .attr("cx", scales.cpu.x)
+}
+
