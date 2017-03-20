@@ -24,69 +24,125 @@ function SPLOMPanel(scheduler) {
    );
 }
 
+
+
 function update(svgElement,scheduler) {
    if (!svgElement) return;
-   var dataArray = [2,5,8,9,5,3,6,7,4,6,7,8,3,2,4,6,4,5]
-   //var margin = {top:30,right:30,bottom:30,left:30};
-   const width = 1000, size = 200;
-   console.log(scheduler.allJobs[1].running.AvgPriority);
-   //console.log(d3.select("svgElement").text)
+   //SIZES
+   const NumberOfGraph = 1;
+   const width = 1000, height = 1000;
+   const padding = ((height/NumberOfGraph)*0.15),size = ((height/NumberOfGraph)*0.85);   
+    
+   const SPLOMAttr = {
+    getX(d) {
+        return d.init.runTime
+    },
+    getY(d) {
+       return d.init.createTime
+    }
+};
 
-   var p = d3.select("svgElement").selectAll("p")
-            .data([].scheduler.allJobs)
+   //MAIN svg
+   var svg = d3.select(svgElement)
+                    .attr("height", height)
+                    .attr("width",width)
+                    .attr("style", `transform: translate(+${width / 2}px, 10px)`);
+    
+    svg.call(scatterPlot,scheduler,SPLOMAttr)
+   // for (var i = 0; i < NumberOfGraph; i++)
+       // {for(var j = 0; j<NumberOfGraph;j++){
+        //PREPARE SCALE
+
+        //CALCULATE SHIFTED VALUES
+       // var shiftX = i*size;
+       // var shiftY = j*size;
+        /*
+        //CREATE NEW CHART
+        var chartGroup = svg.append("g")
+                            .classed("group"+1, true)
+                            .attr("transform","translate("+(padding+shiftX)+","+(padding+shiftY)+")");
+        //DRAW X AXIS
+        chartGroup.append("g")
+            .attr("class","axis x")
+            .attr("transform","translate("+((padding/2))+","+((size+padding/2))+")")
+            .call(xAxis)
+
+        //DRAW Y AXIS
+        chartGroup.append("g")
+            .attr("class","axis y")
+            .attr("transform","translate("+(padding)+","+(padding)+")")
+            .call(yAxis)
+
+        //PLOT GRAPH
+        /*chartGroup.append("g").selectAll("circle")
+            .data(scheduler.allJobs)
             .enter()
-            .append("p")
-            .text(function (d,i){
-                return d;
-            })
-   /*var area = d3.area()
-                .x(function(d,i){return i*20;})
-                .y(100)
-                .y1(function(d){return 100-d; })
-
-    var svg = d3.select(svgElement)
-                .append("svg")
-                .attr("height","100%")
-                .attr("width","100%");
-    
-    
-  // console.log(scheduler.allJobs);
-
-   
-
-     var yScale = d3.scaleLinear()
-                    .domain([0,d3.max(dataArray)])
-                    .range([100,0])
-                    .nice();
-
-    var xScale = d3.scaleLinear()
-                    .domain([0,d3.max(dataArray)])
-                    .range([0,width])
-                    .nice();
-
-
-    var yAxis = d3.axisLeft(yScale);
-    var xAxis = d3.axisBottom(xScale);
-
-    var chartGroup = svg.append("g").attr("transform","translate("+margin.left+","+margin.top+")");
-
-    chartGroup.append("path").attr("d",area(dataArray));
-
-    chartGroup.append()
-
-    svg.append("g")
-        .attr("class","axis y")
-        .attr("transform","translate("+margin.left+","+margin.top+")")
-        .call(yAxis);
-    
- 
-
-    
-   // svg.call(yAxis);
-
-    */
-
-
-   
+            .append("circle")
+            .attr("r", 3)
+            .attr("cx", d => x(d.running.AvgPriority*10+padding))
+            .attr("cy", d => y(d.running.waitingTime*10+padding))*/
+   //     }
+  //  }
 }
+function scatterPlot(svg,scheduler,accessor) {
+       const NumberOfGraph = 1;
+    const width = 1000, height = 1000;
+   const padding = ((height/NumberOfGraph)*0.15),size = ((height/NumberOfGraph)*0.85);   
+     var x = d3.scaleLinear()
+                    .range([padding / 2, size - padding / 2])
+                    .domain([0,4]);
+
+    var y = d3.scaleLinear()
+                .range([size - padding / 2, padding / 2])
+                .domain([0,4]);
+     //MAKING Y AXIS        
+    var yAxis = d3.axisLeft(y);
+    //MAKING X AXIS  
+    var xAxis = d3.axisBottom(x);
+
+
+    const jobJoin = svg.selectAll("g.axis")
+                       .data([0])
+
+    const jobEnter = jobJoin.enter()
+    //Making x Axis
+    jobEnter.append("g")
+            .classed("axis x",true)
+            .attr("transform", `translate(${100},${500})`)
+            .call(xAxis)
+
+     // Making y Axis      
+     jobEnter.append("g")
+            .classed("axis y",true)
+            .attr("transform",`translate(${100},${100})`)
+            .call(yAxis)
+
+    scatterPlotDots(svg,scheduler,accessor)
+}
+
+function scatterPlotDots(svg,scheduler,accessor){
+     const NumberOfGraph = 1;
+    const width = 1000, height = 1000;
+   const padding = ((height/NumberOfGraph)*0.15),size = ((height/NumberOfGraph)*0.85);   
+     const x = d3.scaleLinear()
+                    .range([padding / 2, size - padding / 2])
+                    .domain([0,4]);
+
+    const y = d3.scaleLinear()
+                .range([size - padding / 2, padding / 2])
+                .domain([0,4]);
+
+    const update = svg.selectAll("circle.job")
+                      .classed("job",true)
+                      .data(scheduler.finishedJobs)
+    
+    const enter = update.enter()
+
+    enter.append("circle")  
+         .classed("job",true)
+         .attr("r", 3)
+         .attr("cx", d => x(accessor.getX(d)))
+         .attr("cy", d => y(accessor.getY(d)))
+
+}   
 
