@@ -6,8 +6,7 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
-import "./SchedulerPanel.scss";
-
+import "./SPLOMPanel.scss";
 export default Container.createFunctional(SPLOMPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
 });
@@ -28,38 +27,299 @@ function SPLOMPanel(scheduler) {
 
 function update(svgElement,scheduler) {
    if (!svgElement) return;
-   //SIZES
-   var newScale = initSPLOMScale(1000,1000,4); 
-    
-   const SPLOMAttr = {
+   
+
+    //SPLOM Attr contains all data for graphs
+    // ORDER OF DRAWING 
+    // 1
+    // 2 3
+    // 4 5 6 
+    // ........
+   const SPLOMAttr = [{
+       labelX: "Runtime",
+       labelY: "Runtime",
         getX(d) {
             return d.init.runTime
         },
         getY(d) {
         return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
         }
-    };
-
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    },
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+    ,
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+    ,
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+    ,
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+    ,
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+    ,
+    {
+       labelX: "Runtime",
+       labelY: "Runtime",
+        getX(d) {
+            return d.init.runTime
+        },
+        getY(d) {
+        return d.init.createTime
+    },
+    getDomainX(d){
+        return [0,10];
+        },
+    getDomainY(d){
+        return [0,10];
+        }
+    }
+   
+    ];
+    //CREATE NEW SCALE - CHANGE sizeOfMatrix in SPLOMPanel to adjust SPLOM size
+   const sizeOfMatrix = Math.floor(Math.sqrt(2*(SPLOMAttr.length)) + 1/2)
+   const newScale = initSPLOMScale(1000,1000,sizeOfMatrix); 
+    
    //MAIN svg
-   var svg = d3.select(svgElement)
+   const svg = d3.select(svgElement)
                     .attr("height", newScale.height)
                     .attr("width",newScale.width)
-                    .attr("style", `transform: translate(+${newScale.width / 2}px, 10px)`);
+                   // .attr("style", `transform: translate(+${newScale.width / 2}px, 10px)`)
     
-    svg.call(scatterPlot,scheduler,SPLOMAttr,newScale)
-   // for (var i = 0; i < NumberOfGraph; i++)
-       // {for(var j = 0; j<NumberOfGraph;j++){
-        //PREPARE SCALE
+    const chartJoin = svg.selectAll("g.chart")
+                        .data(SPLOMAttr, D => Math.random())
+    
+    const enter = chartJoin.enter()
 
-        //CALCULATE SHIFTED VALUES
-       // var shiftX = i*size;
-       // var shiftY = j*size;
-        /*
-        //CREATE NEW CHART
-        var chartGroup = svg.append("g")
-                            .classed("group"+1, true)
-                            .attr("transform","translate("+(padding+shiftX)+","+(padding+shiftY)+")");
-                            */
+    const exit = chartJoin.exit()
+                            .remove()
+
+    const chart = enter.append("g")
+                 .classed("chart",true)
+                .each(function (d,i){
+                    //calculate X position
+                    const y = Math.floor(Math.sqrt(2*(i+1)) + 1/2) -1
+                    
+                    //calculate Y position
+                    const m = Math.floor((Math.sqrt(8*i+1) - 1) / 2)
+                    const x = i - m*(m+1)/2 
+
+                    //calculate shifted coordinates
+                    const shiftX =  (x*(newScale.size + newScale.padding));
+                    const shiftY = y*(newScale.size + newScale.padding);
+
+                    //Generate scatter plot
+                    const c = d3.select(this)
+                                .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
+                                .call(scatterPlot,scheduler,d,newScale,shiftX,shiftY)
+                }
+         )  
 }
 
 
@@ -70,28 +330,34 @@ function update(svgElement,scheduler) {
  * @param accessor - to access the data
  * @param scale - scale for the axis
  */
-function scatterPlot(svg,scheduler,accessor,scale) {
+function scatterPlot(svg,scheduler,accessor,scale,shiftX,shiftY) {
      //MAKING Y AXIS        
-    var yAxis = d3.axisLeft(scale.xScale.domain([0,d3.max(accessor.getX(scheduler))]));
+    var yAxis = d3.axisLeft(scale.yScale.domain(accessor.getDomainY(scheduler)));
     //MAKING X AXIS  
-    var xAxis = d3.axisBottom(scale.yScale.domain([10,0]));
+    var xAxis = d3.axisBottom(scale.xScale.domain(accessor.getDomainX(scheduler)));
 
     const jobJoin = svg.selectAll("g.axis")
                        .data([0])
-
+                       
     const jobEnter = jobJoin.enter()
-    //Making x Axis
+                            
+    //Append x Axis
     jobEnter.append("g")
             .classed("axis x",true)
-            .attr("transform", `translate(${scale.padding/2},${(scale.size+(scale.padding/2))})`)
+            .attr("transform", `translate(${scale.padding/2},${(scale.size)})`)
             .call(xAxis)
 
-     // Making y Axis      
+     // Append y Axis      
      jobEnter.append("g")
             .classed("axis y",true)
-            .attr("transform",`translate(${scale.padding},${scale.padding})`)
+            .attr("transform",`translate(${scale.padding},${scale.padding/2})`)
             .call(yAxis)
-
+     jobEnter.append("rect")
+             .attr("class","frame")
+             .attr("width",scale.size-scale.padding)
+             .attr("height",scale.size-scale.padding)
+             .attr("transform",`translate(${scale.padding},${scale.padding})`)
+ 
     scatterPlotDots(svg,scheduler,accessor,scale)
 }
 /**
@@ -102,16 +368,16 @@ function scatterPlot(svg,scheduler,accessor,scale) {
 function scatterPlotDots(svg,scheduler,accessor,scale){
     const update = svg.selectAll("circle.job")
                       .classed("job",true)
-                      .data(scheduler.finishedJobs)
-                     
+                      .data(scheduler.finishedJobs,d => d.init.id)
     const enter = update.enter()
 
+    //Creating dots
     enter.append("circle")  
          .classed("job",true)
-         .attr("r", 4)
+         .attr("r", scale.size/100)
          .attr("cx", d => scale.xScale(accessor.getY(d)))
          .attr("cy", d => scale.yScale(accessor.getY(d)))
-         .attr("transform",`translate(${scale.padding},${scale.padding})`)
+         .attr("transform",`translate(${5},${scale.padding-5})`)
 }   
 
 /**
@@ -123,10 +389,9 @@ function initSPLOMScale(width,height,numberOfGraph) {
    
     const xScale = d3.scaleLinear()
                     .range([padding / 2, size - padding / 2]);
-                   // .domain([0,4]);
+                    
     const yScale = d3.scaleLinear()
                     .range([size - padding / 2, padding / 2]);
-                    //.domain([0,4]);
     return {
         width,
         height,

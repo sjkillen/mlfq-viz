@@ -1,0 +1,38 @@
+$border: 3px;
+
+svg {
+   border: solid 1px black;
+   position: absolute;
+   left: 20%;
+   rect.frame {
+       fill: transparent;
+       stroke-width: $border;
+       stroke: black;
+   }
+  
+   circle.job {
+       cursor: pointer;
+       stroke-width: 1;
+       stroke: red;
+       fill: black;
+       &[data-selected="true"] {
+           stroke-width: 8px;
+       }
+       /** DEBUG JOB STATES
+       &[data-state="cpu"] {
+           fill: yellow;
+       }
+       &[data-state="future"] {
+           fill: white;
+       }
+       &[data-state="finished"] {
+           fill: black;
+       }
+       &[data-state="io"] {
+           fill: orange;
+       }
+       &[data-state="waiting"] {
+           fill: red;
+       }**/
+   }
+}
