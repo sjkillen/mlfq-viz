@@ -72,7 +72,7 @@ function update(svgElement,scheduler) {
  */
 function scatterPlot(svg,scheduler,accessor,scale) {
      //MAKING Y AXIS        
-    var yAxis = d3.axisLeft(scale.xScale.domain([0,10]));
+    var yAxis = d3.axisLeft(scale.xScale.domain([0,d3.max(accessor.getX(scheduler))]));
     //MAKING X AXIS  
     var xAxis = d3.axisBottom(scale.yScale.domain([10,0]));
 
@@ -89,7 +89,7 @@ function scatterPlot(svg,scheduler,accessor,scale) {
      // Making y Axis      
      jobEnter.append("g")
             .classed("axis y",true)
-            .attr("transform",`translate(${scale.padding/2},${scale.padding/2})`)
+            .attr("transform",`translate(${scale.padding},${scale.padding})`)
             .call(yAxis)
 
     scatterPlotDots(svg,scheduler,accessor,scale)
@@ -103,15 +103,15 @@ function scatterPlotDots(svg,scheduler,accessor,scale){
     const update = svg.selectAll("circle.job")
                       .classed("job",true)
                       .data(scheduler.finishedJobs)
-    
+                     
     const enter = update.enter()
 
     enter.append("circle")  
          .classed("job",true)
-         .attr("r", 3)
-         .attr("cx", d => scale.xScale(accessor.getX(d)))
+         .attr("r", 4)
+         .attr("cx", d => scale.xScale(accessor.getY(d)))
          .attr("cy", d => scale.yScale(accessor.getY(d)))
-
+         .attr("transform",`translate(${scale.padding},${scale.padding})`)
 }   
 
 /**
