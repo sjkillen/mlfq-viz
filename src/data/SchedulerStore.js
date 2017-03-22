@@ -21,6 +21,7 @@ class SchedulerStore extends ReduceStore {
          scheduler: freezeSched(scheduler),
          prevJobStates: prev,
          selectedJobId: -1,
+         fillAttr: "none",
          lastUpdate: performance.now()
       }).setIn(["scheduler", "changed"], true);
    }
@@ -28,6 +29,7 @@ class SchedulerStore extends ReduceStore {
       const state = this.getState();
       const scheduler = state.get("scheduler").toJS();
       scheduler.selectedJobId = state.get("selectedJobId");
+      scheduler.fillAttr = state.get("fillAttr");
       return scheduler;
    }
    reduce(state, action) {
@@ -42,6 +44,10 @@ class SchedulerStore extends ReduceStore {
          }
          case actions.SELECT_JOB: {
             return state.set("selectedJobId", action.data.init.id)
+               .setIn(["scheduler", "changed"], false);
+         }
+         case actions.SET_JOB_FILL: {
+            return state.set("fillAttr", action.data)
                .setIn(["scheduler", "changed"], false);
          }
          default:

@@ -8,7 +8,8 @@ import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
 import * as anim from "./schedulerAnimations";
-import { selectJob } from "../data/SchedulerActions";
+import { selectJob, setJobFillAttribute } from "../data/SchedulerActions";
+import access from "../data/dataAccessors";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
@@ -25,6 +26,11 @@ function SchedulerPanel(scheduler) {
             ref={(el) => update(el, scheduler)}
             className="image">
          </svg>
+         <select onChange={e => setJobFillAttribute(e.target.value)}>
+            <option value="none">None</option>
+            <option value=".init.ioFreq">IO Frequency</option>
+            <option value="tq">Time Quantum</option>
+         </select>
       </span>
    );
 }
@@ -39,31 +45,58 @@ function jobLife(svg, scheduler, scales) {
    jobJoin
       .call(drawJob, scheduler, scales)
    jobJoin
-      .call(jobClockFillSet, scales);
+      .call(jobClockFill, scheduler, scales);
+   jobJoin
+      .call(jobFillup, scheduler, scales);
    const group = jobJoin.enter()
       .append("g")
       .classed("job", true)
       .on("click", selectJob)
    group.append("circle")
+      .classed("back", true)
    group.call(drawJob, scheduler, scales)
-   group.append("path")
+   group.append("circle")
       .classed("clockfill", true)
-      .call(jobClockFillSet, scales);
+      .call(jobClockFill, scheduler, scales);
+   group.call(makeFillupGradient, scheduler, scales)
+   group.append("circle")
+      .classed("fillup", true)
+      .call(jobFillup, scheduler, scales);
    jobJoin.exit().remove();
    return jobJoin;
+}
+
+function makeFillupGradient(group, scheduler, scales) {
+   const gradient = group.append("linearGradient")
+      .attr("id", scales.fillup.gradId)
+      .attr("x1", "0.5")
+      .attr("x2", "0.5")
+      .attr("y1", "1")
+      .attr("y2", "0")
+
+   gradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-opacity", 1)
+      .attr("stop-color", "blue")
+   gradient.append("stop")
+      .classed("move", true)
+      .attr("offset", "50%")
+      .attr("stop-opacity", 1)
+      .attr("stop-color", "blue")
+   gradient.append("stop")
+      .classed("move", true)
+      .attr("offset", "50%")
+      .attr("stop-opacity", 0)
+   gradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-opacity", 0)
+   return gradient;
 }
 
 /**
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-
-   const timerScales = scheduler.queues.forEach(q => {
-      return d3.scaleLinear()
-         .domain([0, q.timeQuantum])
-         .range([0, 2 * Math.PI])
-   });
-   const timer = job => timerScales[job.running.priority](job.running.quantumLeft)
 
    const maxQueueHeight = 7;
    const marginBottom = 200;
@@ -78,6 +111,18 @@ function getScales(svg, scheduler) {
       .range([height - marginBottom, marginTop]);
    const queueWidth = jobHeight.bandwidth();
    const radius = queueWidth / 2;
+
+   const timerFull = Math.PI * radius;
+   const timerScales = scheduler.queues.map(q => {
+      return d3.scaleLinear()
+         .domain([q.timeQuantum, 0])
+         .range([0, timerFull])
+   });
+   const timer = job => {
+      const perc = timerScales[job.running.priority](job.running.quantumLeft)
+      return `${perc}, ${timerFull}`;
+   }
+
    const queueTop = jobHeight(maxQueueHeight - 1) - radius;
    const queue = d3.scaleBand()
       .domain(d3.range(scheduler.numQueues))
@@ -139,11 +184,22 @@ function getScales(svg, scheduler) {
       io,
       timer,
       dead,
+      fillup: fillupScales(scheduler),
       requeue,
       finished: () => 0,
       // Takes job's queue position and outputs its y position
       queueOrder: jobHeight
    };
+}
+
+/**
+ * Scales for the fill up attr
+ */
+function fillupScales(scheduler) {
+   return {
+      attr: access[scheduler.fillAttr] || (d => 0),
+      gradId: d => `jobfillup-grad-${d.init.id}`,
+   }
 }
 
 /**
@@ -207,12 +263,29 @@ function getJobPosition(job, scheduler) {
  * @param scheduler 
  * @param scales 
  */
-function jobClockFillSet(group, scales) {
-   const context = d3.path();
-   context.arc(0, 0, scales.radius * 0.5, 0, 2 * Math.PI);
-   return group.select("path.clockfill")
-      .attr("d", context.toString())
+function jobClockFill(group, scheduler, scales) {
+   return group.select("circle.clockfill")
+      .attr("visibility", scheduler.fillAttr === "tq" ? "visible" : "hidden")
+      .attr("r", scales.radius / 2)
+      .style("stroke", "aqua")
+      .style("stroke-width", `${scales.radius}px`)
       .attr("fill", "blue")
+      .attr("stroke-dasharray", d => scales.timer(d))
+}
+
+
+/**
+ * Encodes an attribute inside the job
+ * @param {d3 selection} job element to fill 
+ * @param scheduler 
+ * @param scales 
+ */
+function jobFillup(group, scheduler, scales) {
+   group.selectAll("stop.move")
+      .attr("offset", d => `${scales.fillup.attr(d)}%`)
+   return group.select("circle.fillup")
+      .attr("r", scales.radius)
+      .attr("fill", d => `url(#${scales.fillup.gradId(d)})`)
 }
 
 /**
