@@ -7,7 +7,7 @@ import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
 const pathLArrow = require ("./Images/leftArrow.png");
 const pathRArrow = require ("./Images/RightArrow.png");
-import './dat.gui';
+import './dat-gui';
 
 
 const content = {

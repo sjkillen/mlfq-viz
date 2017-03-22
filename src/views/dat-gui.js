@@ -1,5 +1,6 @@
 import dat from "dat.gui/build/dat.gui.min"
-
+import mainScheduler from "../scheduler"
+import random from "../randomAdapter";
 //---------------------------------- simulator panel ---------------------------------------------- 
 var simulator = {
 	'Load' : function(){},
@@ -10,7 +11,14 @@ var simulator = {
   };
   var simulator_config = {
   'Duration': 100,
-  'Speed': 5,
+  get ["Speed"](){
+      return mainScheduler.speed;
+  },
+  set ["Speed"](v){
+    mainScheduler.speed = v;
+
+  },
+
   'Color': false,
   };
 
@@ -24,13 +32,16 @@ var simulator = {
   menu.add(simulator, 'Enter Explore Mode')
   
    var Config = menu.addFolder("Playback");
-   Config.add(simulator_config,'Speed',1,10);
+   Config.add(simulator_config,'Speed',100,6000);
   
  //------------------------------------- scheduler panel ------------------------------------------- 
   var scheduler = {
   "Number of Queues": 12,
 	'Boost Time': 10,
-	'Trigger Boost': function(){}
+	'Trigger Boost': function(){
+    mainScheduler.boostJobs();
+
+  }
   };
 	var TimeQuantum ={
   'Queue 1': 1,
@@ -45,6 +56,15 @@ var simulator = {
   'Queue 10': 10,
   'Queue 11': 11,
   'Queue 12': 12
+  }
+
+  function createTQs() {
+    const myArray = [];
+    for (var element in TimeQuantum) {
+      const [,val] = /Queue ([0-9]*)/.exec(element);
+      myArray[val-1] = TimeQuantum[element];
+    }
+    return myArray;
   }
   
 	var gui2 = gui
@@ -72,9 +92,12 @@ var simulator = {
 		'Number of Jobs': 600,
 		'IO Frequency Min': 70,
 		'IO Frequency Max': 70,
-		'IO Length Min':50,
-		'IO Length Max':50,
-    'Generate Jobs': function() {},
+    "IO Length Min"   : 40,
+    "IO Length Max"   : 30,
+
+    'Generate Jobs': function() {
+      refreshScheduler();
+  },
     'Seed': "GY34uyit786UJG"
   }
   var gui3 = gui2
@@ -88,3 +111,32 @@ var simulator = {
 	menu3.add(workload,'Seed');
 	menu3.add(workload,'Generate Jobs');
   
+
+
+  function refreshScheduler(config){
+    mainScheduler.constructor(
+      {
+          timeQuantums: createTQs(),
+          boostTime: Infinity,
+          resetTQsOnIO: false,
+          random,
+          speed: mainScheduler.speed,
+          generation: [
+              {
+                  ioFrequencyRange: [80, 100],
+                  jobRuntimeRange: [Infinity, Infinity],
+                  numJobsRange: [1, 1],
+                  jobCreateTimeRange: [10, 10],
+                  ioLengthRange: [5, 5]
+              },
+              {
+                  ioFrequencyRange: [33, 80],
+                  jobRuntimeRange: [Infinity, Infinity],
+                  numJobsRange: [1, 1],
+                  jobCreateTimeRange: [1, 1],
+                  ioLengthRange: [0, 0]
+              }
+          ]
+      }
+    )
+}

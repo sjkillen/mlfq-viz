@@ -313,16 +313,15 @@ export default
    /**
     * Runs the scheduler
     */
-   play(update: { (data: Scheduler): void }, speed: number | void) {
-      if (typeof speed === "undefined") speed = this.speed;
+   play(update: { (data: Scheduler): void }) {
       if (this.running)
          throw new Error("Scheduler already running!");
       const tick = () => {
-         this.tickIntervalId = setTimeout(tick, speed);
+         this.tickIntervalId = setTimeout(tick, this.speed);
          this.processJobs();
          update(this);
       };
-      this.tickIntervalId = setTimeout(tick, speed);
+      this.tickIntervalId = setTimeout(tick, this.speed);
    }
 
    /**
