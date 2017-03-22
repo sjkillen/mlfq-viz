@@ -4,23 +4,13 @@
 
 import Scheduler from "./mlfq";
 
-import random from "random-seed";
+import random from "./randomAdapter";
 
 const scheduler = new Scheduler({
     timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
     boostTime: Infinity,
     resetTQsOnIO: true,
-    random: (function () {
-        const gen = random.create();
-        return {
-            seed(seed) {
-                gen.seed(seed);
-            },
-            range(highLow) {
-                return gen.intBetween(...highLow);
-            }
-        };
-    }()),
+    random,
     speed: 500,
     generation: [
         {
