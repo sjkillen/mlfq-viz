@@ -30,12 +30,14 @@ svg {
            font-size: 50px;
        }
    }
-   g.job circle {
+   g.job {
        cursor: pointer;
-       stroke-width: 1;
-       stroke: black;
-       fill: white;
-       &[data-selected="true"] {
+       circle {
+           stroke-width: 1;
+           stroke: black;
+           fill: white;
+       }
+       &[data-selected="true"] circle {
            stroke-width: 8px;
        }
        /** DEBUG JOB STATES
