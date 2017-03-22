@@ -16,6 +16,15 @@ function linear(duration, fraction) {
       .duration(duration * fraction);
 }
 
+function transXY(select, x, y) {
+   select.each(d => {
+      if (typeof x === "function") x = x(d);
+      if (typeof y === "function") y = y(d);
+      return select.attr("transform", `translate(${x}, ${y})`);
+   })
+}
+
+
 /**
  * Animate a job moving from it's queue to the CPU
  * @param job d3 selection of the job element
@@ -25,13 +34,13 @@ function linear(duration, fraction) {
 export function queueToCPU(job, scheduler, scales) {
    const time = scheduler.speed;
    return job.transition(linear(time, 0.25))
-      .attr("cy", scales.requeue.middleJobUp)
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.middleJobUp)
       .transition(linear(time, 0.25))
-      .attr("cx", scales.requeue.leftJob)
+      .call(transXY, scales.requeue.leftJob, scales.requeue.middleJobUp)
       .transition(linear(time, 0.25))
-      .attr("cy", scales.cpu.y)
+      .call(transXY, scales.requeue.leftJob, scales.cpu.y)
       .transition(linear(time, 0.25))
-      .attr("cx", scales.cpu.x)
+      .call(transXY, scales.cpu.x, scales.cpu.y)
 }
 
 /**
@@ -45,8 +54,7 @@ export function queueMove(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
       .transition(linear(time, 1))
-      .attr("cy", y)
-      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .call(transXY, d => scales.jobQueue(d.running.priority), y)
 }
 
 /**
@@ -60,9 +68,9 @@ export function finishJob(job, scheduler, scales) {
    return job
       .attr("opacity", 1)
       .transition(linear(time, 0.5))
-      .attr("cy", scales.requeue.lowerPipeJob)
+      .call(transXY, scales.cpu.x, scales.requeue.lowerPipeJob)
       .transition(linear(time, 0.5))
-      .attr("cx", scales.dead.exit)
+      .call(transXY, scales.dead.exit, scales.requeue.lowerPipeJob)
       .attr("opacity", 0)
 }
 
@@ -77,15 +85,15 @@ export function requeueJob(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
       .transition(linear(time, 0.2))
-      .attr("cy", scales.requeue.lowerPipeJob)
+      .call(transXY, scales.cpu.x, scales.requeue.lowerPipeJob)
       .transition(linear(time, 0.2))
-      .attr("cx", scales.requeue.sidePipeJob)
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.lowerPipeJob)
       .transition(linear(time, 0.2))
-      .attr("cy", scales.requeue.upperPipeJob)
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.upperPipeJob)
       .transition(linear(time, 0.2))
-      .attr("cx", d => scales.jobQueue(d.running.priority))
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.upperPipeJob)
       .transition(linear(time, 0.2))
-      .attr("cy", y)
+      .call(transXY, d => scales.jobQueue(d.running.priority), y)
 }
 
 /**
@@ -98,10 +106,9 @@ export function requeueJob(job, scheduler, scales, y) {
 export function enterSimulation(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
-      .attr("cx", d => scales.jobQueue(d.running.priority))
-      .attr("cy", y - scales.height)
+      .call(transXY, d => scales.jobQueue(d.running.priority), y - scales.height)
       .transition(linear(time, 1))
-      .attr("cy", y)
+      .call(transXY, d => scales.jobQueue(d.running.priority), y)
 }
 
 /**
@@ -114,14 +121,13 @@ export function enterSimulationToCPU(job, scheduler, scales) {
    const time = scheduler.speed;
    const y = scales.queueOrder(0);
    return job
-      .attr("cx", d => scales.jobQueue(d.running.priority))
-      .attr("cy", y - scales.height)
+      .call(transXY, d => scales.jobQueue(d.running.priority), y - scales.height)
       .transition(linear(time, 1 / 3))
-      .attr("cy", y)
+      .call(transXY, d => scales.jobQueue(d.running.priority), y)
       .transition(linear(time, 1 / 3))
-      .attr("cy", scales.cpu.y)
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.cpu.y)
       .transition(linear(time, 1 / 3))
-      .attr("cx", scales.cpu.x);
+      .call(transXY, scales.cpu.x, scales.cpu.y);
 }
 
 /**
@@ -132,9 +138,7 @@ export function enterSimulationToCPU(job, scheduler, scales) {
  */
 export function waitInFuture(job, scheduler, scales) {
    const time = scheduler.speed;
-   return job
-      .attr("cx", -30)
-      .attr("cy", -30)
+   return job.call(transXY, -30, -30)
 }
 
 /**
@@ -147,8 +151,7 @@ export function enterIO(job, scheduler, scales) {
    const time = scheduler.speed;
    return job
       .transition(linear(time, 1))
-      .attr("cx", scales.io.jobX)
-      .attr("cy", scales.io.jobY)
+      .call(transXY, scales.io.jobX, scales.io.jobY)
 }
 
 /**
@@ -161,18 +164,18 @@ export function enterIO(job, scheduler, scales) {
 export function leaveIO(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
-      .transition(linear(time, 1/6))
-      .attr("cx", scales.requeue.leftJob)
-      .transition(linear(time, 1/6))
-      .attr("cy", scales.requeue.lowerPipeJob)
-      .transition(linear(time, 1/6))
-      .attr("cx", scales.requeue.sidePipeJob)
-      .transition(linear(time, 1/6))
-      .attr("cy", scales.requeue.upperPipeJob)
-      .transition(linear(time, 1/6))
-      .attr("cx", d => scales.jobQueue(d.running.priority))
-      .transition(linear(time, 1/6))
-      .attr("cy", y)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, scales.requeue.leftJob, scales.io.jobY)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, scales.requeue.leftJob, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.upperPipeJob)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.upperPipeJob)
+      .transition(linear(time, 1 / 6))
+      .call(transXY, d => scales.jobQueue(d.running.priority), y)
 }
 
 /**
@@ -184,19 +187,19 @@ export function leaveIO(job, scheduler, scales, y) {
 export function leaveIOToCPU(job, scheduler, scales) {
    const time = scheduler.speed;
    return job
-      .transition(linear(time, 1/7))
-      .attr("cx", scales.requeue.leftJob)
-      .transition(linear(time, 1/7))
-      .attr("cy", scales.requeue.lowerPipeJob)
-      .transition(linear(time, 1/7))
-      .attr("cx", scales.requeue.sidePipeJob)
-      .transition(linear(time, 1/7))
-      .attr("cy", scales.requeue.upperPipeJob)
-      .transition(linear(time, 1/7))
-      .attr("cx", scales.jobQueue(0))
-      .transition(linear(time, 1/7))
-      .attr("cy", scales.cpu.y)
-      .transition(linear(time, 1/7))
-      .attr("cx", scales.cpu.x)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.requeue.leftJob, scales.io.jobY)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.requeue.leftJob, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.requeue.sidePipeJob, scales.requeue.upperPipeJob)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.jobQueue(0), scales.requeue.upperPipeJob)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.jobQueue(0), scales.cpu.y)
+      .transition(linear(time, 1 / 7))
+      .call(transXY, scales.cpu.x, scales.cpu.y)
 }
 
