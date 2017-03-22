@@ -7,7 +7,7 @@ import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
 const pathLArrow = require ("./Images/leftArrow.png");
 const pathRArrow = require ("./Images/RightArrow.png");
-
+import './dat-gui';
 
 
 const content = {
@@ -51,12 +51,12 @@ class Header extends Component {
                             <MenuItem eventKey="6" className="" style={dropdownStyle}>PERSISTENT TIME QUANTUMS</MenuItem>
                             <MenuItem eventKey="7" className="" style={dropdownStyle}>THE BOOST TIMER</MenuItem>
                         </DropdownButton>
-                        <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle} ></Button>
+                        <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
                         <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
                             {10}
                         </div>
 
-                        <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle}></Button>
+                        <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
                         
                     
                     </ButtonGroup>
