@@ -1,4 +1,35 @@
 /*!  */
+.SPLOMPanel svg {
+  border: solid 1px black;
+  position: absolute;
+  left: 20%; }
+  .SPLOMPanel svg rect.frame {
+    fill: transparent;
+    stroke-width: 3px;
+    stroke: black; }
+  .SPLOMPanel svg circle.job {
+    cursor: pointer;
+    stroke-width: 1;
+    stroke: red;
+    fill: black;
+    /** DEBUG JOB STATES
+       &[data-state="cpu"] {
+           fill: yellow;
+       }
+       &[data-state="future"] {
+           fill: white;
+       }
+       &[data-state="finished"] {
+           fill: black;
+       }
+       &[data-state="io"] {
+           fill: orange;
+       }
+       &[data-state="waiting"] {
+           fill: red;
+       }**/ }
+    .SPLOMPanel svg circle.job[data-selected="true"] {
+      stroke-width: 8px; }
 .SchedulerPanel svg {
   border: solid 1px black;
   position: absolute;
@@ -5024,24 +5055,26 @@
   position: fixed;
   right: 0;
   bottom: 50%;
-  top: 30%;
-  -webkit-animation-name: pulse;
-  -webkit-animation-duration: 4s infinite;
-  animation: pulse 1s infinite;
-  animation-name: pulse;
-  animation-duration: 1s infinite; }
+  top: 30%; }
+  .Nav .myRArrow:hover {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite; }
 
 .Nav .myLArrow {
   width: 10.00%;
   position: fixed;
   left: 0;
   bottom: 50%;
-  top: 30%;
-  -webkit-animation-name: pulse;
-  -webkit-animation-duration: 4s infinite;
-  animation: pulse 1s infinite;
-  animation-name: pulse;
-  animation-duration: 1s infinite; }
+  top: 30%; }
+  .Nav .myLArrow:hover {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite; }
 
 @-webkit-keyframes pulse {
   0% {
