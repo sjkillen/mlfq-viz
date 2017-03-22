@@ -20,7 +20,7 @@ export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore]
 function SchedulerPanel(scheduler) {
    return (
       <span className="SchedulerPanel">
-         <svg 
+         <svg
             shapeRendering="geometricPrecision"
             ref={(el) => update(el, scheduler)}
             className="image">
@@ -34,14 +34,21 @@ function SchedulerPanel(scheduler) {
  */
 function jobLife(svg, scheduler, scales) {
    const jobJoin = svg
-      .selectAll("circle.job")
+      .selectAll("g.job")
       .data(scheduler.allJobs, d => d.init.id)
-      .call(drawJob, scheduler, scales);
-   jobJoin.enter()
-      .append("circle")
+   jobJoin
+      .call(drawJob, scheduler, scales)
+   jobJoin
+      .call(jobClockFillSet, scales);
+   const group = jobJoin.enter()
+      .append("g")
       .classed("job", true)
+   group.append("circle")
       .on("click", selectJob)
-      .call(drawJob, scheduler, scales);
+   group.call(drawJob, scheduler, scales)
+   group.append("path")
+      .classed("clockfill", true)
+      .call(jobClockFillSet, scales);
    jobJoin.exit().remove();
    return jobJoin;
 }
@@ -50,6 +57,14 @@ function jobLife(svg, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
+
+   const timerScales = scheduler.queues.forEach(q => {
+      return d3.scaleLinear()
+         .domain([0, q.timeQuantum])
+         .range([0, 2 * Math.PI])
+   });
+   const timer = job => timerScales[job.running.priority](job.running.quantumLeft)
+
    const maxQueueHeight = 7;
    const marginBottom = 200;
    const marginTop = 150;
@@ -104,7 +119,7 @@ function getScales(svg, scheduler) {
       textY: requeue.middleUp + queueWidth,
       jobY: cpu.y,
       jobX: requeue.lowerLeft - queueWidth * 3,
-   } 
+   }
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
@@ -122,6 +137,7 @@ function getScales(svg, scheduler) {
       height,
       cpu,
       io,
+      timer,
       dead,
       requeue,
       finished: () => 0,
@@ -153,19 +169,19 @@ function getJobHolster(job, scheduler) {
  * Get the array that contains a job
  */
 function getJobHolster(job, scheduler) {
-      switch (job.state) {
-            case "waiting":
-            case "cpu":
-                  return scheduler.queues[job.running.priority].jobs;
-            case "future":
-                  return scheduler.futureJobs;
-            case "io":
-                  return scheduler.ioJobs;
-            case "finished":
-                  return scheduler.finishedJobs;
-            default:
-                  throw new Error("no holster");
-      }
+   switch (job.state) {
+      case "waiting":
+      case "cpu":
+         return scheduler.queues[job.running.priority].jobs;
+      case "future":
+         return scheduler.futureJobs;
+      case "io":
+         return scheduler.ioJobs;
+      case "finished":
+         return scheduler.finishedJobs;
+      default:
+         throw new Error("no holster");
+   }
 }
 
 /**
@@ -186,16 +202,30 @@ function getJobPosition(job, scheduler) {
 }
 
 /**
+ * Encodes a timer inside a circle, for TQs
+ * @param {d3 selection} job element to fill 
+ * @param scheduler 
+ * @param scales 
+ */
+function jobClockFillSet(group, scales) {
+   const context = d3.path();
+   context.arc(0, 0, scales.radius * 0.5, 0, 2 * Math.PI);
+   return group.select("path.clockfill")
+      .attr("d", context.toString())
+      .attr("fill", "blue")
+}
+
+/**
  * Draw the scheduler's queues and the jobs inside them
  * @param element to draw the queues inside
  * @param scheduler
  * @param scales from getScales
  */
 function drawJob(selection, scheduler, scales) {
+   selection.selectAll("circle").attr("r", d => scales.radius + "px")
    return selection
-      .attr("r", d => scales.radius + "px")
       .attr("data-state", d => d.state)
-      .attr("data-selected", function(d) {
+      .attr("data-selected", function (d) {
          if (d.init.id === scheduler.selectedJobId) {
             // Move job to front
             this.parentNode.appendChild(this);
@@ -241,7 +271,7 @@ function drawJob(selection, scheduler, scales) {
                job.call(anim.leaveIOToCPU, scheduler, scales);
                return;
          }
-      })
+      });
 }
 
 /**
@@ -310,13 +340,13 @@ function cpu(svg, scheduler, scales) {
       .attr("x", scales.cpu.textX)
       .attr("y", scales.cpu.y)
       .text("CPU")
-   
+
    enter.append("text")
       .classed("tick", true)
       .attr("x", scales.cpu.tickTextX)
       .attr("y", scales.cpu.y)
       .text(scheduler.globalTick)
-   
+
    enter.append("circle")
       .classed("slot", true)
       .attr("cx", scales.cpu.x)
@@ -325,7 +355,7 @@ function cpu(svg, scheduler, scales) {
 
    update.selectAll(".tick")
       .text(scheduler.globalTick)
-   
+
 }
 
 /**
