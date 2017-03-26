@@ -17,7 +17,7 @@ const props = {
         },
         label: "IO Frequency",
         calcDomain(scheduler) {
-            return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
+            return [d3.max(scheduler.allJobs, d => d.init.ioFreq), 0]
         }
     },
     [".init.runTime"]: {
@@ -38,6 +38,15 @@ const props = {
             return [0, d3.max(scheduler.allJobs, d => d.init.createTime)]
         }
     },
+    [".init.ioLength"]: {
+        access(d) {
+            return d.init.ioLength;
+        },
+        label: "Job IO Length",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.init.ioLength)]
+        }
+    },
     ["none"]: {
         access(d) {
             return 0;
@@ -56,6 +65,7 @@ const props = {
  */
 function propSetter(axis) {
     return function (propName) {
+        if (!(propName in props)) propName = "none";
         const { access, label, calcDomain } = props[propName];
         this.accessors["get" + axis] = access;
         this.accessors["getDomain" + axis] = calcDomain;

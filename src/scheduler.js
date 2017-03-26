@@ -14,14 +14,14 @@ const scheduler = new Scheduler({
     speed: 3000,
     generation: [
         {
-            ioFrequencyRange: [4, 40],
+            ioFrequencyRange: [1, 1],
             jobRuntimeRange: [100, 200],
-            numJobsRange: [1, 1],
+            numJobsRange: [10, 10],
             jobCreateTimeRange: [10, 10],
             ioLengthRange: [5, 5]
         },
         {
-            ioFrequencyRange: [4, 40],
+            ioFrequencyRange: [30, 40],
             jobRuntimeRange: [60, 1000],
             numJobsRange: [1, 1],
             jobCreateTimeRange: [1, 1],
