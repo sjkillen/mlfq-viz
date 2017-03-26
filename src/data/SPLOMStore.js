@@ -15,8 +15,7 @@ class SPLOMStore extends ReduceStore {
           accessors: accessorMatrix([
               ".init.runTime",
               ".init.createTime",
-              ".init.runTime",
-              ".init.createTime",
+              ".init.ioFreq",
           ])
       };
    }
