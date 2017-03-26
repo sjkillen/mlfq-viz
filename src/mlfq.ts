@@ -190,7 +190,6 @@ class Job {
     * @param rand random library to use
     */
    private maybeStartIO() {
-         debugger;
       this.running.ioFreqLeft--;
       if (this.running.ioFreqLeft <= 0) {
          this.running.ioLeft = this.init.ioLength;

@@ -14,15 +14,15 @@ const scheduler = new Scheduler({
     speed: 3000,
     generation: [
         {
-            ioFrequencyRange: [4, 4],
-            jobRuntimeRange: [Infinity, Infinity],
+            ioFrequencyRange: [4, 40],
+            jobRuntimeRange: [100, 200],
             numJobsRange: [1, 1],
             jobCreateTimeRange: [10, 10],
             ioLengthRange: [5, 5]
         },
         {
-            ioFrequencyRange: [4, 4],
-            jobRuntimeRange: [Infinity, Infinity],
+            ioFrequencyRange: [4, 40],
+            jobRuntimeRange: [60, 1000],
             numJobsRange: [1, 1],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [5, 5]
@@ -30,3 +30,5 @@ const scheduler = new Scheduler({
     ]
 });
 export default scheduler;
+
+window.scheduler = scheduler;

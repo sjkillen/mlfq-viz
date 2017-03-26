@@ -9,7 +9,7 @@ import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
 import * as anim from "./schedulerAnimations";
 import { selectJob, setJobFillAttribute } from "../data/SchedulerActions";
-import access from "../data/dataAccessors";
+import { accessorFactoryFactory } from "../data/dataAccessors";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
@@ -168,6 +168,9 @@ function getScales(svg, scheduler) {
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
+   const access = accessorFactoryFactory()
+      .x(scheduler.fillAttr)
+      .accessors;
    return {
       // x Position a queue needs to be draw
       queue: drawQueue,
@@ -184,7 +187,7 @@ function getScales(svg, scheduler) {
       io,
       timer,
       dead,
-      fillup: fillupScales(scheduler),
+      fillup: fillupScales(scheduler, access),
       requeue,
       finished: () => 0,
       // Takes job's queue position and outputs its y position
@@ -195,22 +198,15 @@ function getScales(svg, scheduler) {
 /**
  * Scales for the fill up attr
  */
-function fillupScales(scheduler) {
+function fillupScales(scheduler, access) {
    const gradId = d => `jobfillup-grad-${d.init.id}`;
-   const accessor = access[scheduler.fillAttr];
-   if (accessor) {
-      const clamp = d3.scaleLinear()
-         .domain([0, d3.max(scheduler.allJobs, access[scheduler.fillAttr])])
-         .range([0, 100]);
-      return {
-         attr: d => clamp(accessor(d)),
-         gradId
-      }
-   } else {
-      return {
-         attr: d => 0,
-         gradId,
-      }
+
+   const clamp = d3.scaleLinear()
+      .domain(access.getDomainX(scheduler))
+      .range([0, 100]);
+   return {
+      attr: d => clamp(access.getX(d)),
+      gradId
    }
 }
 
