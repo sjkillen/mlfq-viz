@@ -196,9 +196,21 @@ function getScales(svg, scheduler) {
  * Scales for the fill up attr
  */
 function fillupScales(scheduler) {
-   return {
-      attr: access[scheduler.fillAttr] || (d => 0),
-      gradId: d => `jobfillup-grad-${d.init.id}`,
+   const gradId = d => `jobfillup-grad-${d.init.id}`;
+   const accessor = access[scheduler.fillAttr];
+   if (accessor) {
+      const clamp = d3.scaleLinear()
+         .domain([0, d3.max(scheduler.allJobs, access[scheduler.fillAttr])])
+         .range([0, 100]);
+      return {
+         attr: d => clamp(accessor(d)),
+         gradId
+      }
+   } else {
+      return {
+         attr: d => 0,
+         gradId,
+      }
    }
 }
 
