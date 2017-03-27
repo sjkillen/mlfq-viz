@@ -7,7 +7,7 @@ import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
 const pathLArrow = require ("./Images/leftArrow.png");
 const pathRArrow = require ("./Images/RightArrow.png");
-import './dat-gui';
+import dat from'./dat-gui';
 
 
 const content = {
@@ -39,6 +39,7 @@ class Header extends Component {
 
     render() {
         return (
+            
             <div>
                 <div>
                     <ButtonGroup className="bootstrap" style={myStyle}>
@@ -67,6 +68,7 @@ class Header extends Component {
                     
                 </Link>
                 <div style={content}>{this.props.children}</div>
+                {dat}
                 <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()}>
                     <img src={pathRArrow} className="myRArrow"/>
                 </Link>

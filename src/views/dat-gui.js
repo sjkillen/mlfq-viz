@@ -1,7 +1,19 @@
 import dat from "dat.gui/build/dat.gui.min"
 import mainScheduler from "../scheduler"
 import random from "../randomAdapter";
+import path from "path";
 //---------------------------------- simulator panel ---------------------------------------------- 
+
+
+
+if (window.location.href.includes("SPLOM")){
+  console.log("SPLOM VIEW");
+} else {
+  console.log("Scheduler view");
+}
+
+
+
 var simulator = {
 	'Load' : function(){},
 	'Save' : function(){},
@@ -33,6 +45,7 @@ var simulator = {
   
    var Config = menu.addFolder("Playback");
    Config.add(simulator_config,'Speed',100,6000);
+//}
   
  //------------------------------------- scheduler panel ------------------------------------------- 
   var scheduler = {
@@ -111,6 +124,10 @@ var simulator = {
 	menu3.add(workload,'Seed');
 	menu3.add(workload,'Generate Jobs');
   
+  //workload
+  //timeQuantums
+  //scheduler
+  //simulator_config
 
 
   function refreshScheduler(config){
