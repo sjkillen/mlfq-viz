@@ -8,7 +8,6 @@ import { updateScheduler, actions } from "./SchedulerActions";
 import dispatcher from "./dispatcher";
 import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
-import Scheduler from "../mlfq";
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
