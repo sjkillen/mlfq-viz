@@ -8,7 +8,7 @@ const scheduler = new Scheduler({
     boostTime: Infinity,
     resetTQsOnIO: false,
     random,
-    speed: 3000,
+    speed: 1,
     generation: [
         {
             ioFrequencyRange: [1, 1],

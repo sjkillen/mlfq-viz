@@ -17,14 +17,14 @@ const props = {
         },
         label: "IO Frequency",
         calcDomain(scheduler) {
-            return [d3.max(scheduler.allJobs, d => d.init.ioFreq), 0]
+            return [0,d3.max(scheduler.allJobs, d => d.init.ioFreq)]
         }
     },
     [".init.runTime"]: {
         access(d) {
             return d.init.runTime;
         },
-        label: "Job Run Time",
+        label: "Run Time",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.runTime)]
         }
@@ -33,7 +33,7 @@ const props = {
         access(d) {
             return d.init.createTime;
         },
-        label: "Job Run Time",
+        label: "Create Time",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.createTime)]
         }

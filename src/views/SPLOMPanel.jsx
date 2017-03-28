@@ -84,11 +84,13 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
  * @param scale - scale for the axis
  */
 function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
+    const ratio = 1.1;
    //MAKING Y AXIS        
-   const [min,max] = accessor.getDomainY(scheduler);
-   var yAxis = d3.axisLeft(scale.yScale.domain([min,max*1.2]));
+   const [minY,maxY] = accessor.getDomainY(scheduler);
+   var yAxis = d3.axisLeft(scale.yScale.domain([minY-maxY*.1,maxY*ratio]));
    //MAKING X AXIS  
-   var xAxis = d3.axisBottom(scale.xScale.domain(accessor.getDomainX(scheduler)));
+   const [minX,maxX] = accessor.getDomainX(scheduler);  
+   var xAxis = d3.axisBottom(scale.xScale.domain([minX-maxX*.1,maxX*ratio]));
 
    const jobJoin = svg.selectAll("g.axis")
       .data([0])
@@ -112,18 +114,19 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
       .attr("height", scale.size - scale.padding)
       .attr("transform", `translate(${scale.padding},${scale.padding})`)
 
-    jobenter.append("text")  
+    
+    jobEnter.append("text")  
             .style("text-anchor", "end")
             .attr("x",-scale.size/2-scale.padding/2)
             .attr("y",scale.padding*.5)
             .attr("transform", "rotate(-90)")
-            .text(d=>d.getLabelX());
-
-    jobenter.append("text")
+    
+            .text(accessor.labelX);
+    jobEnter.append("text")
             .style("text-anchor", "end")
             .attr("x",scale.size/2 + scale.padding/2)
             .attr("y",scale.size+scale.padding*.5)
-            .text(d => d.getLabelY());
+            .text(accessor.labelY);
    scatterPlotDots(svg, scheduler, accessor, scale)
 }
 /**
@@ -144,7 +147,7 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
       .attr("r", scale.size / 100)
       .attr("cx", d => scale.xScale(accessor.getX(d)))
       .attr("cy", d => scale.yScale(accessor.getY(d)))
-      .attr("transform", `translate(${5},${scale.padding/2 - scale.size/100})`);
+      .attr("transform", `translate(${(scale.padding/2)*0.1},${(scale.padding/2)*1.1})`);
 
 
 }   
