@@ -7,8 +7,9 @@ import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
+import "./PlaybackControl.scss";
 import * as anim from "./schedulerAnimations";
-import { selectJob, setJobFillAttribute } from "../data/SchedulerActions";
+import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
 import { accessorFactoryFactory } from "../data/dataAccessors";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
@@ -23,14 +24,40 @@ function SchedulerPanel(scheduler) {
       <span className="SchedulerPanel">
          <svg
             shapeRendering="geometricPrecision"
-            ref={(el) => update(el, scheduler)}
+            ref={el => update(el, scheduler)}
             className="image">
          </svg>
          <select onChange={e => setJobFillAttribute(e.target.value)}>
             <option value="none">None</option>
             <option value=".init.ioFreq">IO Frequency</option>
+            <option value=".init.ioLength">IO Length</option>
             <option value="tq">Time Quantum</option>
          </select>
+         <div>
+            <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
+            <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
+            <PlaybackControl disableStates={[playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
+            <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
+         </div>
+      </span>
+   );
+}
+
+function PlaybackControl({ mode, children, currMode, disableStates }) {
+   let addClass = currMode === mode ? " active" : " inactive";
+   let disabled = false;
+   if (disableStates.indexOf(currMode) !== -1) {
+      addClass += " disabled";
+      disabled = true;
+   }
+   return (
+      <span className="PlaybackControl">
+         <button className={addClass} onClick={e => {
+            if (disabled) return;
+            setPlayback(mode)
+         }}>
+            {children}
+         </button>
       </span>
    );
 }
@@ -97,7 +124,6 @@ function makeFillupGradient(group, scheduler, scales) {
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
-
    const maxQueueHeight = 7;
    const marginBottom = 200;
    const marginTop = 150;
@@ -188,6 +214,7 @@ function getScales(svg, scheduler) {
       timer,
       dead,
       fillup: fillupScales(scheduler, access),
+      fillColour: access.colourX,
       requeue,
       finished: () => 0,
       // Takes job's queue position and outputs its y position
@@ -275,9 +302,8 @@ function jobClockFill(group, scheduler, scales) {
    return group.select("circle.clockfill")
       .attr("visibility", scheduler.fillAttr === "tq" ? "visible" : "hidden")
       .attr("r", scales.radius / 2)
-      .style("stroke", "aqua")
+      .style("stroke", scales.fillColour)
       .style("stroke-width", `${scales.radius}px`)
-      .attr("fill", "blue")
       .attr("stroke-dasharray", d => scales.timer(d))
 }
 
@@ -291,6 +317,7 @@ function jobClockFill(group, scheduler, scales) {
 function jobFillup(group, scheduler, scales) {
    group.selectAll("stop.move")
       .attr("offset", d => `${scales.fillup.attr(d)}%`)
+   group.selectAll("stop").attr("stop-color", scales.fillColour)
    return group.select("circle.fillup")
       .attr("r", scales.radius)
       .attr("fill", d => `url(#${scales.fillup.gradId(d)})`)

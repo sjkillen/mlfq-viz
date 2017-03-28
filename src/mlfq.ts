@@ -103,9 +103,9 @@ class Job {
    /**
     * Reset a job's time quantum to full without changing priority
     */
-    resetTQ() {
-       this.running.quantumLeft = this.running.quantumFull;
-    }
+   resetTQ() {
+      this.running.quantumLeft = this.running.quantumFull;
+   }
 
    /**
     * Increment the job's waiting time and recalculate it's average priority
@@ -258,8 +258,7 @@ interface Queue {
 /**
  * MLFQ Simulator
  */
-export default
-   class Scheduler {
+export default class Scheduler {
    // How many priority levels
    numQueues: number;
    // How often to boost job priorities
@@ -320,13 +319,23 @@ export default
     */
    play(update: { (data: Scheduler): void }) {
       if (this.running)
-         throw new Error("Scheduler already running!");
+         throw new Error("Scheduler is already running!");
       const tick = () => {
          this.tickIntervalId = setTimeout(tick, this.speed);
          this.processJobs();
          update(this);
       };
-      this.tickIntervalId = setTimeout(tick, this.speed);
+      this.tickIntervalId = setTimeout(tick, 0);
+   }
+
+   /**
+    * Plays only the next step of simulation
+    */
+   playNext(update: { (data: Scheduler): void }) {
+      if (this.running)
+         throw new Error("Scheduler is already running!");
+      this.processJobs();
+      update(this);
    }
 
    /**
@@ -406,7 +415,6 @@ export default
       this.running = false;
       clearTimeout(this.tickIntervalId);
       this.tickIntervalId = -1;
-      console.log("MLFQ Simulation completed");
    }
 
    /**
