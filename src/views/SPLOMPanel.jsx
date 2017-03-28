@@ -85,7 +85,8 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
  */
 function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
    //MAKING Y AXIS        
-   var yAxis = d3.axisLeft(scale.yScale.domain(accessor.getDomainY(scheduler)));
+   const [min,max] = accessor.getDomainY(scheduler);
+   var yAxis = d3.axisLeft(scale.yScale.domain([min,max*1.2]));
    //MAKING X AXIS  
    var xAxis = d3.axisBottom(scale.xScale.domain(accessor.getDomainX(scheduler)));
 
@@ -111,6 +112,18 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
       .attr("height", scale.size - scale.padding)
       .attr("transform", `translate(${scale.padding},${scale.padding})`)
 
+    jobenter.append("text")  
+            .style("text-anchor", "end")
+            .attr("x",-scale.size/2-scale.padding/2)
+            .attr("y",scale.padding*.5)
+            .attr("transform", "rotate(-90)")
+            .text(d=>d.getLabelX());
+
+    jobenter.append("text")
+            .style("text-anchor", "end")
+            .attr("x",scale.size/2 + scale.padding/2)
+            .attr("y",scale.size+scale.padding*.5)
+            .text(d => d.getLabelY());
    scatterPlotDots(svg, scheduler, accessor, scale)
 }
 /**
@@ -133,18 +146,7 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
       .attr("cy", d => scale.yScale(accessor.getY(d)))
       .attr("transform", `translate(${5},${scale.padding/2 - scale.size/100})`);
 
-    enter.append("text")  
-            .style("text-anchor", "end")
-            .attr("x",-scale.size/2)
-            .attr("y",scale.padding*.5)
-            .attr("transform", "rotate(-90)")
-            .text(d => "hi");
 
-    enter.append("text")
-            .style("text-anchor", "end")
-            .attr("x",scale.size/2 + scale.padding)
-            .attr("y",scale.size+scale.padding*.5)
-            .text(d => "hello");
 }   
 
 /**
