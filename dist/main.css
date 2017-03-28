@@ -11,25 +11,14 @@
     cursor: pointer;
     stroke-width: 1;
     stroke: red;
-    fill: black;
-    /** DEBUG JOB STATES
-       &[data-state="cpu"] {
-           fill: yellow;
-       }
-       &[data-state="future"] {
-           fill: white;
-       }
-       &[data-state="finished"] {
-           fill: black;
-       }
-       &[data-state="io"] {
-           fill: orange;
-       }
-       &[data-state="waiting"] {
-           fill: red;
-       }**/ }
+    fill: black; }
     .SPLOMPanel svg circle.job[data-selected="true"] {
       stroke-width: 8px; }
+.SchedulerPanel select {
+  width: 400;
+  height: 100;
+  font-size: 50; }
+
 .SchedulerPanel svg {
   border: solid 1px black;
   position: absolute;
@@ -50,11 +39,8 @@
     stroke: black; }
   .SchedulerPanel svg .io text {
     font-size: 50px; }
-  .SchedulerPanel svg circle.job {
+  .SchedulerPanel svg g.job {
     cursor: pointer;
-    stroke-width: 1;
-    stroke: black;
-    fill: white;
     /** DEBUG JOB STATES
        &[data-state="cpu"] {
            fill: yellow;
@@ -71,7 +57,14 @@
        &[data-state="waiting"] {
            fill: red;
        }**/ }
-    .SchedulerPanel svg circle.job[data-selected="true"] {
+    .SchedulerPanel svg g.job circle.back {
+      stroke-width: 1;
+      stroke: black;
+      fill: white; }
+    .SchedulerPanel svg g.job circle.clockfill {
+      fill: white;
+      transform: rotate(-90deg); }
+    .SchedulerPanel svg g.job[data-selected="true"] circle {
       stroke-width: 8px; }
 .TableView td, .TableView th {
   border: 1px solid black;
@@ -5055,24 +5048,26 @@
   position: fixed;
   right: 0;
   bottom: 50%;
-  top: 30%;
-  -webkit-animation-name: pulse;
-  -webkit-animation-duration: 4s infinite;
-  animation: pulse 1s infinite;
-  animation-name: pulse;
-  animation-duration: 1s infinite; }
+  top: 30%; }
+  .Nav .myRArrow:hover {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite; }
 
 .Nav .myLArrow {
   width: 10.00%;
   position: fixed;
   left: 0;
   bottom: 50%;
-  top: 30%;
-  -webkit-animation-name: pulse;
-  -webkit-animation-duration: 4s infinite;
-  animation: pulse 1s infinite;
-  animation-name: pulse;
-  animation-duration: 1s infinite; }
+  top: 30%; }
+  .Nav .myLArrow:hover {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 4s infinite;
+    animation: pulse 1s infinite;
+    animation-name: pulse;
+    animation-duration: 1s infinite; }
 
 @-webkit-keyframes pulse {
   0% {

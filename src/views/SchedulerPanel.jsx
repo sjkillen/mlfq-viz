@@ -8,7 +8,8 @@ import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
 import * as anim from "./schedulerAnimations";
-import { selectJob } from "../data/SchedulerActions";
+import { selectJob, setJobFillAttribute } from "../data/SchedulerActions";
+import { accessorFactoryFactory } from "../data/dataAccessors";
 
 export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
@@ -20,11 +21,16 @@ export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore]
 function SchedulerPanel(scheduler) {
    return (
       <span className="SchedulerPanel">
-         <svg 
+         <svg
             shapeRendering="geometricPrecision"
             ref={(el) => update(el, scheduler)}
             className="image">
          </svg>
+         <select onChange={e => setJobFillAttribute(e.target.value)}>
+            <option value="none">None</option>
+            <option value=".init.ioFreq">IO Frequency</option>
+            <option value="tq">Time Quantum</option>
+         </select>
       </span>
    );
 }
@@ -34,22 +40,64 @@ function SchedulerPanel(scheduler) {
  */
 function jobLife(svg, scheduler, scales) {
    const jobJoin = svg
-      .selectAll("circle.job")
+      .selectAll("g.job")
       .data(scheduler.allJobs, d => d.init.id)
-      .call(drawJob, scheduler, scales);
-   jobJoin.enter()
-      .append("circle")
+   jobJoin
+      .call(drawJob, scheduler, scales)
+   jobJoin
+      .call(jobClockFill, scheduler, scales);
+   jobJoin
+      .call(jobFillup, scheduler, scales);
+   const group = jobJoin.enter()
+      .append("g")
       .classed("job", true)
       .on("click", selectJob)
-      .call(drawJob, scheduler, scales);
+   group.append("circle")
+      .classed("back", true)
+   group.call(drawJob, scheduler, scales)
+   group.append("circle")
+      .classed("clockfill", true)
+      .call(jobClockFill, scheduler, scales);
+   group.call(makeFillupGradient, scheduler, scales)
+   group.append("circle")
+      .classed("fillup", true)
+      .call(jobFillup, scheduler, scales);
    jobJoin.exit().remove();
    return jobJoin;
+}
+
+function makeFillupGradient(group, scheduler, scales) {
+   const gradient = group.append("linearGradient")
+      .attr("id", scales.fillup.gradId)
+      .attr("x1", "0.5")
+      .attr("x2", "0.5")
+      .attr("y1", "1")
+      .attr("y2", "0")
+
+   gradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-opacity", 1)
+      .attr("stop-color", "blue")
+   gradient.append("stop")
+      .classed("move", true)
+      .attr("offset", "50%")
+      .attr("stop-opacity", 1)
+      .attr("stop-color", "blue")
+   gradient.append("stop")
+      .classed("move", true)
+      .attr("offset", "50%")
+      .attr("stop-opacity", 0)
+   gradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-opacity", 0)
+   return gradient;
 }
 
 /**
  * Generate all the needed scales
  */
 function getScales(svg, scheduler) {
+
    const maxQueueHeight = 7;
    const marginBottom = 200;
    const marginTop = 150;
@@ -63,6 +111,18 @@ function getScales(svg, scheduler) {
       .range([height - marginBottom, marginTop]);
    const queueWidth = jobHeight.bandwidth();
    const radius = queueWidth / 2;
+
+   const timerFull = Math.PI * radius;
+   const timerScales = scheduler.queues.map(q => {
+      return d3.scaleLinear()
+         .domain([q.timeQuantum, 0])
+         .range([0, timerFull])
+   });
+   const timer = job => {
+      const perc = timerScales[job.running.priority](job.running.quantumLeft)
+      return `${perc}, ${timerFull}`;
+   }
+
    const queueTop = jobHeight(maxQueueHeight - 1) - radius;
    const queue = d3.scaleBand()
       .domain(d3.range(scheduler.numQueues))
@@ -104,10 +164,13 @@ function getScales(svg, scheduler) {
       textY: requeue.middleUp + queueWidth,
       jobY: cpu.y,
       jobX: requeue.lowerLeft - queueWidth * 3,
-   } 
+   }
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
+   const access = accessorFactoryFactory()
+      .x(scheduler.fillAttr)
+      .accessors;
    return {
       // x Position a queue needs to be draw
       queue: drawQueue,
@@ -122,12 +185,29 @@ function getScales(svg, scheduler) {
       height,
       cpu,
       io,
+      timer,
       dead,
+      fillup: fillupScales(scheduler, access),
       requeue,
       finished: () => 0,
       // Takes job's queue position and outputs its y position
       queueOrder: jobHeight
    };
+}
+
+/**
+ * Scales for the fill up attr
+ */
+function fillupScales(scheduler, access) {
+   const gradId = d => `jobfillup-grad-${d.init.id}`;
+
+   const clamp = d3.scaleLinear()
+      .domain(access.getDomainX(scheduler))
+      .range([0, 100]);
+   return {
+      attr: d => clamp(access.getX(d)),
+      gradId
+   }
 }
 
 /**
@@ -153,19 +233,19 @@ function getJobHolster(job, scheduler) {
  * Get the array that contains a job
  */
 function getJobHolster(job, scheduler) {
-      switch (job.state) {
-            case "waiting":
-            case "cpu":
-                  return scheduler.queues[job.running.priority].jobs;
-            case "future":
-                  return scheduler.futureJobs;
-            case "io":
-                  return scheduler.ioJobs;
-            case "finished":
-                  return scheduler.finishedJobs;
-            default:
-                  throw new Error("no holster");
-      }
+   switch (job.state) {
+      case "waiting":
+      case "cpu":
+         return scheduler.queues[job.running.priority].jobs;
+      case "future":
+         return scheduler.futureJobs;
+      case "io":
+         return scheduler.ioJobs;
+      case "finished":
+         return scheduler.finishedJobs;
+      default:
+         throw new Error("no holster");
+   }
 }
 
 /**
@@ -186,16 +266,47 @@ function getJobPosition(job, scheduler) {
 }
 
 /**
+ * Encodes a timer inside a circle, for TQs
+ * @param {d3 selection} job element to fill 
+ * @param scheduler 
+ * @param scales 
+ */
+function jobClockFill(group, scheduler, scales) {
+   return group.select("circle.clockfill")
+      .attr("visibility", scheduler.fillAttr === "tq" ? "visible" : "hidden")
+      .attr("r", scales.radius / 2)
+      .style("stroke", "aqua")
+      .style("stroke-width", `${scales.radius}px`)
+      .attr("fill", "blue")
+      .attr("stroke-dasharray", d => scales.timer(d))
+}
+
+
+/**
+ * Encodes an attribute inside the job
+ * @param {d3 selection} job element to fill 
+ * @param scheduler 
+ * @param scales 
+ */
+function jobFillup(group, scheduler, scales) {
+   group.selectAll("stop.move")
+      .attr("offset", d => `${scales.fillup.attr(d)}%`)
+   return group.select("circle.fillup")
+      .attr("r", scales.radius)
+      .attr("fill", d => `url(#${scales.fillup.gradId(d)})`)
+}
+
+/**
  * Draw the scheduler's queues and the jobs inside them
  * @param element to draw the queues inside
  * @param scheduler
  * @param scales from getScales
  */
 function drawJob(selection, scheduler, scales) {
+   selection.selectAll("circle").attr("r", d => scales.radius + "px")
    return selection
-      .attr("r", d => scales.radius + "px")
       .attr("data-state", d => d.state)
-      .attr("data-selected", function(d) {
+      .attr("data-selected", function (d) {
          if (d.init.id === scheduler.selectedJobId) {
             // Move job to front
             this.parentNode.appendChild(this);
@@ -241,7 +352,7 @@ function drawJob(selection, scheduler, scales) {
                job.call(anim.leaveIOToCPU, scheduler, scales);
                return;
          }
-      })
+      });
 }
 
 /**
@@ -310,13 +421,13 @@ function cpu(svg, scheduler, scales) {
       .attr("x", scales.cpu.textX)
       .attr("y", scales.cpu.y)
       .text("CPU")
-   
+
    enter.append("text")
       .classed("tick", true)
       .attr("x", scales.cpu.tickTextX)
       .attr("y", scales.cpu.y)
       .text(scheduler.globalTick)
-   
+
    enter.append("circle")
       .classed("slot", true)
       .attr("cx", scales.cpu.x)
@@ -325,7 +436,7 @@ function cpu(svg, scheduler, scales) {
 
    update.selectAll(".tick")
       .text(scheduler.globalTick)
-   
+
 }
 
 /**

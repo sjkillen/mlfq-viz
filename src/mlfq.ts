@@ -40,7 +40,7 @@ class Job {
       createTime: number;
       // Total time job needs to spend on CPU to finish
       runTime: number;
-      // How often (%) of runtime job will perform IO
+      // Period of cycles that a job will perform IO
       ioFreq: number;
       // How long this job performs IO for
       ioLength: number;
@@ -71,6 +71,8 @@ class Job {
       waitingTime: number;
       // Amount of ticks left to complete io, 0 if job isn't performing io
       ioLeft: number;
+      // Cycles until job performs IO
+      ioFreqLeft: number;
       // Average priority over job's lifetime
       avgPriority: number;
       // All the priorities a job has had over it's lifetime
@@ -126,7 +128,7 @@ class Job {
     * @param globalTick number of ticks since the simulation started
     * @param rand random library to use for IO
     */
-   doWork(globalTick: number, rand: Random) {
+   doWork(globalTick: number) {
       this.running.waitingTime = 0;
       if (this.perf.responseTime === -1)
          this.perf.responseTime = globalTick - this.init.createTime;
@@ -142,7 +144,7 @@ class Job {
       } else if (this.running.serviceTime > this.init.runTime) {
          throw new Error("job missed finish");
       } else if (!this.quantumExpired()) {
-         this.maybeStartIO(rand);
+         this.maybeStartIO();
       }
    }
    /**
@@ -187,9 +189,11 @@ class Job {
     * Sometimes starts performing IO (uses IO freq)
     * @param rand random library to use
     */
-   private maybeStartIO(rand: Random) {
-      if (rand.range([0, 100]) <= this.init.ioFreq) {
+   private maybeStartIO() {
+      this.running.ioFreqLeft--;
+      if (this.running.ioFreqLeft <= 0) {
          this.running.ioLeft = this.init.ioLength;
+         this.running.ioFreqLeft = this.init.ioFreq;
       }
    }
    /**
@@ -217,6 +221,7 @@ class Job {
          quantumLeft: 0,
          quantumFull: 0,
          ioLeft: 0,
+         ioFreqLeft: ioFreq,
          totalWaitingTime: 0,
          waitingTime: 0,
          avgPriority: 0,
@@ -313,16 +318,15 @@ export default
    /**
     * Runs the scheduler
     */
-   play(update: { (data: Scheduler): void }, speed: number | void) {
-      if (typeof speed === "undefined") speed = this.speed;
+   play(update: { (data: Scheduler): void }) {
       if (this.running)
          throw new Error("Scheduler already running!");
       const tick = () => {
-         this.tickIntervalId = setTimeout(tick, speed);
+         this.tickIntervalId = setTimeout(tick, this.speed);
          this.processJobs();
          update(this);
       };
-      this.tickIntervalId = setTimeout(tick, speed);
+      this.tickIntervalId = setTimeout(tick, this.speed);
    }
 
    /**
@@ -487,7 +491,7 @@ export default
     */
    processCpuJob() {
       if (this.cpuJob) {
-         this.cpuJob.doWork(this.globalTick, this.random);
+         this.cpuJob.doWork(this.globalTick);
          if (this.cpuJob.isFinished()) {
             this.finishedJobs.push(this.cpuJob);
             this.cpuJob = undefined;

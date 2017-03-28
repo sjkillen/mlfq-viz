@@ -1,5 +1,9 @@
 $border: 3px;
-
+select {
+    width: 400;
+    height: 100;
+    font-size: 50;
+}
 svg {
    border: solid 1px black;
    position: absolute;
@@ -30,12 +34,18 @@ svg {
            font-size: 50px;
        }
    }
-   circle.job {
+   g.job {
        cursor: pointer;
-       stroke-width: 1;
-       stroke: black;
-       fill: white;
-       &[data-selected="true"] {
+       circle.back {
+           stroke-width: 1;
+           stroke: black;
+           fill: white;
+       }
+       circle.clockfill {
+           fill: white;
+           transform: rotate(-90deg);
+       }
+       &[data-selected="true"] circle {
            stroke-width: 8px;
        }
        /** DEBUG JOB STATES

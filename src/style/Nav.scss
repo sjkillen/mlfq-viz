@@ -17,11 +17,13 @@
     bottom:50%;
     top:30%;
 
-    -webkit-animation-name: pulse;
-    -webkit-animation-duration: 4s infinite;
-    animation: pulse 1s infinite;
-    animation-name: pulse;
-    animation-duration: 1s infinite;
+    &:hover {
+        -webkit-animation-name: pulse;
+        -webkit-animation-duration: 4s infinite;
+        animation: pulse 1s infinite;
+        animation-name: pulse;
+        animation-duration: 1s infinite;
+    }
 }
 
 .myLArrow{
@@ -31,11 +33,13 @@
     bottom:50%;
     top:30%;
 
-    -webkit-animation-name: pulse;
-    -webkit-animation-duration: 4s infinite;
-    animation: pulse 1s infinite;
-    animation-name: pulse;
-    animation-duration: 1s infinite;
+    &:hover {
+        -webkit-animation-name: pulse;
+        -webkit-animation-duration: 4s infinite;
+        animation: pulse 1s infinite;
+        animation-name: pulse;
+        animation-duration: 1s infinite;
+    }
 }
     //safari
     @-webkit-keyframes pulse {

@@ -4,11 +4,12 @@
 
 import Scheduler from "./mlfq";
 
-import random from "random-seed";
+import random from "./randomAdapter";
 
 const scheduler = new Scheduler({
-    timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
+    timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
     boostTime: Infinity,
+
     resetTQsOnIO: true,
     random: (function () {
         const gen = random.create();
@@ -36,7 +37,10 @@ const scheduler = new Scheduler({
             numJobsRange: [5, 100],
             jobCreateTimeRange: [1, 10],
             ioLengthRange: [0, 0]
+
         }
     ]
 });
 export default scheduler;
+
+window.scheduler = scheduler;

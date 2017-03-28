@@ -7,7 +7,7 @@ import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
 const pathLArrow = require ("./Images/leftArrow.png");
 const pathRArrow = require ("./Images/RightArrow.png");
-
+import './dat-gui';
 
 
 const content = {
@@ -25,7 +25,17 @@ const dropdownStyle = {
     color: "white",
 };
 
+
+
 class Header extends Component {
+    
+    lArrow() {
+        return {display: this.props.location.pathname === "/Scheduler" ? "none" : ""}
+    }
+
+    rArrow() {
+        return {display: this.props.location.pathname === "/Scheduler" ? "" : "none"}
+    }
 
     render() {
         return (
@@ -41,21 +51,24 @@ class Header extends Component {
                             <MenuItem eventKey="6" className="" style={dropdownStyle}>PERSISTENT TIME QUANTUMS</MenuItem>
                             <MenuItem eventKey="7" className="" style={dropdownStyle}>THE BOOST TIMER</MenuItem>
                         </DropdownButton>
-                        <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle} ></Button>
+                        <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
                         <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
                             {10}
                         </div>
 
-                        <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle}></Button>
+                        <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
+                        
+                    
                     </ButtonGroup>
                 </div>
 
-                <Link to={"Scheduler"} className="Nav">
-                    <img src={pathLArrow} className="myLArrow" />
+                <Link to={"Scheduler"} className="Nav" style = {this.lArrow()}>
+                    <img src={pathLArrow} className="myLArrow"/>
+                    
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"SPLOM"} className="Nav">
-                    <img src={pathRArrow} className="myRArrow" />
+                <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()}>
+                    <img src={pathRArrow} className="myRArrow"/>
                 </Link>
             </div>
         );
