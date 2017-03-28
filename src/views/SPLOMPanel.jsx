@@ -67,9 +67,10 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
          const shiftY = y * (newScale.size + newScale.padding);
 
          //Generate scatter plot
-         const c = d3.select(this)
-            .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
-            .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
+
+         const addScatterplot = d3.select(this)
+                                .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
+                                .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
       }
       )
 }
@@ -130,8 +131,21 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
       .attr("r", scale.size / 100)
       .attr("cx", d => scale.xScale(accessor.getX(d)))
       .attr("cy", d => scale.yScale(accessor.getY(d)))
-      .attr("transform", `translate(${5},${scale.padding - 5})`)
-}
+      .attr("transform", `translate(${5},${scale.padding/2 - scale.size/100})`);
+
+    enter.append("text")  
+            .style("text-anchor", "end")
+            .attr("x",-scale.size/2)
+            .attr("y",scale.padding*.5)
+            .attr("transform", "rotate(-90)")
+            .text(d => "hi");
+
+    enter.append("text")
+            .style("text-anchor", "end")
+            .attr("x",scale.size/2 + scale.padding)
+            .attr("y",scale.size+scale.padding*.5)
+            .text(d => "hello");
+}   
 
 /**
  * Generate all the needed scales
