@@ -93,9 +93,9 @@ export function accessorFactoryFactory() {
  * @param props to combine 
  */
 function *getCombinations2(props) {
-    for (let i = 0; i < props.length - 1; i++) {        
-        for (let j = i + 1; j < props.length; j++) {
-            yield [props[i], props[j]];
+    for (let i = 0; i < props.length; i++) {        
+        for (let j=0 ; j<=i; j++) {
+            yield [props[j], props[i]];
         }
     }
 }

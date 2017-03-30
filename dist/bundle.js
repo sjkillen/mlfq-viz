@@ -8329,7 +8329,7 @@
 	    boostTime: Infinity,
 	    resetTQsOnIO: false,
 	    random: _randomAdapter2.default,
-	    speed: 3000,
+	    speed: 1,
 	    generation: [{
 	        ioFrequencyRange: [1, 1],
 	        jobRuntimeRange: [100, 200],
@@ -30560,13 +30560,17 @@
 	   value: true
 	});
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * Render the SPLOMPanel
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          */
+
 	var _react = __webpack_require__(305);
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _d = __webpack_require__(483);
+	var _d2 = __webpack_require__(483);
 
-	var d3 = _interopRequireWildcard(_d);
+	var d3 = _interopRequireWildcard(_d2);
 
 	var _utils = __webpack_require__(484);
 
@@ -30583,10 +30587,6 @@
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Render the SPLOMPanel
-	 */
 
 	exports.default = _utils.Container.createFunctional(SPLOMPanel, function () {
 	   return [_SchedulerStore2.default, _SPLOMStore2.default];
@@ -30659,28 +30659,56 @@
 	 * @param scale - scale for the axis
 	 */
 	function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
+	   var ratio = 1.1;
 	   //MAKING Y AXIS        
-	   var yAxis = d3.axisLeft(scale.yScale.domain(accessor.getDomainY(scheduler)));
+
+	   var _accessor$getDomainY = accessor.getDomainY(scheduler),
+	       _accessor$getDomainY2 = _slicedToArray(_accessor$getDomainY, 2),
+	       minY = _accessor$getDomainY2[0],
+	       maxY = _accessor$getDomainY2[1];
+
+	   var yAxis = d3.axisLeft(scale.yScale.domain([minY - maxY * .1, maxY * ratio]));
 	   //MAKING X AXIS  
-	   var xAxis = d3.axisBottom(scale.xScale.domain(accessor.getDomainX(scheduler)));
+
+	   var _accessor$getDomainX = accessor.getDomainX(scheduler),
+	       _accessor$getDomainX2 = _slicedToArray(_accessor$getDomainX, 2),
+	       minX = _accessor$getDomainX2[0],
+	       maxX = _accessor$getDomainX2[1];
+
+	   var xAxis = d3.axisBottom(scale.xScale.domain([minX - maxX * .1, maxX * ratio]));
 
 	   var jobJoin = svg.selectAll("g.axis").data([0]);
 
 	   var jobEnter = jobJoin.enter();
 
-	   //Append x Axis
-	   jobEnter.append("g").classed("axis x", true).attr("transform", "translate(" + scale.padding / 2 + "," + scale.size + ")").call(xAxis);
-
-	   // Append y Axis      
-	   jobEnter.append("g").classed("axis y", true).attr("transform", "translate(" + scale.padding + "," + scale.padding / 2 + ")").call(yAxis);
+	   //Add frame
 	   jobEnter.append("rect").attr("class", "frame").attr("width", scale.size - scale.padding).attr("height", scale.size - scale.padding).attr("transform", "translate(" + scale.padding + "," + scale.padding + ")");
 
-	   scatterPlotDots(svg, scheduler, accessor, scale);
+	   //PlotDots if labels are different
+	   if (accessor.labelX !== accessor.labelY) {
+
+	      //Append x Axis
+	      jobEnter.append("g").classed("axis x", true).attr("transform", "translate(" + scale.padding / 2 + "," + scale.size + ")").call(xAxis);
+
+	      // Append y Axis      
+	      jobEnter.append("g").classed("axis y", true).attr("transform", "translate(" + scale.padding + "," + scale.padding / 2 + ")").call(yAxis);
+	      //Add label for Y axis
+	      jobEnter.append("text").style("text-anchor", "middle").style("font-size", scale.size / 20 + "px").attr("x", -scale.size / 2 - scale.padding / 2).attr("y", scale.padding * .5).attr("transform", "rotate(-90)").text(accessor.labelX);
+	      //Add label for X axis
+	      jobEnter.append("text").style("text-anchor", "middle").style("font-size", scale.size / 20 + "px").attr("x", scale.size / 2 + scale.padding / 2).attr("y", scale.size + scale.padding * .8).text(accessor.labelY);
+	      scatterPlotDots(svg, scheduler, accessor, scale);
+	   }
+	   //Draw Label Panel if labels are the same
+	   else {
+	         drawLabelPanel(jobEnter, accessor, scale);
+	      }
 	}
 	/**
 	 * Plotting dots on graph
 	 * @param svg
 	 * @param scheduler 
+	 * @param accessor
+	 * @param scale  
 	 */
 	function scatterPlotDots(svg, scheduler, accessor, scale) {
 	   var update = svg.selectAll("circle.job").classed("job", true)
@@ -30695,23 +30723,23 @@
 	      return scale.xScale(accessor.getX(d));
 	   }).attr("cy", function (d) {
 	      return scale.yScale(accessor.getY(d));
-	   }).attr("transform", "translate(" + 5 + "," + (scale.padding / 2 - scale.size / 100) + ")");
-
-	   enter.append("text").style("text-anchor", "end").attr("x", -scale.size / 2).attr("y", scale.padding * .5).attr("transform", "rotate(-90)").text(function (d) {
-	      return "hi";
-	   });
-
-	   enter.append("text").style("text-anchor", "end").attr("x", scale.size / 2 + scale.padding).attr("y", scale.size + scale.padding * .5).text(function (d) {
-	      return "hello";
-	   });
+	   }).attr("transform", "translate(" + scale.padding / 2 * 0.1 + "," + scale.padding / 2 * 1.1 + ")");
 	}
-
+	/**
+	 * Draw Label panel
+	 * @param jobEnter
+	 * @param accessor 
+	 * @param scale
+	 */
+	function drawLabelPanel(jobEnter, accessor, scale) {
+	   jobEnter.append("text").style("text-anchor", "middle").attr("x", scale.size / 2 + scale.padding / 2).attr("y", scale.size / 2 + scale.padding / 2).style("font-size", scale.size / 7 + "px").text(accessor.labelX);
+	}
 	/**
 	 * Generate all the needed scales
 	 */
 	function initSPLOMScale(width, height, numberOfGraph) {
-	   var padding = height / numberOfGraph * 0.15;
-	   var size = height / numberOfGraph * 0.85;
+	   var padding = height / numberOfGraph * 0.1;
+	   var size = height / numberOfGraph * 0.9;
 
 	   var xScale = d3.scaleLinear().range([padding / 2, size - padding / 2]);
 
@@ -54222,16 +54250,16 @@
 
 	    label: "IO Frequency",
 	    calcDomain: function calcDomain(scheduler) {
-	        return [d3.max(scheduler.allJobs, function (d) {
+	        return [0, d3.max(scheduler.allJobs, function (d) {
 	            return d.init.ioFreq;
-	        }), 0];
+	        })];
 	    }
 	}), _defineProperty(_props, ".init.runTime", {
 	    access: function access(d) {
 	        return d.init.runTime;
 	    },
 
-	    label: "Job Run Time",
+	    label: "Run Time",
 	    calcDomain: function calcDomain(scheduler) {
 	        return [0, d3.max(scheduler.allJobs, function (d) {
 	            return d.init.runTime;
@@ -54242,7 +54270,7 @@
 	        return d.init.createTime;
 	    },
 
-	    label: "Job Run Time",
+	    label: "Create Time",
 	    calcDomain: function calcDomain(scheduler) {
 	        return [0, d3.max(scheduler.allJobs, function (d) {
 	            return d.init.createTime;
@@ -54317,21 +54345,21 @@
 	                    i = 0;
 
 	                case 1:
-	                    if (!(i < props.length - 1)) {
+	                    if (!(i < props.length)) {
 	                        _context.next = 12;
 	                        break;
 	                    }
 
-	                    j = i + 1;
+	                    j = 0;
 
 	                case 3:
-	                    if (!(j < props.length)) {
+	                    if (!(j <= i)) {
 	                        _context.next = 9;
 	                        break;
 	                    }
 
 	                    _context.next = 6;
-	                    return [props[i], props[j]];
+	                    return [props[j], props[i]];
 
 	                case 6:
 	                    j++;
