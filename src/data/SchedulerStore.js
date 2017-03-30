@@ -4,23 +4,22 @@
 
 import { ReduceStore } from "flux/utils";
 import scheduler from "../scheduler";
-import { updateScheduler, actions } from "./SchedulerActions";
+import { updateScheduler, actions, playback, unstepping } from "./SchedulerActions";
 import dispatcher from "./dispatcher";
 import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
+import Scheduler from "../mlfq"
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
       scheduler.generateJobs();
-      scheduler.play(scheduler => {
-         updateScheduler(scheduler);
-      });
       const prev = setStates(scheduler, {})
       return immut({
          scheduler: freezeSched(scheduler),
          prevJobStates: prev,
          selectedJobId: -1,
          fillAttr: "none",
+         playBackMode: playback.paused,
          lastUpdate: performance.now()
       }).setIn(["scheduler", "changed"], true);
    }
@@ -29,6 +28,7 @@ class SchedulerStore extends ReduceStore {
       const scheduler = state.get("scheduler").toJS();
       scheduler.selectedJobId = state.get("selectedJobId");
       scheduler.fillAttr = state.get("fillAttr");
+      scheduler.playMode = state.get("playBackMode");
       return scheduler;
    }
    reduce(state, action) {
@@ -49,10 +49,48 @@ class SchedulerStore extends ReduceStore {
             return state.set("fillAttr", action.data)
                .setIn(["scheduler", "changed"], false);
          }
+         case actions.SET_PLAYBACK: {
+            let changed = false;
+            if (action.data === playback.paused) {
+               scheduler.stop();
+            } else if (action.data === playback.playing && this.notPlaying(state)) {
+               scheduler.play(schedulerLoop);
+            } else if (action.data === playback.stepping && this.notPlaying(state)) {
+               setTimeout(() => {
+                  unstepping(scheduler.speed);
+                  scheduler.playNext(schedulerLoop)
+               }, 0);
+            } else if (action.data === playback.restarting) {
+               if (!this.notPlaying(state)) scheduler.stop();
+               Scheduler.call(scheduler, scheduler.config);
+               scheduler.generateJobs();
+               changed = true;
+               setTimeout(() => {
+                  updateScheduler(scheduler);
+                  scheduler.generateJobs();
+                  unstepping(300);
+               }, 0);
+            }
+            return state.set("playBackMode", action.data)
+               .setIn(["scheduler", "changed"], changed);
+         }
+         case actions.UNSTEP: {
+            return state.set("playBackMode", playback.paused)
+               .setIn(["scheduler", "changed"], false);
+         }
          default:
             return state;
       }
    }
+   notPlaying(state) {
+      const mode = state.get("playBackMode");
+      return mode !== playback.playing &&
+         mode !== playback.stepping;
+   }
+}
+
+function schedulerLoop(scheduler) {
+   updateScheduler(scheduler);
 }
 
 function freezeSched(s) {

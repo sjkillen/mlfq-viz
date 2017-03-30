@@ -1,0 +1,11 @@
+button {
+   &.active {
+      background: blue;
+   }
+   &.inactive {
+      background: white;
+   }
+   &.disabled {
+      background: grey;
+   }
+}
