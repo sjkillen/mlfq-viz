@@ -58,6 +58,12 @@ const props = {
     }
 };
 
+let i = 0;
+const colours = d3.scaleOrdinal(d3.schemeCategory10)
+    .domain(d3.range(Object.keys(props).length));
+for (const prop in props) {
+    props[prop].colour = colours(i++);
+}
 /**
  * Create an accessor factory for an axis
  * @param axis X, Y, Z, etc
@@ -66,10 +72,11 @@ const props = {
 function propSetter(axis) {
     return function (propName) {
         if (!(propName in props)) propName = "none";
-        const { access, label, calcDomain } = props[propName];
+        const { access, label, calcDomain, colour } = props[propName];
         this.accessors["get" + axis] = access;
         this.accessors["getDomain" + axis] = calcDomain;
         this.accessors["label" + axis] = label;
+        this.accessors["colour" + axis] = colour;
         return this;
     };
 }
