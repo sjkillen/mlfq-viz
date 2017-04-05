@@ -1,13 +1,29 @@
 $border: 3px;
-select {
-    width: 400;
-    height: 100;
-    font-size: 50;
+.container {
+    display: block;
+    position: relative;
+    left: 20%;
+}
+.controls {
+    position: relative;
+    left: 10%;
+    width: 600px;
+    select {
+        width: 400;
+        height: 50;
+        font-size: 30;
+    }
+    .PlaybackControl button {
+        cursor: pointer;
+        border-radius: 300px;
+        width: 120px;
+        height: 120px;
+    }
 }
 svg {
    border: solid 1px black;
-   position: absolute;
-   left: 50%;
+   position: relative;
+   border: 0px solid black;
    rect.queue {
        fill: white;
        stroke-width: $border;
@@ -45,24 +61,8 @@ svg {
            fill: white;
            transform: rotate(-90deg);
        }
-       &[data-selected="true"] circle {
-           stroke-width: 8px;
+       &[data-selected="true"] circle.border {
+           transform: scale(1.3, 1.3);
        }
-       /** DEBUG JOB STATES
-       &[data-state="cpu"] {
-           fill: yellow;
-       }
-       &[data-state="future"] {
-           fill: white;
-       }
-       &[data-state="finished"] {
-           fill: black;
-       }
-       &[data-state="io"] {
-           fill: orange;
-       }
-       &[data-state="waiting"] {
-           fill: red;
-       }**/
    }
 }

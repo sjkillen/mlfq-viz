@@ -12,36 +12,54 @@ import * as anim from "./schedulerAnimations";
 import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
 import { accessorFactoryFactory } from "../data/dataAccessors";
 
-export default Container.createFunctional(SchedulerPanel, () => [SchedulerStore], () => {
-   return SchedulerStore.getScheduler();
+window.addEventListener("blur", e => {
+   setPlayback(playback.paused);
 });
 
 /**
  * Called every state change
  */
-function SchedulerPanel(scheduler) {
-   return (
-      <span className="SchedulerPanel">
-         <svg
-            shapeRendering="geometricPrecision"
-            ref={el => update(el, scheduler)}
-            className="image">
-         </svg>
-         <select onChange={e => setJobFillAttribute(e.target.value)}>
-            <option value="none">None</option>
-            <option value=".init.ioFreq">IO Frequency</option>
-            <option value=".init.ioLength">IO Length</option>
-            <option value="tq">Time Quantum</option>
-         </select>
-         <div>
-            <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
-            <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
-            <PlaybackControl disableStates={[playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
-            <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
-         </div>
-      </span>
-   );
+class SchedulerPanel extends Component {
+   static getStores() {
+      return [SchedulerStore];
+   }
+   static calculateState(prevState) {
+      return SchedulerStore.getScheduler();
+   }
+   componentWillUnmount() {
+      setPlayback(playback.paused);
+   }
+   render() {
+      const scheduler = this.state;
+      return (
+         <span className="SchedulerPanel">
+            <div className="container">
+               <svg
+                  shapeRendering="geometricPrecision"
+                  ref={el => update(el, scheduler)}
+                  className="image">
+               </svg>
+               <div className="controls">
+                  <select onChange={e => setJobFillAttribute(e.target.value)}>
+                     <option value="none">None</option>
+                     <option value=".init.ioFreq">IO Frequency</option>
+                     <option value=".init.ioLength">IO Length</option>
+                     <option value="tq">Time Quantum</option>
+                  </select>
+                  <div>
+                     <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
+                     <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
+                     <PlaybackControl disableStates={[playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
+                     <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
+                  </div>
+               </div>
+            </div>
+         </span>
+      );
+   }
 }
+
+export default Container.create(SchedulerPanel);
 
 function PlaybackControl({ mode, children, currMode, disableStates }) {
    let addClass = currMode === mode ? " active" : " inactive";
@@ -79,6 +97,9 @@ function jobLife(svg, scheduler, scales) {
       .append("g")
       .classed("job", true)
       .on("click", selectJob)
+   group.append("circle")
+      .classed("border", true)
+
    group.append("circle")
       .classed("back", true)
    group.call(drawJob, scheduler, scales)
@@ -277,8 +298,8 @@ function getJobHolster(job, scheduler) {
 
 /**
  * Get the position of a job in it's queue
- * @param job 
- * @param scheduler 
+ * @param job
+ * @param scheduler
  * @returns the position of the job in it's queue (future, io, waiting, cpu)
  */
 function getJobPosition(job, scheduler) {
@@ -294,9 +315,9 @@ function getJobPosition(job, scheduler) {
 
 /**
  * Encodes a timer inside a circle, for TQs
- * @param {d3 selection} job element to fill 
- * @param scheduler 
- * @param scales 
+ * @param {d3 selection} job element to fill
+ * @param scheduler
+ * @param scales
  */
 function jobClockFill(group, scheduler, scales) {
    return group.select("circle.clockfill")
@@ -310,9 +331,9 @@ function jobClockFill(group, scheduler, scales) {
 
 /**
  * Encodes an attribute inside the job
- * @param {d3 selection} job element to fill 
- * @param scheduler 
- * @param scales 
+ * @param {d3 selection} job element to fill
+ * @param scheduler
+ * @param scales
  */
 function jobFillup(group, scheduler, scales) {
    group.selectAll("stop.move")
@@ -497,7 +518,6 @@ function update(svgElement, scheduler) {
    const scales = getScales(svg, scheduler);
    svg.attr("height", scales.height)
       .attr("width", scales.width)
-      .attr("style", `transform: translate(-${scales.width / 2}px, 0)`);
    svg.call(requeuePipe, scheduler, scales);
    svg.call(queues, scheduler, scales);
    svg.call(cpu, scheduler, scales);

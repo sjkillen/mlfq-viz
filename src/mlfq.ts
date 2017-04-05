@@ -295,6 +295,7 @@ export default class Scheduler {
    constructor(config: Configuration) {
       this.finishedJobs = [];
       this.futureJobs = [];
+      this.cpuJob = undefined;
       this.ioJobs = [];
       this.speed = config.speed;
       this.numQueues = config.timeQuantums.length;

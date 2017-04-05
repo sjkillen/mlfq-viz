@@ -33,6 +33,7 @@ function SPLOMPanel(scheduler) {
 function update(svgElement, { scheduler, SPLOMAttr }) {
    if (!svgElement) return;
 
+
    //CREATE NEW SCALE - CHANGE sizeOfMatrix in SPLOMPanel to adjust SPLOM size
    const sizeOfMatrix = Math.floor(Math.sqrt(2 * (SPLOMAttr.length)) + 1 / 2)
    const newScale = initSPLOMScale(1000, 1000, sizeOfMatrix);
@@ -66,9 +67,10 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
          const shiftY = y * (newScale.size + newScale.padding);
 
          //Generate scatter plot
-         const c = d3.select(this)
-            .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
-            .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
+
+         const addScatterplot = d3.select(this)
+                                .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
+                                .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
       }
       )
 }
@@ -82,62 +84,104 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
  * @param scale - scale for the axis
  */
 function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
-   //MAKING Y AXIS        
-   var yAxis = d3.axisLeft(scale.yScale.domain(accessor.getDomainY(scheduler)));
-   //MAKING X AXIS  
-   var xAxis = d3.axisBottom(scale.xScale.domain(accessor.getDomainX(scheduler)));
+      const ratio = 1.1;
+      //MAKING Y AXIS        
+      const [minY,maxY] = accessor.getDomainY(scheduler);
+      var yAxis = d3.axisLeft(scale.yScale.domain([minY-maxY*.1,maxY*ratio]));
+      //MAKING X AXIS  
+      const [minX,maxX] = accessor.getDomainX(scheduler);  
+      var xAxis = d3.axisBottom(scale.xScale.domain([minX-maxX*.1,maxX*ratio]));
 
-   const jobJoin = svg.selectAll("g.axis")
-      .data([0])
+      const jobJoin = svg.selectAll("g.axis")
+            .data([0])
 
-   const jobEnter = jobJoin.enter()
+      const jobEnter = jobJoin.enter()
 
-   //Append x Axis
-   jobEnter.append("g")
-      .classed("axis x", true)
-      .attr("transform", `translate(${scale.padding / 2},${(scale.size)})`)
-      .call(xAxis)
+      //Add frame
+      jobEnter.append("rect")
+            .attr("class", "frame")
+            .attr("width", scale.size - scale.padding)
+            .attr("height", scale.size - scale.padding)
+            .attr("transform", `translate(${scale.padding},${scale.padding})`);
+     
+      //PlotDots if labels are different
+      if(accessor.labelX !== accessor.labelY){
+            
+            //Append x Axis
+            jobEnter.append("g")
+            .classed("axis x", true)
+            .attr("transform", `translate(${scale.padding / 2},${(scale.size)})`)
+            .call(xAxis)
 
-   // Append y Axis      
-   jobEnter.append("g")
-      .classed("axis y", true)
-      .attr("transform", `translate(${scale.padding},${scale.padding / 2})`)
-      .call(yAxis)
-   jobEnter.append("rect")
-      .attr("class", "frame")
-      .attr("width", scale.size - scale.padding)
-      .attr("height", scale.size - scale.padding)
-      .attr("transform", `translate(${scale.padding},${scale.padding})`)
-
-   scatterPlotDots(svg, scheduler, accessor, scale)
+            // Append y Axis      
+            jobEnter.append("g")
+                  .classed("axis y", true)
+                  .attr("transform", `translate(${scale.padding},${scale.padding / 2})`)
+                  .call(yAxis);
+            //Add label for Y axis
+            jobEnter.append("text")  
+                  .style("text-anchor", "middle")
+                   .style("font-size", `${scale.size/20}px`)
+                  .attr("x",-scale.size/2-scale.padding/2)
+                  .attr("y",scale.padding*.5)
+                  .attr("transform", "rotate(-90)")
+                  .text(accessor.labelX);
+            //Add label for X axis
+            jobEnter.append("text")
+                  .style("text-anchor", "middle")
+                   .style("font-size", `${scale.size/20}px`)
+                  .attr("x",scale.size/2 + scale.padding/2)
+                  .attr("y",scale.size+scale.padding*.8)
+                  .text(accessor.labelY);
+            scatterPlotDots(svg, scheduler, accessor, scale)
+      }
+      //Draw Label Panel if labels are the same
+      else{
+            drawLabelPanel(jobEnter,accessor,scale)
+      }
 }
 /**
  * Plotting dots on graph
  * @param svg
  * @param scheduler 
+ * @param accessor
+ * @param scale  
  */
 function scatterPlotDots(svg, scheduler, accessor, scale) {
-   const update = svg.selectAll("circle.job")
-      .classed("job", true)
-      // TODO change back to only finished jobs
-      .data(scheduler.allJobs, d => d.init.id)
-   const enter = update.enter()
+      const update = svg.selectAll("circle.job")
+                        .classed("job", true)
+                        // TODO change back to only finished jobs
+                        .data(scheduler.allJobs, d => d.init.id)
+      const enter = update.enter()
 
-   //Creating dots
-   enter.append("circle")
-      .classed("job", true)
-      .attr("r", scale.size / 100)
-      .attr("cx", d => scale.xScale(accessor.getX(d)))
-      .attr("cy", d => scale.yScale(accessor.getY(d)))
-      .attr("transform", `translate(${5},${scale.padding - 5})`)
-}
-
+      //Creating dots
+      enter.append("circle")
+            .classed("job", true)
+            .attr("r", scale.size / 100)
+            .attr("cx", d => scale.xScale(accessor.getX(d)))
+            .attr("cy", d => scale.yScale(accessor.getY(d)))
+            .attr("transform", `translate(${(scale.padding/2)*0.1},${(scale.padding/2)*1.1})`);
+}   
+/**
+ * Draw Label panel
+ * @param jobEnter
+ * @param accessor 
+ * @param scale
+ */
+function drawLabelPanel(jobEnter, accessor, scale) {
+   jobEnter.append("text")
+            .style("text-anchor", "middle")
+            .attr("x",scale.size/2 + scale.padding/2)
+            .attr("y",scale.size/2 + scale.padding/2)
+            .style("font-size", `${scale.size/7}px`)
+            .text(accessor.labelX);
+} 
 /**
  * Generate all the needed scales
  */
 function initSPLOMScale(width, height, numberOfGraph) {
-   const padding = ((height / numberOfGraph) * 0.15);
-   const size = ((height / numberOfGraph) * 0.85);
+   const padding = ((height / numberOfGraph) * 0.1);
+   const size = ((height / numberOfGraph) * 0.9);
 
    const xScale = d3.scaleLinear()
       .range([padding / 2, size - padding / 2]);
