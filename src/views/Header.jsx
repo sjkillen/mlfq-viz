@@ -7,8 +7,8 @@ import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
 const pathLArrow = require ("./Images/leftArrow.png");
 const pathRArrow = require ("./Images/RightArrow.png");
-import './dat-gui';
-
+import DatGUI from'./dat-gui';
+import {navigate} from "../data/guiActions";
 
 const content = {
     width:"80.00%",  
@@ -39,7 +39,9 @@ class Header extends Component {
 
     render() {
         return (
+            
             <div>
+            <DatGUI />
                 <div>
                     <ButtonGroup className="bootstrap" style={myStyle}>
                         <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="" style={myStyle}>
@@ -62,12 +64,12 @@ class Header extends Component {
                     </ButtonGroup>
                 </div>
 
-                <Link to={"Scheduler"} className="Nav" style = {this.lArrow()}>
+                <Link to={"Scheduler"} className="Nav" style = {this.lArrow()} onClick={() => navigate("Scheduler")}>
                     <img src={pathLArrow} className="myLArrow"/>
                     
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()}>
+                <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()} onClick={navigate.bind(null, "SPLOM")}>
                     <img src={pathRArrow} className="myRArrow"/>
                 </Link>
             </div>
