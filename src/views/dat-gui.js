@@ -53,7 +53,7 @@ const SchedulerParametersPannel = {
       render(gui);
     },
     get ["Boost Time"]() {
-      return mainScheduler.boostTime;
+      return config["Boost Time"];
     },
     set ["Boost Time"](v) {
       config["Boost Time"] = v;
@@ -109,7 +109,6 @@ var JobGeneratorPannel = {
     },
     'Generate Jobs': function() {
       refreshScheduler(config);
-      console.log("Added a job batch")
     }
   }
 
