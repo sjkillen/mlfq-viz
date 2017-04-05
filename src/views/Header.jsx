@@ -38,7 +38,7 @@ class Header extends Component {
             disp = "none";
         else if (view === "/SPLOM") 
             disp = "";
-        else if (view === "/PAAxis"){
+        else if (view === "/PAPanel"){
             disp = "";
         }
         return {display: disp}
@@ -51,7 +51,7 @@ class Header extends Component {
             disp: "";
         else if (view === "/SPLOM") 
             disp = "";
-        else if(view === "/PAAxis")
+        else if(view === "/PAPanel")
             disp = "none";
 
         return {display: disp}
@@ -62,14 +62,14 @@ class Header extends Component {
          if (currentView === "/Scheduler")
             return "SPLOM"
         else if (currentView === "/SPLOM") 
-            return "PAAxis"
+            return "PAPanel"
     }
 
     LarrowController () {
         var currentView = this.props.location.pathname;
          if (currentView === "/SPLOM")
             return "Scheduler"
-        else if (currentView === "/PAAxis")
+        else if (currentView === "/PAPanel")
             return "SPLOM"
     }
 

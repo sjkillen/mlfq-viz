@@ -8,7 +8,6 @@ import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory,  } from 'react-router'
 import Header from "./Header"
-//import PAPanel from "./PAPanel"
 
 class App extends Component {
   render() {
