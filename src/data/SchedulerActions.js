@@ -49,6 +49,18 @@ export function setPlayback(mode) {
 }
 
 /**
+ * Restart the scheduler
+ */
+export function restartScheduler(config) {
+   dispatcher.dispatch({
+      type: actions.SET_PLAYBACK,
+      data: playback.restarting,
+      config
+   });
+}
+
+
+/**
  * Selects a job in the simulation
  * @param job to select
  */

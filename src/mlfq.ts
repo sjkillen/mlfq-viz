@@ -2,6 +2,9 @@
  * Schedule for running MLFQ simulations and genarating data
  */
 
+import _random from "./randomAdapter";
+const random = _random as Random;
+
 /**
  * Interface for an injectable library for generating random numbers using a seed
  */
@@ -237,7 +240,6 @@ interface Configuration {
    timeQuantums: number[];
    resetTQsOnIO: boolean;
    boostTime: number;
-   random: Random;
    speed: number;
    generation: {
       ioFrequencyRange: [number, number];
@@ -372,7 +374,7 @@ export default class Scheduler {
     * Configure the schedule
     */
    configure(config: Configuration) {
-      const { timeQuantums, boostTime, random } = config;
+      const { timeQuantums, boostTime } = config;
       this.config = config;
       this.random = random;
       this.boostTime = boostTime;
