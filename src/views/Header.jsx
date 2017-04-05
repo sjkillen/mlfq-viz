@@ -10,6 +10,7 @@ const pathRArrow = require ("./Images/RightArrow.png");
 import DatGUI from'./dat-gui';
 import {navigate} from "../data/guiActions";
 
+
 const content = {
     width:"80.00%",  
     height:"95%",
@@ -30,12 +31,48 @@ const dropdownStyle = {
 class Header extends Component {
     
     lArrow() {
-        return {display: this.props.location.pathname === "/Scheduler" ? "none" : ""}
+        var view = this.props.location.pathname;
+        var disp = ""
+        if (view === "/Scheduler")
+            disp = "none";
+        else if (view === "/SPLOM") 
+            disp = "";
+        else if (view === "/PAAxis"){
+            disp = "";
+        }
+        return {display: disp}
     }
 
     rArrow() {
-        return {display: this.props.location.pathname === "/Scheduler" ? "" : "none"}
+        var view = this.props.location.pathname;
+        var disp;
+        if (view === "/Scheduler") 
+            disp: "";
+        else if (view === "/SPLOM") 
+            disp = "";
+        else if(view === "/PAAxis")
+            disp = "none";
+
+        return {display: disp}
     }
+
+    RarrowController () {
+        var currentView = this.props.location.pathname;
+         if (currentView === "/Scheduler")
+            return "SPLOM"
+        else if (currentView === "/SPLOM") 
+            return "PAAxis"
+    }
+
+    LarrowController () {
+        var currentView = this.props.location.pathname;
+         if (currentView === "/SPLOM")
+            return "Scheduler"
+        else if (currentView === "/PAAxis")
+            return "SPLOM"
+    }
+
+    
 
     configScheduler(){
     }
@@ -98,13 +135,11 @@ class Header extends Component {
                     
                     </ButtonGroup>
                 </div>
-
-                <Link to={"Scheduler"} className="Nav" style = {this.lArrow()} onClick={() => navigate("Scheduler")}>
+                <Link to={this.LarrowController()} className="Nav" style = {this.lArrow()}>
                     <img src={pathLArrow} className="myLArrow"/>
-                    
                 </Link>
                 <div style={content}>{this.props.children}</div>
-                <Link to={"SPLOM"} className="Nav"  style = {this.rArrow()} onClick={navigate.bind(null, "SPLOM")}>
+                <Link to={this.RarrowController()} className="Nav"  style = {this.rArrow()}>
                     <img src={pathRArrow} className="myRArrow"/>
                 </Link>
             </div>
