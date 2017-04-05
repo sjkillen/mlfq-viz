@@ -65,7 +65,7 @@ class SchedulerStore extends ReduceStore {
                }, 0);
             } else if (action.data === playback.restarting) {
                if (!this.notPlaying(state)) scheduler.stop();
-               Scheduler.call(scheduler, scheduler.config);
+               Scheduler.call(scheduler, action.config || scheduler.config);
                changed = true;
                setTimeout(() => {
                   updateScheduler(scheduler);

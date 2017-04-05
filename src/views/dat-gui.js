@@ -8,7 +8,7 @@ import SchedulerStore from "../data/SchedulerStore";
 import React, { Component } from 'react'
 import * as d3 from "d3";
 import guiStore from "../data/guiStore"
-
+import {restartScheduler} from "../data/SchedulerActions"
 
 
 //for removing folders thanks stack overflow! http://stackoverflow.com/questions/18085540/remove-folder-in-dat-gui
@@ -34,15 +34,7 @@ const config = {
   "IO Length Min" : 40,
   "IO Length Max" : 30,
   "Duration": 10,
-  "generation": [
-    /*{
-            ioFrequencyRange: [30, 40],
-            jobRuntimeRange: [60, 1000],
-            numJobsRange: [1, 1],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 49]
-        }
-        */],
+  "generation": [],
 }
 
 const SimulationsPannel = {
@@ -58,15 +50,13 @@ const SchedulerParametersPannel = {
     },
     set ["Number of Queues"](v){
       config.numOfQues = v;
-      render(gui)
-      refreshScheduler(config);
+      render(gui);
     },
     get ["Boost Time"]() {
       return mainScheduler.boostTime;
     },
     set ["Boost Time"](v) {
       config["Boost Time"] = v;
-      refreshScheduler(config);
     },
     'Trigger Boost': function(){
       mainScheduler.boostJobs();
@@ -76,6 +66,7 @@ const SchedulerParametersPannel = {
     },
     set ["Speed"](v){
       mainScheduler.speed = v;
+      mainScheduler.config.speed = v;
     }
 };
 
@@ -117,24 +108,7 @@ var JobGeneratorPannel = {
       config["Duration"] = v;
     },
     'Generate Jobs': function() {
-      config.generation = {
-            ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
-            jobRuntimeRange: [1, config["Duration"]],
-            numJobsRange: [config["numOfJobs"], config["numOfJobs"]],
-            jobCreateTimeRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
-            ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
-      };
-      /*
-      config["generation"].push({
-                  ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
-                  jobRuntimeRange: [1, config["Duration"]],
-                  numJobsRange: [config["numOfJobs"], config["numOfJobs"]],
-                  jobCreateTimeRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
-                  ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
-      })
-*/
       refreshScheduler(config);
-
       console.log("Added a job batch")
     }
   }
@@ -200,12 +174,12 @@ function displaySimulations(gui, simulator) {
 function displayJobGenerator(gui, workload){
     var gui3 = gui;
     var menu3 = gui3.addFolder("Job Generator"); 
-    menu3.add(workload,'Number of Jobs', 1,1000);
-    menu3.add(workload,'IO Frequency Min', 1,100);
-    menu3.add(workload,'IO Frequency Max', 1,100);
-    menu3.add(workload,'Duration',1,1000);
-    menu3.add(workload,'IO Length Min',1,100);
-    menu3.add(workload,'IO Length Max',1,100);
+    menu3.add(workload,'Number of Jobs', 1,10);
+    menu3.add(workload,'IO Frequency Min', 1,10);
+    menu3.add(workload,'IO Frequency Max', 1,10);
+    menu3.add(workload,'Duration',1,10);
+    menu3.add(workload,'IO Length Min',1,10);
+    menu3.add(workload,'IO Length Max',1,10);
     menu3.add(workload,'Generate Jobs');
     return gui;
 }
@@ -234,31 +208,19 @@ function createTQs() {
 }
 //i suposed to restart the scheduler
   function refreshScheduler(config){
-    mainScheduler.constructor(
-      {
+
+    restartScheduler({
           timeQuantums: createTQs(),
           boostTime: config["Boost Time"],
           resetTQsOnIO: false,
           random,
           speed: mainScheduler.speed,
-          generation: config.generation,
-      }
-    )
+          generation: [{
+            ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
+            jobRuntimeRange: [1, config["Duration"]],
+            numJobsRange: [config["numOfJobs"], config["numOfJobs"]],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
+          }],
+      });
 }
-
-/*
-              {
-                  ioFrequencyRange: [80, 100],
-                  jobRuntimeRange: [Infinity, Infinity],
-                  numJobsRange: [1, 1],
-                  jobCreateTimeRange: [10, 10],
-                  ioLengthRange: [5, 5]
-              },
-              {
-                  ioFrequencyRange: [33, 80],
-                  jobRuntimeRange: [Infinity, Infinity],
-                  numJobsRange: [1, 1],
-                  jobCreateTimeRange: [1, 1],
-                  ioLengthRange: [0, 0]
-              }
-              */
