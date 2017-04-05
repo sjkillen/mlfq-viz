@@ -9,10 +9,10 @@ import { actions } from "./PAActions";
 import dispatcher from "./dispatcher";
 import { accessorMatrix } from "./dataAccessors";
 
-class SPLOMStore extends ReduceStore {
+class PAStore extends ReduceStore {
    getInitialState() {
       return {
-          accessors: accessorMatrix([
+          accessors: accessorParallelAxis([
               ".init.runTime",
               ".init.createTime",
               ".init.ioFreq",
