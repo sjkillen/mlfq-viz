@@ -7,6 +7,7 @@ import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory,  } from 'react-router'
 import Header from "./Header"
+//import PAPanel from "./PAPanel"
 
 class App extends Component {
   render() {
@@ -16,7 +17,7 @@ class App extends Component {
           <IndexRoute component={TableView}/>
           <Route path='/Scheduler' component={SchedulerPanel} />
           <Route path='/SPLOM' component={SPLOMPanel} />
-
+          <Route path="/PAPanel" component={SPLOMPanel} />
         </Route>
       </Router>
     );
