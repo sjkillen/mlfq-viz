@@ -34,7 +34,15 @@ const config = {
   "IO Length Min" : 40,
   "IO Length Max" : 30,
   "Duration": 10,
-  "generation": [],
+  "generation": [
+    /*{
+            ioFrequencyRange: [30, 40],
+            jobRuntimeRange: [60, 1000],
+            numJobsRange: [1, 1],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [1, 49]
+        }
+        */],
 }
 
 const SimulationsPannel = {
@@ -109,6 +117,14 @@ var JobGeneratorPannel = {
       config["Duration"] = v;
     },
     'Generate Jobs': function() {
+      config.generation = {
+            ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
+            jobRuntimeRange: [1, config["Duration"]],
+            numJobsRange: [config["numOfJobs"], config["numOfJobs"]],
+            jobCreateTimeRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
+            ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
+      };
+      /*
       config["generation"].push({
                   ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
                   jobRuntimeRange: [1, config["Duration"]],
@@ -116,8 +132,9 @@ var JobGeneratorPannel = {
                   jobCreateTimeRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
                   ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
       })
-
+*/
       refreshScheduler(config);
+
       console.log("Added a job batch")
     }
   }
@@ -224,24 +241,24 @@ function createTQs() {
           resetTQsOnIO: false,
           random,
           speed: mainScheduler.speed,
-          generation: [
-
-        {
-            ioFrequencyRange: [1, 1],
-            jobRuntimeRange: [100, 200],
-            numJobsRange: [10, 10],
-            jobCreateTimeRange: [5, 10],
-            ioLengthRange: [50, 100]
-        },
-        {
-            ioFrequencyRange: [30, 40],
-            jobRuntimeRange: [60, 1000],
-            numJobsRange: [1, 1],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 49]
-        }
-
-          ]
+          generation: config.generation,
       }
     )
 }
+
+/*
+              {
+                  ioFrequencyRange: [80, 100],
+                  jobRuntimeRange: [Infinity, Infinity],
+                  numJobsRange: [1, 1],
+                  jobCreateTimeRange: [10, 10],
+                  ioLengthRange: [5, 5]
+              },
+              {
+                  ioFrequencyRange: [33, 80],
+                  jobRuntimeRange: [Infinity, Infinity],
+                  numJobsRange: [1, 1],
+                  jobCreateTimeRange: [1, 1],
+                  ioLengthRange: [0, 0]
+              }
+              */
