@@ -9,6 +9,7 @@ import dispatcher from "./dispatcher";
 import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
 import Scheduler from "../mlfq"
+import { actions as lessonActions } from "./lessons"
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
@@ -49,29 +50,26 @@ class SchedulerStore extends ReduceStore {
             return state.set("fillAttr", action.data)
                .setIn(["scheduler", "changed"], false);
          }
+         case lessonActions.SET_LESSON: {
+            return configLesson(state, action.data);
+         }
          case actions.SET_PLAYBACK: {
             let changed = false;
             if (action.data === playback.paused) {
                scheduler.stop();
-            } else if (action.data === playback.playing && this.notPlaying(state)) {
+            } else if (action.data === playback.playing && notPlaying(state)) {
                scheduler.play(schedulerLoop);
             } else if (action.data === playback.stepping) {
                scheduler.stop();
                setTimeout(() => {
                   unstepping(scheduler.speed);
-                  if (this.notPlaying(state)) {
+                  if (notPlaying(state)) {
                      scheduler.playNext(schedulerLoop)
                   }
                }, 0);
             } else if (action.data === playback.restarting) {
-               if (!this.notPlaying(state)) scheduler.stop();
-               Scheduler.call(scheduler, action.config || scheduler.config);
                changed = true;
-               setTimeout(() => {
-                  updateScheduler(scheduler);
-                  scheduler.generateJobs();
-                  unstepping(300);
-               }, 0);
+               restart(state, action.config);
             }
             return state.set("playBackMode", action.data)
                .setIn(["scheduler", "changed"], changed);
@@ -84,11 +82,27 @@ class SchedulerStore extends ReduceStore {
             return state;
       }
    }
-   notPlaying(state) {
-      const mode = state.get("playBackMode");
-      return mode !== playback.playing &&
-         mode !== playback.stepping;
-   }
+}
+
+function notPlaying(state) {
+   const mode = state.get("playBackMode");
+   return mode !== playback.playing &&
+      mode !== playback.stepping;
+}
+
+function restart(state, config) {
+   if (!notPlaying(state)) scheduler.stop();
+   Scheduler.call(scheduler, config || scheduler.config);
+   setTimeout(() => {
+      updateScheduler(scheduler);
+      scheduler.generateJobs();
+      unstepping(300);
+   }, 0);
+}
+
+function configLesson(state, lesson) {
+   restart(state, lesson.simulation);
+   return state;
 }
 
 function schedulerLoop(scheduler) {

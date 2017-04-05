@@ -1,12 +1,10 @@
 
 import Scheduler from "./mlfq";
-import random from "./randomAdapter";
 
 const scheduler = new Scheduler({
     timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
     boostTime: Infinity,
     resetTQsOnIO: false,
-    random,
     speed: 1000,
     generation: [
         {
