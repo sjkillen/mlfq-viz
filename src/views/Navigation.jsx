@@ -17,7 +17,7 @@ class App extends Component {
         <Route path="/" component={Header}>
           <IndexRoute component={TableView}/>
           <Route path='/Scheduler' component={SchedulerPanel} />
-          <Route path='/SPLOM' component={SPLOManel} />
+          <Route path='/SPLOM' component={SPLOMPanel} />
           <Route path='/PAPanel' component={PAPanel} />
         </Route>
       </Router>
