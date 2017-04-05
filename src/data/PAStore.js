@@ -7,7 +7,7 @@ import scheduler from "../scheduler";
 import { actions as schedActions} from "./SchedulerActions";
 import { actions } from "./PAActions";
 import dispatcher from "./dispatcher";
-import { accessorMatrix } from "./dataAccessors";
+import { accessorParallelAxis } from "./dataAccessors";
 
 class PAStore extends ReduceStore {
    getInitialState() {
@@ -17,7 +17,7 @@ class PAStore extends ReduceStore {
               ".init.createTime",
               ".init.ioFreq",
           ])
-      };
+      };    
    }
    reduce(state, action) {
       switch (action.type) {
