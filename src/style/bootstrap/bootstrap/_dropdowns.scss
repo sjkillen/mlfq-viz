@@ -68,9 +68,15 @@
     clear: both;
     font-weight: normal;
     line-height: $line-height-base;
-    color: $dropdown-link-color;
+    color: white; //$dropdown-link-color;
     white-space: nowrap; // prevent links from randomly breaking onto new lines
   }
+
+  li {
+    color: white;
+  }
+
+  
 }
 
 // Hover/Focus state
@@ -78,7 +84,7 @@
   &:hover,
   &:focus {
     text-decoration: none;
-    color: $dropdown-link-hover-color;
+    color: black;
     background-color: $dropdown-link-hover-bg;
   }
 }
@@ -103,7 +109,7 @@
   &,
   &:hover,
   &:focus {
-    color: $dropdown-link-disabled-color;
+    color: "white";
   }
 
   // Nuke hover/focus effects
@@ -155,7 +161,7 @@
   padding: 3px 20px;
   font-size: $font-size-small;
   line-height: $line-height-base;
-  color: $dropdown-header-color;
+  color: "white";
   white-space: nowrap; // as with > li > a
 }
 

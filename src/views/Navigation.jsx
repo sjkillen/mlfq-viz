@@ -16,7 +16,6 @@ class App extends Component {
           <IndexRoute component={TableView}/>
           <Route path='/Scheduler' component={SchedulerPanel} />
           <Route path='/SPLOM' component={SPLOMPanel} />
-
         </Route>
       </Router>
     );

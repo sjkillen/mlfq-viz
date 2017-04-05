@@ -1,6 +1,11 @@
-.dropdown-menu {
-    padding: 0
+.menu {
+    background-color: black;
+    &:hover {
+        background-color: white;
+        color: black;
+    }   
 }
+
 
 .myBtn {
     border: 5px;
@@ -53,3 +58,15 @@
         50%  {width: 10.2%;}
         100% {width: 10%;}
     }
+
+.MenuItem {
+    background-color: black;
+    color: white;
+
+    &:hover {
+        color: black;
+    }
+    a {
+        color: white;
+    }
+}

@@ -1,6 +1,5 @@
 
 import Scheduler from "./mlfq";
-
 import random from "./randomAdapter";
 
 const scheduler = new Scheduler({
