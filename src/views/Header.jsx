@@ -17,6 +17,7 @@ const content = {
 
 const myStyle = {
     backgroundColor: "black",
+    color: "white",
 }
 
 const dropdownStyle = {
@@ -24,7 +25,6 @@ const dropdownStyle = {
     zIndex: "0",
     color: "white",
 };
-
 
 
 class Header extends Component {
@@ -38,8 +38,6 @@ class Header extends Component {
     }
 
     configScheduler(){
-
-
     }
 
     configHandler (event) {
@@ -80,8 +78,8 @@ class Header extends Component {
             <DatGUI Hello="asdasdfasdfadf"/>
                 <div>
                     <ButtonGroup className="bootstrap" style={myStyle}>
-                        <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="" style={myStyle}>
-                            <MenuItem eventKey="0" className="" onSelect={this.configHandler} style={dropdownStyle}>EXPLORE</MenuItem>
+                        <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>
+                            <MenuItem eventKey="0" className="MenuItem" onSelect={this.configHandler} style={dropdownStyle}>EXPLORE</MenuItem>
                             <MenuItem eventKey="1" className="" onSelect={this.configHandler} style={dropdownStyle}>GETTING STARTED</MenuItem>
                             <MenuItem eventKey="2" className="" onSelect={this.configHandler} style={dropdownStyle}>JOB LIFE CYCLE</MenuItem>
                             <MenuItem eventKey="3" className="" onSelect={this.configHandler} style={dropdownStyle}>BASIC IO</MenuItem>
