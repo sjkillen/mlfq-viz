@@ -40,9 +40,10 @@ function update(svgElement, { scheduler, PAAttr }) {
     [4,-4,16,8,0.25,9]
     ];
 
-   var pc = d3.parcoords()
-            .data(data)
-            .render()
-            .createAxes();
+   var pc = d3.select(svgElement)
+                .parcoords()
+                .data(data)
+                .render()
+                .createAxes();
 
 }

@@ -23,7 +23,7 @@ class PAStore extends ReduceStore {
       switch (action.type) {
          case actions.UPDATE_PARALLEL_AXIS: {
             return {
-                accessors: accessorMatrix(action.data)
+                accessors: accessorParallelAxis(action.data)
             };
          }
          default:
