@@ -55,15 +55,17 @@ class SchedulerStore extends ReduceStore {
                scheduler.stop();
             } else if (action.data === playback.playing && this.notPlaying(state)) {
                scheduler.play(schedulerLoop);
-            } else if (action.data === playback.stepping && this.notPlaying(state)) {
+            } else if (action.data === playback.stepping) {
+               scheduler.stop();
                setTimeout(() => {
                   unstepping(scheduler.speed);
-                  scheduler.playNext(schedulerLoop)
+                  if (this.notPlaying(state)) {
+                     scheduler.playNext(schedulerLoop)
+                  }
                }, 0);
             } else if (action.data === playback.restarting) {
                if (!this.notPlaying(state)) scheduler.stop();
                Scheduler.call(scheduler, scheduler.config);
-               scheduler.generateJobs();
                changed = true;
                setTimeout(() => {
                   updateScheduler(scheduler);
