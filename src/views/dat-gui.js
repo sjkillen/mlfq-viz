@@ -136,6 +136,8 @@ var RestartScheduler = {
 
 
 function datGui(props){
+
+  
     gui = props.gui;
     render(gui);
     return null;
