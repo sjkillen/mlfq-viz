@@ -3,7 +3,9 @@ import dispatcher from "./dispatcher";
 export const actions = {
    UPDATE_SCHEDULER: Symbol("UPDATE_SCHEDULER"),
    SELECT_JOB: Symbol("SELECT_JOB"),
-   SET_JOB_FILL: Symbol("SET_JOB_FILL")
+   SET_JOB_FILL: Symbol("SET_JOB_FILL"),
+   SET_PLAYBACK: Symbol("SET_PLAYBACK"),
+   UNSTEP: Symbol("UNSTEP")
 };
 
 /**
@@ -14,6 +16,35 @@ export function updateScheduler(scheduler) {
    dispatcher.dispatch({
       type: actions.UPDATE_SCHEDULER,
       data: scheduler
+   });
+}
+
+export const playback = {
+   paused: Symbol("paused"),
+   playing: Symbol("playing"),
+   restarting: Symbol("restarting"),
+   stepping: Symbol("stepping")
+};
+
+/**
+ * Wait until a step has played and then go back to paused mode 
+ */
+export function unstepping(delay) {
+   setTimeout(() => {
+      dispatcher.dispatch({
+         type: actions.UNSTEP
+      });
+   }, delay);
+}
+
+/**
+ * Set the playback mode of the scheduler
+ * @param mode (see above)
+ */
+export function setPlayback(mode) {
+   dispatcher.dispatch({
+      type: actions.SET_PLAYBACK,
+      data: mode
    });
 }
 

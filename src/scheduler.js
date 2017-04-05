@@ -14,15 +14,15 @@ const scheduler = new Scheduler({
             ioFrequencyRange: [1, 1],
             jobRuntimeRange: [100, 200],
             numJobsRange: [10, 10],
-            jobCreateTimeRange: [10, 10],
-            ioLengthRange: [5, 5]
+            jobCreateTimeRange: [5, 10],
+            ioLengthRange: [50, 100]
         },
         {
             ioFrequencyRange: [30, 40],
             jobRuntimeRange: [60, 1000],
             numJobsRange: [1, 1],
             jobCreateTimeRange: [1, 1],
-            ioLengthRange: [5, 5]
+            ioLengthRange: [1, 49]
         }
     ]
 });
