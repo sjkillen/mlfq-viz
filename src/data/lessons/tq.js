@@ -1,25 +1,18 @@
 export default {
    lessonName: "THE TIME QUANTUM",
    simulation: {
-      timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [3, 6, 9, 12, 15, 18, 21, 24, 27],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 1],
-            jobRuntimeRange: [100, 200],
-            numJobsRange: [10, 10],
-            jobCreateTimeRange: [5, 10],
-            ioLengthRange: [50, 100]
-         },
-         {
-            ioFrequencyRange: [30, 40],
-            jobRuntimeRange: [60, 1000],
-            numJobsRange: [1, 1],
+            ioFrequencyRange: [200, 200],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [5, 5],
             jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 49]
-         }
+            ioLengthRange: [100, 100]
+         },
       ]
    },
    scheduler: {
@@ -50,17 +43,12 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Boost Time": 50,
-            "Number of Queues": 8,
-            "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
+            "Number of Queues": 6,
+            "timeQuantums": [2, 3, 4, 5, 8, 10],
         },
         "Job Generator": {
             "Number of Jobs": 10, 
-            "IO Frequency Min" : 10,
-            'IO Frequency Max' : 20,
             "Duration": 10,
-            "IO Length Min" : 10,
-            "IO Length Max" : 15,
         },
    },
    details: {
