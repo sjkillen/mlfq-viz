@@ -10,16 +10,10 @@ export default {
             ioFrequencyRange: [10, 10],
             jobRuntimeRange: [5, 5],
             numJobsRange: [5, 5],
-            jobCreateTimeRange: [1, 1],
+            jobCreateTimeRange: [1, 30],
             ioLengthRange: [50, 100]
          },
-         {
-            ioFrequencyRange: [10, 10],
-            jobRuntimeRange: [5, 5],
-            numJobsRange: [5, 5],
-            jobCreateTimeRange: [30, 30],
-            ioLengthRange: [50, 100]
-         },
+
       ]
    },
    scheduler: {
@@ -32,16 +26,10 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parallel: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parameter: {

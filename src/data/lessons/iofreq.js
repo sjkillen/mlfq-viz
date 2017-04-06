@@ -3,13 +3,41 @@ export default {
    simulation: {
       timeQuantums: [4, 5, 6, 7, 8, 10, 11, 12],
       boostTime: Infinity,
-      resetTQsOnIO: false,
+      resetTQsOnIO: true,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 3],
+            ioFrequencyRange: [1, 1],
             jobRuntimeRange: [50, 50],
-            numJobsRange: [5, 5],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [3, 3],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [5, 5],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [7, 7],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [9, 9],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [3, 3]
          },
@@ -26,9 +54,8 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
+        ".init.ioFreq",
+        ".running.avgPriority",
       ]
    },
    parallel: {
@@ -41,13 +68,13 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Number of Queues": 6,
-            "timeQuantums": [4, 5, 6, 7, 8, 10],
+            "Number of Queues": 8,
+            "timeQuantums": [4, 5, 6, 7, 8, 10, 11, 12],
         },
         "Job Generator": {
             "Number of Jobs": 5,
             "IO Frequency Min" : 1,
-            'IO Frequency Max' : 20,
+            'IO Frequency Max' : 5,
             "Duration": 50,
             "IO Length Min" : 3,
             "IO Length Max" : 3,
