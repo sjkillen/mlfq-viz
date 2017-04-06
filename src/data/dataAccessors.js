@@ -119,22 +119,24 @@ function *accessorMatrix2d(props) {
             .accessors;
     }
 }
+
 /**
- * Yield all accessors needed for a PA
- * Used for the PA
+ * Get accessors
  */
-function *accessorPA(props) {
-    for (const [propX, propY] of getCombinations2(props)) {
+function *getAccessors(props) {
+    for (const prop of props) {
         yield accessorFactoryFactory()
-            .x(propX)
-            .y(propY)
+            .y(prop)
             .accessors;
     }
 }
+
+
+
 export function accessorMatrix(props) {
     return [...accessorMatrix2d(props)];
 }
 
 export function accessorParallelAxis(props){
-    return [...accessorPA(props)];
+    return [...getAccessors(props)];
 }
