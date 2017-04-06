@@ -15,7 +15,10 @@ class PAStore extends ReduceStore {
           accessors: accessorParallelAxis([
               ".init.runTime",
               ".init.createTime",
-              ".init.ioFreq",
+               ".init.createTime",
+               ".init.createTime",
+              // ".init.createTime",
+              
           ])
       };    
    }

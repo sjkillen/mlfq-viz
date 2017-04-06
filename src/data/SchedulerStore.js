@@ -104,6 +104,9 @@ function restart(state, config) {
 
 function configLesson(state, lesson) {
    restart(state, immut(lesson.simulation).toJS());
+   if (lesson.scheduler.attributes.indexOf(state.get("fillAttr")) === -1) {
+      state = state.set("fillAttr", lesson.scheduler.attributes[0]);
+   }
    return state.set("displayAttr", immut(lesson.scheduler.attributes));
 }
 

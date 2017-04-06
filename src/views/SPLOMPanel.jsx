@@ -79,10 +79,11 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
    const ratio = 1.1;
    //MAKING Y AXIS        
    const [minY, maxY] = accessor.getDomainY(scheduler);
-   var yAxis = d3.axisLeft(scale.yScale.domain([minY - maxY * .1, maxY * ratio]));
+   var yAxis = d3.axisLeft(scale.yScale.domain([minY - maxY * .1, maxY * ratio])).ticks(5);
+
    //MAKING X AXIS  
    const [minX, maxX] = accessor.getDomainX(scheduler);
-   var xAxis = d3.axisBottom(scale.xScale.domain([minX - maxX * .1, maxX * ratio]));
+   var xAxis = d3.axisBottom(scale.xScale.domain([minX - maxX * .1, maxX * ratio])).ticks(5);
 
    const jobJoin = svg.selectAll("g.axis")
       .data([0])
@@ -109,21 +110,6 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
          .classed("axis y", true)
          .attr("transform", `translate(${scale.padding},${scale.padding / 2})`)
          .call(yAxis);
-      /*Add label for Y axis
-      jobEnter.append("text")
-         .style("text-anchor", "middle")
-         .style("font-size", `${scale.size / 20}px`)
-         .attr("x", -scale.size / 2 - scale.padding / 2)
-         .attr("y", scale.padding * .5)
-         .attr("transform", "rotate(-90)")
-         .text(accessor.labelX);
-      //Add label for X axis
-      jobEnter.append("text")
-         .style("text-anchor", "middle")
-         .style("font-size", `${scale.size / 20}px`)
-         .attr("x", scale.size / 2 + scale.padding / 2)
-         .attr("y", scale.size + scale.padding * .8)
-         .text(accessor.labelY);*/
       scatterPlotDots(svg, scheduler, accessor, scale)
    }
    //Draw Label Panel if labels are the same
@@ -152,7 +138,7 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
       .attr("r", scale.size / 100)
       .attr("cx", d => scale.xScale(accessor.getX(d)))
       .attr("cy", d => scale.yScale(accessor.getY(d)))
-      .attr("transform", `translate(${(scale.padding / 2) * 0.1},${(scale.padding / 2) * 1.1})`);
+      .attr("transform", `translate(${(scale.size / 100) },${scale.size / 100})`);
 }
 
 /**
@@ -166,7 +152,7 @@ function drawLabelPanel(jobEnter, accessor, scale) {
       .style("text-anchor", "middle")
       .attr("x", scale.size / 2 + scale.padding / 2)
       .attr("y", scale.size / 2 + scale.padding / 2)
-      .style("font-size", `${scale.size / 7}px`)
+      .style("font-size", `${scale.size / 8}px`)
       .text(accessor.labelX);
 }
 
