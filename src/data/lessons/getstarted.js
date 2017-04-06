@@ -1,26 +1,34 @@
 export default {
-   lessonName: "",
+   lessonName: "GETTING STARTED",
    simulation: {
-      timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [3, 4, 5, 6, 9, 10],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [5, 5],
-            jobRuntimeRange: [Infinity, Infinity],
-            numJobsRange: [1, 1],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [50, 100]
-         }
+            ioFrequencyRange: [10, 20],
+            jobRuntimeRange: [100, 200],
+            numJobsRange: [3, 3],
+            jobCreateTimeRange: [1, 5],
+            ioLengthRange: [10, 20]
+         },
+         {
+            ioFrequencyRange: [10, 20],
+            jobRuntimeRange: [100, 200],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [30, 40],
+            ioLengthRange: [10, 20]
+         },
+
       ]
    },
    scheduler: {
       attributes: [
-         "none",
          ".init.ioFreq",
          ".init.ioLength",
-         "tq"
+         "tq",
+         "none"
       ],
       options: {
          showBoostTimer: true
@@ -28,10 +36,9 @@ export default {
    },
    splom: {
       attributes: [
+         ".init.runTime",
          ".init.createTime",
-         ".init.ioLength",
-         ".init.ioFreq",
-         ".init.runTime"
+         ".init.ioFreq"
       ]
    },
    parallel: {
@@ -42,8 +49,11 @@ export default {
       ]
    },
    parameter: {
-      attributes: [],
-      options: {}
+        "render": true,
+        "Scheduler Parameters": {
+        },
+        "Job Generator": {
+        },
    },
    details: {
       attributes: []

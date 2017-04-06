@@ -1,7 +1,7 @@
 export default {
-   lessonName: "EXPLORE",
+   lessonName: "PERSISTENT TIME QUANTUMS",
    simulation: {
-      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
@@ -24,14 +24,10 @@ export default {
    },
    scheduler: {
       attributes: [
-         "none",
          ".init.ioFreq",
          ".init.ioLength",
          "tq",
-         "none&priority=greyscale",
-         "tq&priority=greyscale",
-         "none&priority=rainbow",
-         "tq&priority=rainbow"
+         "none"
       ],
       options: {
          showBoostTimer: true
@@ -51,9 +47,8 @@ export default {
          ".init.ioFreq"
       ]
    },
-
    parameter: {
-        "render": true,
+       "render": true,
         "Scheduler Parameters": {
             "Boost Time": 50,
             "Number of Queues": 8,

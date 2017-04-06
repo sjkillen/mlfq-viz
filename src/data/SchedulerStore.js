@@ -103,7 +103,7 @@ function restart(state, config) {
 }
 
 function configLesson(state, lesson) {
-   restart(state, lesson.simulation);
+   restart(state, immut(lesson.simulation).toJS());
    return state.set("displayAttr", immut(lesson.scheduler.attributes));
 }
 

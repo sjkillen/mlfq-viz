@@ -79,6 +79,8 @@ class Header extends Component {
             return "SPLOM"
     }
     render() {
+        let lessonIndex = "-";
+        const indexLookup = [];
         return (
             <div className="Header">
                 <DatGUI />
@@ -86,20 +88,22 @@ class Header extends Component {
                     <ButtonGroup className="bootstrap" style={myStyle}>
                         <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>{
                             Object.getOwnPropertyNames(lessons).map((lesson, i) => {
+                                indexLookup[i] = lesson;
                                 const selected = this.state.selectedLesson === lessons[lesson].lessonName;
                                 const className = selected ? "menu selected" : "menu";
+                                if (selected) lessonIndex = i;
                                 return (
                                     <MenuItem className={className} key={lesson} eventKey={lesson} onSelect={setLesson} style={dropdownStyle}>
-                                        {lessons[lesson].lessonName || lesson}
+                                        { i } - {lessons[lesson].lessonName || lesson}
                                     </MenuItem>
                                 )
                             })}
                         </DropdownButton>
-                        <Button className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
+                        <Button onClick={() => moveLesson(indexLookup, lessonIndex, -1)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
                         <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
-                            {10}
+                            {lessonIndex}
                         </div>
-                        <Button className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
+                        <Button onClick={() => moveLesson(indexLookup, lessonIndex, +1)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
                     </ButtonGroup>
                 </div>
                 <Link to={this.LarrowController()} className="Nav" style={this.lArrow()}>
@@ -112,6 +116,12 @@ class Header extends Component {
             </div>
         );
     }
+}
+
+function moveLesson(lookup, index, mov) {
+    const newIndex = index + mov;
+    if (!Number.isInteger(index) || newIndex < 0 || newIndex >= lookup.length) return;
+    setLesson(lookup[newIndex]);
 }
 
 export default Container.create(Header);
