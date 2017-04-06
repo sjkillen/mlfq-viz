@@ -644,7 +644,7 @@ function legend(svg, scheduler, scales) {
 
    const enter = update.enter().append("g").classed("legend job", true);
    const legendScale = Object.create(scales);
-   leg
+   //leg
    legendScale.radius = 25;
    update.style("transform",
       `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
