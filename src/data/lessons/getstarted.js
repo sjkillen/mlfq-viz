@@ -48,8 +48,11 @@ export default {
       ]
    },
    parameter: {
-      attributes: [],
-      options: {}
+        "render": true,
+        "Scheduler Parameters": {
+        },
+        "Job Generator": {
+        },
    },
    details: {
       attributes: []

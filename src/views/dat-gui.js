@@ -148,8 +148,9 @@ function datGui(props){
     propsParameter = props.parameter
     gui = props.gui;
     if (props.parameter["render"] === true) {
-      renderGui(gui, propsParameter)
       currentLesson = props.lessonName
+      renderGui(gui, propsParameter)
+      
     } 
     
     return null;
