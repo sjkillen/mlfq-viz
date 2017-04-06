@@ -1,26 +1,25 @@
 export default {
    lessonName: "THE BOOST TIMER",
    simulation: {
-      timeQuantums: [3, 4, 5, 6, 7, 8, 10, 12],
-      boostTime: 20,
+      timeQuantums: [2, 1, 2, 1, 2, 1, 3, 20],
+      boostTime: 15,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
             ioFrequencyRange: [1, 10],
             jobRuntimeRange: [100, 100],
-            numJobsRange: [6, 6],
-            jobCreateTimeRange: [1, 5],
+            numJobsRange: [4, 4],
+            jobCreateTimeRange: [1, 1],
             ioLengthRange: [3, 3]
          },
       ]
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq",
-         "none"
+         "none",
+         "none&priority=greyscale",
+         "none&priority=rainbow",
       ],
       options: {
          showBoostTimer: true
@@ -43,7 +42,7 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Boost Time": 25,
+            "Boost Time": 30,
             "Number of Queues": 8,
             "timeQuantums": [3, 4, 5, 6, 7, 8, 10, 12]
         },

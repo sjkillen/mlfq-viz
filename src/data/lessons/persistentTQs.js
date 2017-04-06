@@ -1,14 +1,14 @@
 export default {
    lessonName: "PERSISTENT TIME QUANTUMS",
    simulation: {
-      timeQuantums: [3, 4, 5, 6, 7, 8, 10, 12],
+      timeQuantums: [5, 7, 9, 11, 15, 20, 22, 28],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 10],
-            jobRuntimeRange: [50, 50],
+            ioFrequencyRange: [1, 3],
+            jobRuntimeRange: [100, 100],
             numJobsRange: [5, 5],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [3, 3]
@@ -17,10 +17,10 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
+         "none",
          "tq",
-         "none"
+         "tq&priority=greyscale",
+         "tq&priority=rainbow"
       ],
       options: {
          showBoostTimer: true

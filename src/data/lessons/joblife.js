@@ -24,9 +24,6 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq",
          "none"
       ],
       options: {

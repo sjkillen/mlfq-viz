@@ -7,7 +7,7 @@ export default {
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 10],
+            ioFrequencyRange: [1, 3],
             jobRuntimeRange: [50, 50],
             numJobsRange: [5, 5],
             jobCreateTimeRange: [1, 1],
@@ -17,9 +17,7 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq",
+        ".init.ioFreq",
          "none"
       ],
       options: {

@@ -17,10 +17,9 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
          "tq",
-         "none"
+         "tq&priority=greyscale",
+         "tq&priority=rainbow"
       ],
       options: {
          showBoostTimer: true
