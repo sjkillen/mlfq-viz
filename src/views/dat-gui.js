@@ -89,25 +89,37 @@ var JobGeneratorPannel = {
       return config["IO Frequency Min"];
     },
     set ["IO Frequency Min"](v){
-      config['IO Frequency Min'] = v;
+      if (v < config['IO Frequency Max'])
+        config['IO Frequency Min'] = v;
+      else 
+        config['IO Frequency Min'] = config['IO Frequency Max'];
     },
     get ['IO Frequency Max'](){
       return config["IO Frequency Max"];
     },
     set ["IO Frequency Max"](v){
-      config['IO Frequency Max'] = v;
+      if (v > config['IO Frequency Min'])
+        config['IO Frequency Max'] = v;
+      else 
+        config['IO Frequency Max'] = config['IO Frequency Min'];
     },
     get ['IO Length Min'](){
       return config["IO Length Min"];
     },
     set ["IO Length Min"](v){
-      config["IO Length Min"] = v;
+      if (v < config['IO Length Max'])
+        config['IO Length Min'] = v;
+      else 
+        config['IO Length Min'] = config['IO Length Max'];
     },
     get ['IO Length Max'](){
       return config["IO Length Max"];
     },
     set ["IO Length Max"](v){
-      config["IO Length Max"] = v;
+      if (v > config['IO Length Min'])
+        config['IO Length Max'] = v;
+      else 
+        config['IO Length Max'] = config['IO Length Min'];
     },
     get ["Duration"](){
       return config["Duration"];

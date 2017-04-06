@@ -47,18 +47,14 @@ export default {
          ".init.ioFreq"
       ]
    },
-   parameter: {        
-       
+   parameter: { 
        "render": true,
-        "Scheduler Parameters": 
-        {
+        "Scheduler Parameters": {
             "Boost Time": 50,
             "Number of Queues": 8,
             "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
         },
-
-        "Job Generator": 
-        {
+        "Job Generator": {
             "Number of Jobs": 10, 
             "IO Frequency Min" : 10,
             'IO Frequency Max' : 20,
