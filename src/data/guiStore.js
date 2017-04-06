@@ -28,7 +28,6 @@ class guiStore extends ReduceStore {
         }
         case lessonActions.SET_LESSON:
             clone.parameter = action.data.parameter
-            console.log(clone)
             return clone
         default:
             return state;
