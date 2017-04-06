@@ -20,6 +20,7 @@ class SchedulerStore extends ReduceStore {
          prevJobStates: prev,
          selectedJobId: -1,
          fillAttr: "none",
+         displayAttr: [],
          playBackMode: playback.paused,
          lastUpdate: performance.now()
       }).setIn(["scheduler", "changed"], true);
@@ -30,6 +31,7 @@ class SchedulerStore extends ReduceStore {
       scheduler.selectedJobId = state.get("selectedJobId");
       scheduler.fillAttr = state.get("fillAttr");
       scheduler.playMode = state.get("playBackMode");
+      scheduler.displayAttr = state.get("displayAttr").toJS();
       return scheduler;
    }
    reduce(state, action) {
@@ -51,7 +53,7 @@ class SchedulerStore extends ReduceStore {
                .setIn(["scheduler", "changed"], false);
          }
          case lessonActions.SET_LESSON: {
-            return configLesson(state, action.data);
+            return configLesson(state, action.data)
          }
          case actions.SET_PLAYBACK: {
             let changed = false;
@@ -102,7 +104,7 @@ function restart(state, config) {
 
 function configLesson(state, lesson) {
    restart(state, lesson.simulation);
-   return state;
+   return state.set("displayAttr", immut(lesson.scheduler.attributes));
 }
 
 function schedulerLoop(scheduler) {
