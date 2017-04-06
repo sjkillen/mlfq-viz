@@ -44,13 +44,14 @@ const SimulationsPannel = {
   'Share Link': "https://mlfq.tk/YGUuy768K",
 };
 
+var propsParameter;
 const SchedulerParametersPannel = {
     get ["Number of Queues"](){
       return config["Number of Queues"];
     },
     set ["Number of Queues"](v){
       config["Number of Queues"] = v;
-      render(gui);
+      renderGui(gui, propsParameter);
     },
     get ["Boost Time"]() {
       return config["Boost Time"];
@@ -141,12 +142,11 @@ var JobGeneratorPannel = {
 
 //this is what is connected to the store
 function datGui(props){
-
+    propsParameter = props.parameter
     gui = props.gui;
-    //if (props.parameter["render"] === true)
-      //renderGui(gui, props.parameter)
-    render(gui);
-    clearPanels(gui)
+    if (props.parameter["render"] === true)
+      renderGui(gui, props.parameter)
+    //render(gui);
     return null;
 }
 
@@ -254,8 +254,6 @@ function renderGui(gui, params) {
     }
 
   }
-
-  //clearPanels(gui);
   retainSpeed(gui);
 }
 
