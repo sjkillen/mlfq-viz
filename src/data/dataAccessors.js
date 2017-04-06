@@ -10,7 +10,7 @@ import * as d3 from "d3";
  * .label -> text display of prop
  * .calcDomain(scheduler) -> return domain of value [min, max]
  */
-const props = {
+export const props = {
     [".init.ioFreq"]: {
         access(d) {
             return d.init.ioFreq;

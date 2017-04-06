@@ -1,7 +1,39 @@
+$dim: 250px;
+
 & {
    width: 100%;
    background: #1f77b4;
    top: 900px;
-   height: 250px;
+   height: $dim;
    position: absolute;
+}
+
+svg {
+   background: lightblue;
+   height: $dim;
+   width: $dim;
+   display: inline-block;
+}
+
+.content {
+   display: inline-block;
+   vertical-align: top;
+   .lesson {
+      height: 100%;
+      width: 700px;
+      overflow: hidden;
+      background: orange;
+      position: relative;
+      .message {
+         padding: 30px;
+         background: blue;
+      }
+      .next {
+         position: absolute;
+         padding: 30px;
+         bottom: 0px;
+         width: 100%;
+         background: blue;
+      }
+   }
 }

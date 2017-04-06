@@ -56,7 +56,21 @@ export default {
       options: {}
    },
    details: {
-      attributes: []
+      lesson: [
+         {
+            message: "Welcome",
+            atCycle: 1
+         },
+         {
+            message: "This is cycle 5",
+            atCycle: 5
+         }
+      ],
+      attributes: [
+         ".init.runTime",
+         ".init.createTime",
+         ".init.ioFreq"
+      ]
    },
    navigation: [
       "scheduler",
