@@ -1,7 +1,7 @@
 export default {
    lessonName: "EXPLORE",
    simulation: {
-      timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
@@ -27,6 +27,10 @@ export default {
          ".init.ioFreq",
          ".init.ioLength",
          "tq",
+         "none&priority=greyscale",
+         "tq&priority=greyscale",
+         "none&priority=rainbow",
+         "tq&priority=rainbow",
          "none"
       ],
       options: {

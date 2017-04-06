@@ -80,7 +80,6 @@ class Job {
       avgPriority: number;
       // All the priorities a job has had over it's lifetime
       priorities: number[];
-
    };
 
    /**

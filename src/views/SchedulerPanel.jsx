@@ -92,6 +92,8 @@ function jobLife(svg, scheduler, scales) {
       .call(jobClockFill, scheduler, scales);
    jobJoin
       .call(jobFillup, scheduler, scales);
+   jobJoin.selectAll(".back")
+      .call(colourPriority, scheduler, scales)
    const group = jobJoin.enter()
       .append("g")
       .classed("job", true)
@@ -101,6 +103,7 @@ function jobLife(svg, scheduler, scales) {
 
    group.append("circle")
       .classed("back", true)
+      .call(colourPriority, scheduler, scales)
    group.call(drawJob, scheduler, scales)
    group.append("circle")
       .classed("clockfill", true)
@@ -111,6 +114,12 @@ function jobLife(svg, scheduler, scales) {
       .call(jobFillup, scheduler, scales);
    jobJoin.exit().remove();
    return jobJoin;
+}
+
+function colourPriority(job, scheduler, scales) {
+   return job.attr("fill", d => 
+      scales.priority(d.running.priority)
+   )
 }
 
 function makeFillupGradient(group, scheduler, scales) {
@@ -214,9 +223,7 @@ function getScales(svg, scheduler) {
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
-   const access = accessorFactoryFactory()
-      .x(scheduler.fillAttr)
-      .accessors;
+   const access = buildAccessor(scheduler);
    return {
       // x Position a queue needs to be draw
       queue: drawQueue,
@@ -231,7 +238,9 @@ function getScales(svg, scheduler) {
       height,
       cpu,
       io,
+      access,
       timer,
+      priority: priorityScale(scheduler, access),
       dead,
       fillup: fillupScales(scheduler, access),
       fillColour: access.colourX,
@@ -240,6 +249,25 @@ function getScales(svg, scheduler) {
       // Takes job's queue position and outputs its y position
       queueOrder: jobHeight
    };
+}
+
+function priorityScale(scheduler, access) {
+   if (!access.getY) return d => "white";
+   const bins = scheduler.numQueues + 1;
+   let scale;
+   if (access.shading === "rainbow") {
+      if (bins <= 10) {
+         scale = d3.scaleOrdinal(d3.schemeCategory10);
+      } else {
+         scale = d3.scaleOrdinal(d3.schemeCategory20);
+      }
+      scale = scale.domain(d3.range(bins));
+   } else {
+      scale = d3.scaleLinear()
+         .domain([0, bins])
+         .range(["#FFF", "#111"])
+   }
+   return scale;
 }
 
 /**
@@ -260,6 +288,30 @@ function fillupScales(scheduler, access) {
       attr: d => clamp(access.getX(d)),
       gradId
    }
+}
+
+function buildAccessor(scheduler) {
+   const attr = scheduler.fillAttr;
+   let access
+   if (attr.match("priority")) {
+      const [other] = attr.split("&");
+      scheduler.fillAttr = other || "none";
+      access = accessorFactoryFactory()
+         .x(other)
+         .y(".running.priority")
+         .accessors;
+      if (attr.match("greyscale")) {
+         access.shading = "greyscale";
+      } else {
+         access.shading = "rainbow";
+      }
+   }
+   else {
+      access = accessorFactoryFactory()
+         .x(attr)
+         .accessors;
+   }
+   return access
 }
 
 /**
@@ -332,7 +384,6 @@ function jobClockFill(group, scheduler, scales) {
       .attr("stroke-dasharray", d => scales.timer(d))
 }
 
-
 /**
  * Encodes an attribute inside the job
  * @param {d3 selection} job element to fill
@@ -344,6 +395,7 @@ function jobFillup(group, scheduler, scales) {
       .attr("offset", d => `${scales.fillup.attr(d)}%`)
    group.selectAll("stop").attr("stop-color", scales.fillColour)
    return group.select("circle.fillup")
+      .attr("visibility", scales.access.getY ? "hidden" : "visible")
       .attr("r", scales.radius)
       .attr("fill", d => `url(#${scales.fillup.gradId(d)})`)
 }
