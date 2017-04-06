@@ -16,6 +16,7 @@ const props = {
             return d.init.ioFreq;
         },
         label: "IO Frequency",
+        legend: ["Low IO Freq.", "High IO Freq."],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
         }
@@ -25,6 +26,7 @@ const props = {
             return d.perf.responseTime;
         },
         label: "Response Time",
+        legend: ["Quick Response", "Slow Response"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.responseTime)]
         }
@@ -34,6 +36,7 @@ const props = {
             return d.perf.turnaroundTime;
         },
         label: "Turnaround Time",
+        legend: ["Short Turnaround", "Long Turnaround"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.turnaroundTime)]
         }
@@ -43,6 +46,7 @@ const props = {
             return d.running.serviceTime;
         },
         label: "Service Time",
+        legend: ["Little Service Time", "Lots of Service Time"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.serviceTime)]
         }
@@ -52,6 +56,7 @@ const props = {
             return d.running.totalWaitingTime;
         },
         label: "Total Waiting Time",
+        legend: ["Little Waiting", "Lots of Waiting"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.totalWaitingTime)]
         }
@@ -61,6 +66,7 @@ const props = {
             return d.running.avgPriority;
         },
         label: "Average Priority",
+        legend: ["Usually Low Priority", "Usually High Priority"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.avgPriority)]
         }
@@ -70,6 +76,7 @@ const props = {
             return d.init.runTime;
         },
         label: "Run Time",
+        legend: ["Short Job", "Long Job"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.runTime)]
         }
@@ -79,6 +86,7 @@ const props = {
             return d.init.createTime;
         },
         label: "Create Time",
+        legend: ["Early Job", "Late Job"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.createTime)]
         }
@@ -88,18 +96,21 @@ const props = {
             return d.init.ioLength;
         },
         label: "Job IO Length",
+        legend: ["Short IO", "Long IO"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioLength)]
         }
     },
     ["tq"]: {
-        label: "Time Quantum"
+        label: "Time Quantum",
+        legend: ["Barely Depleted", "Almost Depleted"],
     },
     ["none"]: {
         access(d) {
             return 0;
         },
         label: "None",
+        legend: ["No Enconding", ""],
         calcDomain(scheduler) {
             return [0, 0];
         }
@@ -109,21 +120,26 @@ const props = {
             return d.running.priority;
         },
         label: "Priority",
+        legend: ["Low Priority", "High Priority"],
         calcDomain(scheduler) {
             return [0, scheduler.numQueues]
         }
     },
     ["none&priority=greyscale"]: {
-        label: "Priority (Greyscale)"
+        label: "Priority (Greyscale)",
+        legend: ["Low Priority", "High Priority"],
     },
     ["tq&priority=greyscale"]: {
-        label: "Time Quantum & Priority (Greyscale)"
+        label: "Time Quantum & Priority (Greyscale)",
+        legend: ["Barely Depleted", "Almost Depleted"],
     },
     ["none&priority=rainbow"]: {
-        label: "Priority (Coloured)"
+        label: "Priority (Coloured)",
+        legend: ["Low Priority", "High Priority"],
     },
     ["tq&priority=rainbow"]: {
-        label: "Time Quantum & Priority (Coloured)"
+        label: "Time Quantum & Priority (Coloured)",
+        legend: ["Barely Depleted", "Almost Depleted"],
     }
 };
 
@@ -141,11 +157,12 @@ for (const prop in props) {
 function propSetter(axis) {
     return function (propName) {
         if (!(propName in props)) propName = "none";
-        const { access, label, calcDomain, colour } = props[propName];
+        const { access, label, calcDomain, colour, legend } = props[propName];
         this.accessors["get" + axis] = access;
         this.accessors["getDomain" + axis] = calcDomain;
         this.accessors["label" + axis] = label;
         this.accessors["colour" + axis] = colour;
+        this.accessors["legend" + axis] = legend;
         return this;
     };
 }

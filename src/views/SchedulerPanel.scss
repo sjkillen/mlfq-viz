@@ -50,7 +50,13 @@ svg {
        }
    }
    g.job {
-       cursor: pointer;
+       &:not(.legend) {
+           cursor: pointer;
+       }
+       text {
+           fill: black;
+           transform: translateY(50px)
+       }
        circle.back {
            stroke-width: 1;
            stroke: black;
