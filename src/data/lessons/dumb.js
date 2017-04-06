@@ -28,9 +28,10 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
          ".init.createTime",
-         ".init.ioFreq"
+         ".init.ioLength",
+         ".init.ioFreq",
+         ".init.runTime"
       ]
    },
    parallel: {

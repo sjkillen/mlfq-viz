@@ -41,7 +41,7 @@ class SchedulerPanel extends Component {
                </svg>
                <div className="controls">
                   <select onChange={e => setJobFillAttribute(e.target.value)}>
-                     {scheduler.displayAttr.map(attr => {   
+                     {scheduler.displayAttr.map(attr => {
                         return (<option value={attr}>{getLabel(attr)}</option>)
                      })}
                   </select>
@@ -247,7 +247,12 @@ function getScales(svg, scheduler) {
  */
 function fillupScales(scheduler, access) {
    const gradId = d => `jobfillup-grad-${d.init.id}`;
-
+   if (!access.getX) {
+      return {
+         attr: d => 0,
+         gradId
+      }
+   }
    const clamp = d3.scaleLinear()
       .domain(access.getDomainX(scheduler))
       .range([0, 100]);

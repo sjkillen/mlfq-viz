@@ -4,20 +4,22 @@
 
 import dispatcher from "./dispatcher";
 
+const requireLesson = require.context("./lessons");
+
 const lessons = {
-   ["EXPLORE"]: getLesson("./lessons/explore"),
-   ["DUMB"]: getLesson("./lessons/dumb"),
-   ["GETTING STARTED"]: getLesson("./lessons/dumb"),
-   ["JOB LIFE CYCLE"]: getLesson("./lessons/dumb"),
-   ["BASIC IO"]: getLesson("./lessons/dumb"),
-   ["THE TIME QUANTUM"]: getLesson("./lessons/dumb"),
-   ["IO FREQUENCY AND PRIORITY"]: getLesson("./lessons/dumb"),
-   ["PERSISTENT TIME QUANTUMS"]: getLesson("./lessons/dumb"),
-   ["THE BOOST TIMER"]: getLesson("./lessons/dumb")
+   ["EXPLORE"]: getLesson("./explore"),
+   ["DUMB"]: getLesson("./dumb"),
+   ["GETTING STARTED"]: getLesson("./dumb"),
+   ["JOB LIFE CYCLE"]: getLesson("./dumb"),
+   ["BASIC IO"]: getLesson("./dumb"),
+   ["THE TIME QUANTUM"]: getLesson("./dumb"),
+   ["IO FREQUENCY AND PRIORITY"]: getLesson("./dumb"),
+   ["PERSISTENT TIME QUANTUMS"]: getLesson("./dumb"),
+   ["THE BOOST TIMER"]: getLesson("./dumb")
 };
 
 function getLesson(path) {
-   const obj = require(path).default;
+   const obj = requireLesson(path).default;
    deepFreeze(obj);
    return obj;
 }

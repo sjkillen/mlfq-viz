@@ -4,26 +4,22 @@
 
 import { ReduceStore } from "flux/utils";
 import scheduler from "../scheduler";
-import { actions as schedActions} from "./SchedulerActions";
-import { actions } from "./SPLOMActions";
+import { actions as schedActions } from "./SchedulerActions";
 import dispatcher from "./dispatcher";
 import { accessorMatrix } from "./dataAccessors";
+import { actions as lessonActions } from "./lessons";
 
 class SPLOMStore extends ReduceStore {
    getInitialState() {
       return {
-          accessors: accessorMatrix([
-              ".init.runTime",
-              ".init.createTime",
-              ".init.ioFreq",
-          ])
+         accessors: accessorMatrix([])
       };
    }
    reduce(state, action) {
       switch (action.type) {
-         case actions.UPDATE_MATRIX: {
+         case lessonActions.SET_LESSON: {
             return {
-                accessors: accessorMatrix(action.data)
+               accessors: accessorMatrix(action.data.splom.attributes)
             };
          }
          default:
