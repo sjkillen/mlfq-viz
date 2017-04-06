@@ -48,7 +48,7 @@ export default {
       ]
    },
    parameter: {
-      attributes: [],
+      attributes: {"ioFreq" : 1},
       options: {"Simulations" : "", "Scheduler Parameters": "", "Job Generator": ""},
    },
    details: {

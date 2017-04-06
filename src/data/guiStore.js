@@ -14,14 +14,14 @@ class guiStore extends ReduceStore {
        return { href: "",
                 gui: new dat.GUI(),
                 parameter: {},
+                options: {}
          };
    }
 
    reduce(state, action) {
     const clone = Object.assign({}, state);
         
-    switch (action.type) {
-          
+    switch (action.type) {       
         case "NAVIGATE": {
             clone.href = action.data;
             return clone;
