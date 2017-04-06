@@ -11,6 +11,7 @@ import lessons, { setLesson } from "../data/lessons"
 import HeaderStore from "../data/HeaderStore";
 import "./Header.scss";
 
+
 import { Container } from "flux/utils";
 
 const pathLArrow = require("./Images/leftArrow.png");

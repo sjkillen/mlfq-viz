@@ -110,7 +110,7 @@ const props = {
             return 0;
         },
         label: "None",
-        legend: ["No Enconding", ""],
+        legend: ["No Encoding", ""],
         calcDomain(scheduler) {
             return [0, 0];
         }
