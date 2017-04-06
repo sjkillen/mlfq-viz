@@ -482,7 +482,6 @@ function queues(svg, scheduler, scales) {
 function singleQueue(queue, scheduler, scales) {
    return queue.attr("fill", d => {
       if (scales.access.usePriority) {
-         debugger;
          return scales.priority(d.priority)
       } else {
          return "white";
@@ -498,37 +497,60 @@ function singleQueue(queue, scheduler, scales) {
  * Draw the pipe that requeues jobs and the one from queue to cpu
  */
 function requeuePipe(svg, scheduler, scales) {
-   const join = svg.selectAll("rect.requeue").data([1]).enter();
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.lowerUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.middleUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.upperUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.rightWidth)
-      .attr("height", scales.requeue.rightHeight)
-      .attr("x", scales.requeue.rightLeftStart)
-      .attr("y", scales.requeue.rightUpStart)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.rightWidth)
-      .attr("height", scales.requeue.leftHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.middleUp)
+   const update = svg.selectAll("g.requeueGroup").data([1]);
+   const join = update.enter().append("g").classed("requeueGroup", true);
+   join.append("rect").classed("requeue lower", true)
+      .call(lower)
+   
+   update.selectAll(".lower").call(lower)
+   .call(lower)
+   function lower(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.lowerUp)
+   }
+   join.append("rect").classed("requeue middle", true)
+      .call(middle)
+   update.selectAll(".middle").call(middle)
+   function middle(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.middleUp)
+   }
+   join.append("rect").classed("requeue upper", true)
+      .call(upper)
+   update.selectAll(".upper").call(upper)
+   function upper(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.upperUp)
+   }
+   join.append("rect").classed("requeue right", true)
+      .call(right)
+   update.selectAll(".right").call(right)
+   function right(rect) {
+      return rect
+         .attr("width", scales.requeue.rightWidth)
+         .attr("height", scales.requeue.rightHeight)
+         .attr("x", scales.requeue.rightLeftStart)
+         .attr("y", scales.requeue.rightUpStart)
+   }
+   join.append("rect").classed("requeue pipe", true)
+      .call(pipe)
+   update.selectAll(".pipe").call(pipe);
+   function pipe(rect) {
+      return rect
+         .attr("width", scales.requeue.rightWidth)
+         .attr("height", scales.requeue.leftHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.middleUp)
+   }
 }
 
 /**
