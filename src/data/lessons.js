@@ -8,14 +8,13 @@ const requireLesson = require.context("./lessons");
 
 const lessons = {
    ["EXPLORE"]: getLesson("./explore"),
-   ["DUMB"]: getLesson("./dumb"),
-   ["GETTING STARTED"]: getLesson("./dumb"),
-   ["JOB LIFE CYCLE"]: getLesson("./dumb"),
-   ["BASIC IO"]: getLesson("./dumb"),
-   ["THE TIME QUANTUM"]: getLesson("./dumb"),
-   ["IO FREQUENCY AND PRIORITY"]: getLesson("./dumb"),
-   ["PERSISTENT TIME QUANTUMS"]: getLesson("./dumb"),
-   ["THE BOOST TIMER"]: getLesson("./dumb")
+   ["GETTING STARTED"]: getLesson("./getstarted"),
+   ["JOB LIFE CYCLE"]: getLesson("./joblife"),
+   ["BASIC IO"]: getLesson("./basicIO"),
+   ["THE TIME QUANTUM"]: getLesson("./tq"),
+   ["IO FREQUENCY AND PRIORITY"]: getLesson("./iofreq"),
+   ["PERSISTENT TIME QUANTUMS"]: getLesson("./persistentTQs"),
+   ["THE BOOST TIMER"]: getLesson("./boostTimer")
 };
 
 function getLesson(path) {

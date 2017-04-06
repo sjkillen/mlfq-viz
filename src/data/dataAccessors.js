@@ -17,7 +17,52 @@ const props = {
         },
         label: "IO Frequency",
         calcDomain(scheduler) {
-            return [0,d3.max(scheduler.allJobs, d => d.init.ioFreq)]
+            return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
+        }
+    },
+    [".perf.responseTime"]: {
+        access(d) {
+            return d.perf.responseTime;
+        },
+        label: "Response Time",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.perf.responseTime)]
+        }
+    },
+    [".perf.turnaroundTime"]: {
+        access(d) {
+            return d.perf.turnaroundTime;
+        },
+        label: "Turnaround Time",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.perf.turnaroundTime)]
+        }
+    },
+    [".running.serviceTime"]: {
+        access(d) {
+            return d.running.serviceTime;
+        },
+        label: "Service Time",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.running.serviceTime)]
+        }
+    },
+    [".running.totalWaitingTime"]: {
+        access(d) {
+            return d.running.totalWaitingTime;
+        },
+        label: "Total Waiting Time",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.running.totalWaitingTime)]
+        }
+    },
+    [".running.avgPriority"]: {
+        access(d) {
+            return d.running.avgPriority;
+        },
+        label: "Average Priority",
+        calcDomain(scheduler) {
+            return [0, d3.max(scheduler.allJobs, d => d.running.avgPriority)]
         }
     },
     [".init.runTime"]: {
@@ -47,6 +92,9 @@ const props = {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioLength)]
         }
     },
+    ["tq"]: {
+        label: "Time Quantum"
+    },
     ["none"]: {
         access(d) {
             return 0;
@@ -56,8 +104,26 @@ const props = {
             return [0, 0];
         }
     },
-    ["tq"]: {
-        label: "Time Quantum"
+    [".running.priority"]: {
+        access(d) {
+            return d.running.priority;
+        },
+        label: "Priority",
+        calcDomain(scheduler) {
+            return [0, scheduler.numQueues]
+        }
+    },
+    ["none&priority=greyscale"]: {
+        label: "Priority (Greyscale)"
+    },
+    ["tq&priority=greyscale"]: {
+        label: "Time Quantum & Priority (Greyscale)"
+    },
+    ["none&priority=rainbow"]: {
+        label: "Priority (Coloured)"
+    },
+    ["tq&priority=rainbow"]: {
+        label: "Time Quantum & Priority (Coloured)"
     }
 };
 
@@ -106,9 +172,9 @@ export function accessorFactoryFactory() {
  * @example ["a", "b", "c"] -> [["a", "b"], ["a", "c"], ["b", "c"]]
  * @param props to combine 
  */
-function *getCombinations2(props) {
-    for (let i = 0; i < props.length; i++) {        
-        for (let j=0 ; j<=i; j++) {
+function* getCombinations2(props) {
+    for (let i = 0; i < props.length; i++) {
+        for (let j = 0; j <= i; j++) {
             yield [props[j], props[i]];
         }
     }
@@ -118,7 +184,7 @@ function *getCombinations2(props) {
  * Yield all accessors needed for a matrix
  * Used for the SPLOM
  */
-function *accessorMatrix2d(props) {
+function* accessorMatrix2d(props) {
     for (const [propX, propY] of getCombinations2(props)) {
         yield accessorFactoryFactory()
             .x(propX)
@@ -132,6 +198,7 @@ function *accessorMatrix2d(props) {
  */
 function *getAccessors(props) {
     for (const prop of props) {
+
         yield accessorFactoryFactory()
             .y(prop)
             .accessors;
@@ -146,4 +213,5 @@ export function accessorMatrix(props) {
 
 export function accessorParallelAxis(props){
     return [...getAccessors(props)];
+
 }
