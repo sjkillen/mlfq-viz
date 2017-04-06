@@ -37,6 +37,7 @@ function update(svgElement, { scheduler, PAAttr }) {
                .attr("height", newScale.height)
                 .attr("width", newScale.width)
    //Main svg
+   debugger;
    const AxisJoin = svg.selectAll("g.Axis")
                         .data(PAAttr,d => unique++);
    const enter = AxisJoin.enter()
@@ -51,6 +52,7 @@ function update(svgElement, { scheduler, PAAttr }) {
                                                       .attr("style",`transform: translate(+${shiftX}px, +${0}px)`)
                                                       .call(parallelAxis,scheduler,d,newScale,shiftX)
                      })
+  
 }
 /**
  * Generate a parallelAxis
@@ -79,7 +81,7 @@ function parallelAxis(svg, scheduler, accessor, scale, shiftX) {
                    .style("font-size", `${scale.size/15}px`)
                   .attr("transform", `translate(${0},${scale.height-scale.padding}) `)
                   .text(accessor.labelY);
-      drawLines(svg,scheduler,accessor,scale)
+      return yAxis;
 }
 /**
  * draw lines on parallelAxis
