@@ -38,6 +38,7 @@ const config = {
   "Duration": 10,
   "Jobs Start Time": 10,
   "generation": [],
+  "Scheduler Height": 25,
 }
 
 const SimulationsPannel = {
@@ -75,7 +76,16 @@ const SchedulerParametersPannel = {
     set ["Speed"](v){
       mainScheduler.speed = v;
       mainScheduler.config.speed = v;
+    },
+    get ["Scheduler Height"](){
+        return config["Scheduler Height"]
+    },
+    set ["Scheduler Height"](v){
+      config["Scheduler Height"] = v;
     }
+
+
+    
 };
 
 var JobGeneratorPannel = {
@@ -246,6 +256,8 @@ function renderGui(gui, params) {
           config["Boost Time"] = boostTime;
           menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, boostTime)
           menu.add(SchedulerParametersPannel, "Trigger Boost")
+        } else if (SchedulerAttributes[k] === "Scheduler Height"){
+          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, 50)
         }
       }
     }
@@ -257,7 +269,11 @@ function renderGui(gui, params) {
       for (let k = 0; k < SchedulerAttributes.length; k++){
         const displayValue = params[panels[i]][SchedulerAttributes[k]];
         config[SchedulerAttributes[k]] = displayValue; 
-        menu.add(JobGeneratorPannel, SchedulerAttributes[k], 1, 20)
+        let max = 20
+        if(SchedulerAttributes[k] === "Duration")
+          max = 100;
+        
+        menu.add(JobGeneratorPannel, SchedulerAttributes[k], 1, max)
       }
       if(currentLesson === "EXPLORE")
         menu.add(JobGeneratorPannel, "Generate Jobs")
@@ -303,7 +319,7 @@ function refreshScheduler(config){
             ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
             jobRuntimeRange: [1, config["Duration"]],
             numJobsRange: [config["Number of Jobs"], config["Number of Jobs"]],
-            jobCreateTimeRange: [1, 1],
+            jobCreateTimeRange: [1, config["Number of Jobs"]],
             ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
           }],
       });

@@ -39,9 +39,13 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
+        ".init.ioFreq",
+        ".perf.responseTime",
+        ".perf.turnaroundTime",
+        ".running.avgPriority",
+        ".init.runTime",
+        ".init.createTime",
+        ".init.ioLength",
       ]
    },
    parallel: {
@@ -55,15 +59,17 @@ export default {
    parameter: {
         "render": true,
         "Scheduler Parameters": {
-            "Boost Time": 50,
+            "Boost Time": 100,
+            "Scheduler Height": 30,
             "Number of Queues": 8,
             "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
+            
         },
         "Job Generator": {
+            "Duration": 10,
             "Number of Jobs": 10, 
             "IO Frequency Min" : 10,
             'IO Frequency Max' : 20,
-            "Duration": 10,
             "IO Length Min" : 10,
             "IO Length Max" : 15,
         },

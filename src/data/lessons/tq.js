@@ -1,7 +1,7 @@
 export default {
    lessonName: "THE TIME QUANTUM",
    simulation: {
-      timeQuantums: [3, 6, 9, 12, 15, 18, 21, 24, 27],
+      timeQuantums: [3, 6, 9, 12, 15, 18, 21, 24],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
@@ -17,10 +17,9 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
          "tq",
-         "none"
+         "tq&priority=greyscale",
+         "tq&priority=rainbow"
       ],
       options: {
          showBoostTimer: true

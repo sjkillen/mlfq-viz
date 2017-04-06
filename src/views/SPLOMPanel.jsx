@@ -109,7 +109,7 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
          .classed("axis y", true)
          .attr("transform", `translate(${scale.padding},${scale.padding / 2})`)
          .call(yAxis);
-      //Add label for Y axis
+      /*Add label for Y axis
       jobEnter.append("text")
          .style("text-anchor", "middle")
          .style("font-size", `${scale.size / 20}px`)
@@ -123,7 +123,7 @@ function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
          .style("font-size", `${scale.size / 20}px`)
          .attr("x", scale.size / 2 + scale.padding / 2)
          .attr("y", scale.size + scale.padding * .8)
-         .text(accessor.labelY);
+         .text(accessor.labelY);*/
       scatterPlotDots(svg, scheduler, accessor, scale)
    }
    //Draw Label Panel if labels are the same
