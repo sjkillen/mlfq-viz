@@ -1,0 +1,13 @@
+$border: 3px;
+
+svg {
+   border: solid 1px black;
+   position: absolute;
+   left: 20%;
+   rect.frame {
+       fill: transparent;
+       stroke-width: $border;
+       stroke: black;
+   }
+  
+}
