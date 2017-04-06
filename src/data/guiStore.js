@@ -12,7 +12,7 @@ import { actions as lessonActions } from "./lessons"
 class guiStore extends ReduceStore {
    getInitialState() {
        return { href: "",
-                gui: new dat.GUI(),
+                gui: new dat.GUI({width: 300 }),
                 lessonName: "",
                 parameter: {},
                 options: {}

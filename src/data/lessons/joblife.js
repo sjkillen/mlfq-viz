@@ -1,26 +1,30 @@
 export default {
-   lessonName: "",
+   lessonName: "JOB LIFE CYCLE",
    simulation: {
-      timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [5, 5],
-            jobRuntimeRange: [Infinity, Infinity],
-            numJobsRange: [1, 1],
+            ioFrequencyRange: [10, 10],
+            jobRuntimeRange: [5, 5],
+            numJobsRange: [5, 5],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [50, 100]
-         }
+         },
+         {
+            ioFrequencyRange: [10, 10],
+            jobRuntimeRange: [5, 5],
+            numJobsRange: [5, 5],
+            jobCreateTimeRange: [30, 30],
+            ioLengthRange: [50, 100]
+         },
       ]
    },
    scheduler: {
       attributes: [
-         "none",
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq"
+         "none"
       ],
       options: {
          showBoostTimer: true
@@ -28,10 +32,9 @@ export default {
    },
    splom: {
       attributes: [
+         ".init.runTime",
          ".init.createTime",
-         ".init.ioLength",
-         ".init.ioFreq",
-         ".init.runTime"
+         ".init.ioFreq"
       ]
    },
    parallel: {
@@ -42,8 +45,13 @@ export default {
       ]
    },
    parameter: {
-      attributes: [],
-      options: {}
+       "render": true,
+        "Scheduler Parameters": {
+        },
+        "Job Generator": {
+            "Number of Jobs": 10, 
+            "Duration": 5,
+        },
    },
    details: {
       attributes: []

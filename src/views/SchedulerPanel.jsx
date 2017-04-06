@@ -41,8 +41,8 @@ class SchedulerPanel extends Component {
                </svg>
                <div className="controls">
                   <select onChange={e => setJobFillAttribute(e.target.value)}>
-                     {scheduler.displayAttr.map(attr => {
-                        return (<option value={attr}>{getLabel(attr)}</option>)
+                     {scheduler.displayAttr.map((attr, i) => {
+                        return (<option key={i} value={attr}>{getLabel(attr)}</option>)
                      })}
                   </select>
                   <div>
@@ -92,6 +92,8 @@ function jobLife(svg, scheduler, scales) {
       .call(jobClockFill, scheduler, scales);
    jobJoin
       .call(jobFillup, scheduler, scales);
+   jobJoin.selectAll(".back")
+      .call(colourPriority, scheduler, scales)
    const group = jobJoin.enter()
       .append("g")
       .classed("job", true)
@@ -101,6 +103,7 @@ function jobLife(svg, scheduler, scales) {
 
    group.append("circle")
       .classed("back", true)
+      .call(colourPriority, scheduler, scales)
    group.call(drawJob, scheduler, scales)
    group.append("circle")
       .classed("clockfill", true)
@@ -111,6 +114,12 @@ function jobLife(svg, scheduler, scales) {
       .call(jobFillup, scheduler, scales);
    jobJoin.exit().remove();
    return jobJoin;
+}
+
+function colourPriority(job, scheduler, scales) {
+   return job.attr("fill", d =>
+      scales.priority(scales.getJobPriority(d))
+   )
 }
 
 function makeFillupGradient(group, scheduler, scales) {
@@ -211,12 +220,14 @@ function getScales(svg, scheduler) {
       jobY: cpu.y,
       jobX: requeue.lowerLeft - queueWidth * 3,
    }
+   const legend = {
+      x: io.left + 25,
+      y: io.up - 75
+   };
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
-   const access = accessorFactoryFactory()
-      .x(scheduler.fillAttr)
-      .accessors;
+   const access = buildAccessor(scheduler);
    return {
       // x Position a queue needs to be draw
       queue: drawQueue,
@@ -229,9 +240,13 @@ function getScales(svg, scheduler) {
       radius,
       width,
       height,
+      legend,
       cpu,
       io,
+      getJobPriority: d => d.running.priority,
+      access,
       timer,
+      priority: priorityScale(scheduler, access),
       dead,
       fillup: fillupScales(scheduler, access),
       fillColour: access.colourX,
@@ -240,6 +255,25 @@ function getScales(svg, scheduler) {
       // Takes job's queue position and outputs its y position
       queueOrder: jobHeight
    };
+}
+
+function priorityScale(scheduler, access) {
+   if (!access.getY) return d => "white";
+   const bins = scheduler.numQueues + 1;
+   let scale;
+   if (access.shading === "rainbow") {
+      if (bins <= 10) {
+         scale = d3.scaleOrdinal(d3.schemeCategory10);
+      } else {
+         scale = d3.scaleOrdinal(d3.schemeCategory20);
+      }
+      scale = scale.domain(d3.range(bins));
+   } else {
+      scale = d3.scaleLinear()
+         .domain([0, bins])
+         .range(["#FFF", "#111"])
+   }
+   return scale;
 }
 
 /**
@@ -260,6 +294,37 @@ function fillupScales(scheduler, access) {
       attr: d => clamp(access.getX(d)),
       gradId
    }
+}
+
+function buildAccessor(scheduler) {
+   const attr = scheduler.fillAttr;
+   let access
+   if (attr.match("priority")) {
+      const [other] = attr.split("&");
+      scheduler.fillAttr = other || "none";
+      access = accessorFactoryFactory()
+         .x(other)
+         .y(".running.priority")
+         .accessors;
+      access.usePriority = true;
+      if (attr.match("greyscale")) {
+         access.shading = "greyscale";
+      } else {
+         access.shading = "rainbow";
+      }
+   }
+   else {
+      access = accessorFactoryFactory()
+         .x(attr)
+         .accessors;
+   }
+   if (attr.match("tq")) {
+      access.useTQ = true;
+   }
+   if (!access.useTQ && !access.usePriority && !attr.match("none")) {
+      access.useFill = true;
+   }
+   return access
 }
 
 /**
@@ -327,11 +392,16 @@ function jobClockFill(group, scheduler, scales) {
    return group.select("circle.clockfill")
       .attr("visibility", scheduler.fillAttr === "tq" ? "visible" : "hidden")
       .attr("r", scales.radius / 2)
-      .style("stroke", scales.fillColour)
+      .style("stroke", d => {
+         let fill = scales.fillColour;
+         if (scales.access.usePriority) {
+            fill = scales.priority(scales.getJobPriority(d) + 1);
+         }
+         return fill;
+      })
       .style("stroke-width", `${scales.radius}px`)
       .attr("stroke-dasharray", d => scales.timer(d))
 }
-
 
 /**
  * Encodes an attribute inside the job
@@ -344,6 +414,7 @@ function jobFillup(group, scheduler, scales) {
       .attr("offset", d => `${scales.fillup.attr(d)}%`)
    group.selectAll("stop").attr("stop-color", scales.fillColour)
    return group.select("circle.fillup")
+      .attr("visibility", scales.access.getY ? "hidden" : "visible")
       .attr("r", scales.radius)
       .attr("fill", d => `url(#${scales.fillup.gradId(d)})`)
 }
@@ -412,51 +483,92 @@ function drawJob(selection, scheduler, scales) {
  */
 function queues(svg, scheduler, scales) {
    const join = svg.selectAll("rect.queue").data(scheduler.queues);
+   join.call(singleQueue, scheduler, scales)
    join.enter()
       .append("rect")
       .classed("queue", true)
+      .call(singleQueue, scheduler, scales)
+   join.exit().remove();
+}
+
+function singleQueue(queue, scheduler, scales) {
+   return queue.attr("fill", d => {
+      if (scales.access.usePriority) {
+         let colour = scales.priority(d.priority);
+         if (scales.access.shading === "rainbow") {
+            colour = d3.color(colour);
+            colour = colour.brighter(0.25);
+            colour = colour.rgb();
+         }
+         return colour;
+      } else {
+         return "white";
+      }
+   })
       .attr("width", scales.queueWidth)
       .attr("height", scales.queueHeight)
       .attr("x", d => scales.queue(d.priority))
       .attr("y", scales.queueTop)
-   join.exit().remove();
 }
 
 /**
  * Draw the pipe that requeues jobs and the one from queue to cpu
  */
 function requeuePipe(svg, scheduler, scales) {
-   const join = svg.selectAll("rect.requeue").data([1]).enter();
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.lowerUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.middleUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.lowerWidth)
-      .attr("height", scales.requeue.lowerHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.upperUp)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.rightWidth)
-      .attr("height", scales.requeue.rightHeight)
-      .attr("x", scales.requeue.rightLeftStart)
-      .attr("y", scales.requeue.rightUpStart)
-   join.append("rect")
-      .classed("requeue", true)
-      .attr("width", scales.requeue.rightWidth)
-      .attr("height", scales.requeue.leftHeight)
-      .attr("x", scales.requeue.lowerLeft)
-      .attr("y", scales.requeue.middleUp)
+   const update = svg.selectAll("g.requeueGroup").data([1]);
+   const join = update.enter().append("g").classed("requeueGroup", true);
+   join.append("rect").classed("requeue lower", true)
+      .call(lower)
+
+   update.selectAll(".lower").call(lower)
+      .call(lower)
+   function lower(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.lowerUp)
+   }
+   join.append("rect").classed("requeue middle", true)
+      .call(middle)
+   update.selectAll(".middle").call(middle)
+   function middle(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.middleUp)
+   }
+   join.append("rect").classed("requeue upper", true)
+      .call(upper)
+   update.selectAll(".upper").call(upper)
+   function upper(rect) {
+      return rect
+         .attr("width", scales.requeue.lowerWidth)
+         .attr("height", scales.requeue.lowerHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.upperUp)
+   }
+   join.append("rect").classed("requeue right", true)
+      .call(right)
+   update.selectAll(".right").call(right)
+   function right(rect) {
+      return rect
+         .attr("width", scales.requeue.rightWidth)
+         .attr("height", scales.requeue.rightHeight)
+         .attr("x", scales.requeue.rightLeftStart)
+         .attr("y", scales.requeue.rightUpStart)
+   }
+   join.append("rect").classed("requeue pipe", true)
+      .call(pipe)
+   update.selectAll(".pipe").call(pipe);
+   function pipe(rect) {
+      return rect
+         .attr("width", scales.requeue.rightWidth)
+         .attr("height", scales.requeue.leftHeight)
+         .attr("x", scales.requeue.lowerLeft)
+         .attr("y", scales.requeue.middleUp)
+   }
 }
 
 /**
@@ -513,6 +625,74 @@ function io(svg, scheduler, scales) {
       .attr("y", scales.io.textY)
       .text("IO")
 }
+
+function legend(svg, scheduler, scales) {
+   const update = svg.selectAll("g.legend").data([
+      {
+         displace: 0,
+         init: {
+            id: -1
+         },
+         running: {
+            priority: 0,
+         },
+         clock: 3.7,
+         fill: scales.access.useFill ? 10 : 0
+      },
+      {
+         displace: 2,
+         init: {
+            id: -2
+         },
+         running: {
+            priority: scales.access.useTQ ? 0 : 5
+         },
+         clock: 1.3,
+         fill: scales.access.useFill ? 80 : 0
+      }
+   ]);
+   const enter = update.enter().append("g").classed("legend job", true);
+   const legendScale = Object.create(scales);
+   legendScale.timer = d => `${Math.PI * legendScale.radius / d.clock}, ${Math.PI * legendScale.radius}`;
+   legendScale.fillup = Object.create(scales.fillup)
+   legendScale.fillup.attr = d => d.fill
+   legendScale.radius = 25;
+   update.style("transform",
+      `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
+   update.selectAll("circle:not(.clockfill)").attr("r", d => legendScale.radius + "px")
+      .attr("cx", d => d.displace * 50)
+   update.selectAll("circle.clockfill").attr("r", d => legendScale.radius + "px")
+      .attr("cy", d => d.displace * 50)
+   update.call(colourPriority, scheduler, legendScale)
+   update.call(jobClockFill, scheduler, legendScale);
+   update.call(jobFillup, scheduler, legendScale);
+   update.selectAll(".back")
+      .call(colourPriority, scheduler, legendScale)
+
+   enter.style("transform",
+      `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
+   enter.append("circle")
+      .classed("back", true)
+      .call(colourPriority, scheduler, legendScale)
+   enter.append("circle")
+      .classed("clockfill", true)
+      .call(jobClockFill, scheduler, legendScale);
+   enter.call(makeFillupGradient, scheduler, legendScale)
+   enter.append("circle")
+      .classed("fillup", true)
+
+   enter.selectAll("circle:not(.clockfill)").attr("r", d => legendScale.radius + "px")
+      .attr("cx", d => d.displace * 50)
+   enter.selectAll("circle.clockfill").attr("r", d => legendScale.radius + "px")
+      .attr("cy", d => d.displace * 50)
+
+
+   enter.call(colourPriority, scheduler, legendScale)
+   enter.call(jobClockFill, scheduler, legendScale);
+   enter.call(jobFillup, scheduler, legendScale);
+
+}
+
 /**
  * Update the drawing
  */
@@ -527,4 +707,5 @@ function update(svgElement, scheduler) {
    svg.call(cpu, scheduler, scales);
    svg.call(io, scheduler, scales);
    svg.call(jobLife, scheduler, scales);
+   svg.call(legend, scheduler, scales);
 }
