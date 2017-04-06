@@ -26,7 +26,7 @@ dat.GUI.prototype.removeFolder = function(name) {
 var gui;
 const config = {
   "Boost Time" : 10,
-  "numOfQues" : 8,
+  "Number of Queues" : 8,
   "timeQuantums" : [],
   "numOfJobs" : 10,
   "IO Frequency Min" : 10,
@@ -46,10 +46,10 @@ const SimulationsPannel = {
 
 const SchedulerParametersPannel = {
     get ["Number of Queues"](){
-      return config.numOfQues;
+      return config["Number of Queues"];
     },
     set ["Number of Queues"](v){
-      config.numOfQues = v;
+      config["Number of Queues"] = v;
       render(gui);
     },
     get ["Boost Time"]() {
@@ -141,9 +141,12 @@ var JobGeneratorPannel = {
 
 //this is what is connected to the store
 function datGui(props){
+
     gui = props.gui;
-    console.log(props);
+    //if (props.parameter["render"] === true)
+      //renderGui(gui, props.parameter)
     render(gui);
+    clearPanels(gui)
     return null;
 }
 
@@ -193,20 +196,68 @@ function displayJobGenerator(gui, workload){
     return gui;
 }
 
-function displayPannels(pannelList){
-
-}
-
 //--------------------------------------for clearing the pannels
 function render(gui) {
   clearPanels(gui);
   gui = displaySimulations(gui, SimulationsPannel);
-  gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config.numOfQues);
+  gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config["Number of Queues"]);
   gui = displayJobGenerator(gui, JobGeneratorPannel);
   retainSpeed(gui);
-  
 }
 
+function renderGui(gui, params) {
+  clearPanels(gui);
+  const panels = Object.getOwnPropertyNames(params);
+  for (let i=0; i<panels.length; i++){
+
+    //not implemented yet
+    if(panels[i] === "Simulations"){
+      continue;
+    }
+  
+    else if(panels[i] === "Scheduler Parameters") {
+      const menu = gui.addFolder(panels[i]);
+      const SchedulerAttributes = Object.getOwnPropertyNames(params[panels[i]]);
+
+      for (let k = 0; k < SchedulerAttributes.length; k++){
+        //console.log(params[panels[i]][SchedulerAttributes[k]]);
+        
+        if (SchedulerAttributes[k] === "Number of Queues"){
+          const arr = []
+          const numberOfQues = params[panels[i]][SchedulerAttributes[k]];
+          config["Number of Queues"] = numberOfQues;
+
+          for (let i = 1; i <= numberOfQues; i++)
+            arr.push(i);
+          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], arr)
+          
+          const Timequantum = menu.addFolder("Time Quantums");
+          const tqVals = params[panels[i]]["timeQuantums"];
+          const tqDisplayVals = Object.getOwnPropertyNames(TimeQuantum);
+          
+          for (var i = 1; i <= numberOfQues; i++) {
+            TimeQuantum[tqDisplayVals[i-1]] = tqVals[i-1]
+            Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
+          }
+          
+        } else if (SchedulerAttributes[k] === "Boost Time"){
+          let boostTime = params[panels[i]][SchedulerAttributes[k]];
+          config["Boost Time"] = boostTime;
+          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, boostTime)
+          menu.add(SchedulerParametersPannel, "Trigger Boost")
+        }
+      }
+    }
+
+    else if(panels[i] === "Job Generator") {
+      continue;
+    }
+
+  }
+
+  //clearPanels(gui);
+  retainSpeed(gui);
+}
 
 var reloadReference = 0;
 function retainSpeed(gui){
@@ -225,22 +276,17 @@ const pannelNames = {
 }
 
 function clearPanels(gui){
-  const pannels = Object.getOwnPropertyNames(pannelNames);
- gui.removeFolder("Simulations");
- gui.removeFolder("Scheduler Parameters");
- gui.removeFolder("Job Generator");
-
-/*  for (var i = 0; i < pannels.length; i++)
-    console.log(pannelNames[pannels[i]])
-    if(pannelNames[pannels[i]] === 1)
-      gui.removeFolder(pannelNames[i]);
-      */
+const panels = Object.getOwnPropertyNames(pannelNames);
+  for (var i = 0; i < panels.length; i++)
+    if(pannelNames[panels[i]] == 1) {
+      gui.removeFolder(panels[i]);
+    }
 }
 
 
 function createTQs() {
   const myArray = [];
-  for (var i = 1; i <= config["numOfQues"]; i++)
+  for (var i = 1; i <= config["Number of Queues"]; i++)
     myArray.push(TimeQuantum["Queue " + i]);
   return myArray;
 }

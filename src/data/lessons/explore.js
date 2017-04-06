@@ -49,14 +49,16 @@ export default {
    },
 
    parameter: {
+       "render": true,
         "Simulations" :
         {
 
         }, 
         "Scheduler Parameters": 
         {
-            "Boost Time": 50, 
-            "numOfQues": 12,
+            "Boost Time": 50,
+            "Number of Queues": 8,
+            "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
         },
 
         "Job Generator": 
