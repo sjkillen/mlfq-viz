@@ -47,8 +47,8 @@ export default {
             "timeQuantums": [2, 3, 4, 5, 8, 10],
         },
         "Job Generator": {
-            "Number of Jobs": 10, 
-            "Duration": 10,
+            "Number of Jobs": 5, 
+            "Duration": 50,
         },
    },
    details: {
