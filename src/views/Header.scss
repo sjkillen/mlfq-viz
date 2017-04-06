@@ -1,0 +1,9 @@
+
+.menu * {
+   color: #999 !important;
+}
+
+.menu.selected * {
+   color: green !important;
+   /*color: white !important;*/
+}

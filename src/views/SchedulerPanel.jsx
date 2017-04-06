@@ -10,7 +10,7 @@ import "./SchedulerPanel.scss";
 import "./PlaybackControl.scss";
 import * as anim from "./schedulerAnimations";
 import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
-import { accessorFactoryFactory } from "../data/dataAccessors";
+import { accessorFactoryFactory, getLabel } from "../data/dataAccessors";
 
 window.addEventListener("blur", e => {
    setPlayback(playback.paused);
@@ -41,10 +41,9 @@ class SchedulerPanel extends Component {
                </svg>
                <div className="controls">
                   <select onChange={e => setJobFillAttribute(e.target.value)}>
-                     <option value="none">None</option>
-                     <option value=".init.ioFreq">IO Frequency</option>
-                     <option value=".init.ioLength">IO Length</option>
-                     <option value="tq">Time Quantum</option>
+                     {scheduler.displayAttr.map(attr => {   
+                        return (<option value={attr}>{getLabel(attr)}</option>)
+                     })}
                   </select>
                   <div>
                      <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>

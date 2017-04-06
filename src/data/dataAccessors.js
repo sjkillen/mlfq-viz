@@ -11,6 +11,9 @@ import * as d3 from "d3";
  * .calcDomain(scheduler) -> return domain of value [min, max]
  */
 const props = {
+    ["tq"]: {
+        label: "Time Quantum"
+    },
     [".init.ioFreq"]: {
         access(d) {
             return d.init.ioFreq;
@@ -51,7 +54,7 @@ const props = {
         access(d) {
             return 0;
         },
-        label: "No property selected",
+        label: "None",
         calcDomain(scheduler) {
             return [0, 0];
         }
@@ -79,6 +82,10 @@ function propSetter(axis) {
         this.accessors["colour" + axis] = colour;
         return this;
     };
+}
+
+export function getLabel(key) {
+    return props[key].label;
 }
 
 /**
