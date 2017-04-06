@@ -48,7 +48,7 @@ class SchedulerPanel extends Component {
                   <div>
                      <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
                      <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
-                     <PlaybackControl disableStates={[playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
+                     <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
                      <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
                   </div>
                </div>
