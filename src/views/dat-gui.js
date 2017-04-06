@@ -39,6 +39,7 @@ const config = {
   "Jobs Start Time": 10,
   "generation": [],
   "Scheduler Height": 25,
+  "Speed": 10,
 }
 
 const SimulationsPannel = {
@@ -71,11 +72,13 @@ const SchedulerParametersPannel = {
       mainScheduler.boostJobs();
     },
     get ["Speed"](){
-        return mainScheduler.speed;
+        return config["Speed"]
+        //return mainScheduler.speed;
     },
     set ["Speed"](v){
-      mainScheduler.speed = v;
-      mainScheduler.config.speed = v;
+      config["Speed"] = v
+      mainScheduler.speed = 2100 - 200 * config["Speed"];
+      mainScheduler.config.speed = 2100 - 200 * config["Speed"];
     },
     get ["Scheduler Height"](){
         return config["Scheduler Height"]
@@ -286,10 +289,10 @@ function renderGui(gui, params) {
 var reloadReference = 0;
 function retainSpeed(gui){
   if (reloadReference === 0)
-    reloadReference = gui.add(SchedulerParametersPannel,'Speed',100,6000);
+    reloadReference = gui.add(SchedulerParametersPannel,'Speed',1, 10);
   else {
     gui.remove(reloadReference);
-    reloadReference = gui.add(SchedulerParametersPannel,'Speed',100,6000);
+    reloadReference = gui.add(SchedulerParametersPannel,'Speed',1, 10);
   }
 }
 

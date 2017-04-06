@@ -27,6 +27,7 @@ export default {
    },
    splom: {
       attributes: [
+          
       ]
    },
    parallel: {
