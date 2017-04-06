@@ -50,10 +50,6 @@ export default {
 
    parameter: {
        "render": true,
-        "Simulations" :
-        {
-
-        }, 
         "Scheduler Parameters": 
         {
             "Boost Time": 50,
@@ -63,12 +59,12 @@ export default {
 
         "Job Generator": 
         {
-            "numOfJobs": 10, 
+            "Number of Jobs": 10, 
             "IO Frequency Min" : 10,
-            'IO Frequency Max' : 10,
+            'IO Frequency Max' : 20,
             "Duration": 10,
             "IO Length Min" : 10,
-            "IO Length Max" : 10,
+            "IO Length Max" : 15,
         },
    },
    details: {

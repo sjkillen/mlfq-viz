@@ -23,17 +23,20 @@ dat.GUI.prototype.removeFolder = function(name) {
   this.onResize();
 }
 //gui is the dat.gui instance
-var gui;
+var gui
+var currentLesson;
+
 const config = {
   "Boost Time" : 10,
   "Number of Queues" : 8,
   "timeQuantums" : [],
-  "numOfJobs" : 10,
+  "Number of Jobs" : 10,
   "IO Frequency Min" : 10,
   'IO Frequency Max' : 10,
   "IO Length Min" : 10,
   "IO Length Max" : 10,
   "Duration": 10,
+  "Jobs Start Time": 10,
   "generation": [],
 }
 
@@ -51,7 +54,11 @@ const SchedulerParametersPannel = {
     },
     set ["Number of Queues"](v){
       config["Number of Queues"] = v;
-      renderGui(gui, propsParameter);
+
+      if (currentLesson === "EXPLORE")
+        render(gui)
+      else 
+        renderGui(gui, propsParameter)
     },
     get ["Boost Time"]() {
       return config["Boost Time"];
@@ -73,10 +80,10 @@ const SchedulerParametersPannel = {
 
 var JobGeneratorPannel = {
     get ['Number of Jobs'](){
-      return config.numOfJobs;
+      return config['Number of Jobs'];
     },
     set ["Number of Jobs"](v){
-      config.numOfJobs = v;
+      config["Number of Jobs"] = v;
     },
     get ['IO Frequency Min'](){
       return config["IO Frequency Min"];
@@ -108,6 +115,12 @@ var JobGeneratorPannel = {
     set ["Duration"](v){
       config["Duration"] = v;
     },
+    get ["Jobs Start Time"](){
+      return config["Jobs Start Time"];
+    },
+    set ["Jobs Start Time"](v){
+      config["Jobs Start Time"] = v;
+    },
     'Generate Jobs': function() {
       refreshScheduler(config);
     }
@@ -128,25 +141,17 @@ var JobGeneratorPannel = {
     'Queue 12': 12
   }
 
-  var lessons = {
-    "EXPLORE": render,
-    "GETTING STARTED": "",
-    "JOB LIFE CYCLE": "",
-    "BASIC IO": "",
-    "THE TIME QUANTUM": "",
-    "IO FREQUENCY AND PRIORITY": "",
-    "PERSISTENT TIME QUANTUMS": "",
-    "THE BOOST TIMER": "",
-  }
 
 
 //this is what is connected to the store
 function datGui(props){
     propsParameter = props.parameter
     gui = props.gui;
-    if (props.parameter["render"] === true)
-      renderGui(gui, props.parameter)
-    //render(gui);
+    if (props.parameter["render"] === true) {
+      renderGui(gui, propsParameter)
+      currentLesson = props.lessonName
+    } 
+    
     return null;
 }
 
@@ -157,17 +162,6 @@ export default Container.createFunctional(datGui, () => [guiStore], () => {
 });
 
 
-
-//---------------------------------- simulator panel ---------------------------------------------- 
-function displaySimulations(gui, simulator) {
-  var menu = gui.addFolder("Simulations");
-	menu.add(simulator, 'Current Simulation', [ 'Slot 1', 'Slot 2', 'Slot 3' ]);
-	menu.add(simulator, 'Share Link');
-	menu.add(simulator, 'Load');
-  menu.add(simulator, 'Save');
-  pannelNames["Simulations"] = 1;
-  return gui;
-}
 //------------------------------------- scheduler panel -------------------------------------------
   function displaySchedulerParams(gui, scheduler, TimeQuantum, numberOfQues){
     var menu2 = gui.addFolder("Scheduler Parameters"); 
@@ -178,7 +172,6 @@ function displaySimulations(gui, simulator) {
       for (var i = 1; i <= numberOfQues; i++){
         Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
       }
-      pannelNames["Scheduler Parameters"] = 1;
       return gui;
   }
 //-------------------------------------- work load panel ------------------------------------------     
@@ -191,15 +184,15 @@ function displayJobGenerator(gui, workload){
     menu3.add(workload,'Duration',1,10);
     menu3.add(workload,'IO Length Min',1,10);
     menu3.add(workload,'IO Length Max',1,10);
+    menu3.add(workload, "Jobs Start Time", 1, 100)
     menu3.add(workload,'Generate Jobs');
-    pannelNames["Job Generator"] = 1;
+ 
     return gui;
 }
 
 //--------------------------------------for clearing the pannels
 function render(gui) {
   clearPanels(gui);
-  gui = displaySimulations(gui, SimulationsPannel);
   gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config["Number of Queues"]);
   gui = displayJobGenerator(gui, JobGeneratorPannel);
   retainSpeed(gui);
@@ -208,19 +201,14 @@ function render(gui) {
 function renderGui(gui, params) {
   clearPanels(gui);
   const panels = Object.getOwnPropertyNames(params);
+  
   for (let i=0; i<panels.length; i++){
 
-    //not implemented yet
-    if(panels[i] === "Simulations"){
-      continue;
-    }
-  
-    else if(panels[i] === "Scheduler Parameters") {
+    if(panels[i] === "Scheduler Parameters") {
       const menu = gui.addFolder(panels[i]);
       const SchedulerAttributes = Object.getOwnPropertyNames(params[panels[i]]);
 
       for (let k = 0; k < SchedulerAttributes.length; k++){
-        //console.log(params[panels[i]][SchedulerAttributes[k]]);
         
         if (SchedulerAttributes[k] === "Number of Queues"){
           const arr = []
@@ -235,7 +223,7 @@ function renderGui(gui, params) {
           const tqVals = params[panels[i]]["timeQuantums"];
           const tqDisplayVals = Object.getOwnPropertyNames(TimeQuantum);
           
-          for (var i = 1; i <= numberOfQues; i++) {
+          for (let i = 1; i <= numberOfQues; i++) {
             TimeQuantum[tqDisplayVals[i-1]] = tqVals[i-1]
             Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
           }
@@ -249,10 +237,19 @@ function renderGui(gui, params) {
       }
     }
 
-    else if(panels[i] === "Job Generator") {
-      continue;
-    }
+    else if (panels[i] === "Job Generator"){
+      const SchedulerAttributes = Object.getOwnPropertyNames(params[panels[i]]);
+      const menu = gui.addFolder(panels[i]);
 
+      for (let k = 0; k < SchedulerAttributes.length; k++){
+        const displayValue = params[panels[i]][SchedulerAttributes[k]];
+        config[SchedulerAttributes[k]] = displayValue; 
+        menu.add(JobGeneratorPannel, SchedulerAttributes[k], 1, 20)
+      }
+      if(currentLesson === "EXPLORE")
+        menu.add(JobGeneratorPannel, "Generate Jobs")
+        
+    }
   }
   retainSpeed(gui);
 }
@@ -267,18 +264,10 @@ function retainSpeed(gui){
   }
 }
 
-const pannelNames = {
-  "Simulations" : 0,
-  "Scheduler Parameters": 0,
-  "Job Generator": 0
-}
 
 function clearPanels(gui){
-const panels = Object.getOwnPropertyNames(pannelNames);
-  for (var i = 0; i < panels.length; i++)
-    if(pannelNames[panels[i]] == 1) {
-      gui.removeFolder(panels[i]);
-    }
+  gui.removeFolder("Scheduler Parameters");
+  gui.removeFolder("Job Generator");
 }
 
 
@@ -300,7 +289,7 @@ function refreshScheduler(config){
           generation: [{
             ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
             jobRuntimeRange: [1, config["Duration"]],
-            numJobsRange: [config["numOfJobs"], config["numOfJobs"]],
+            numJobsRange: [config["Number of Jobs"], config["Number of Jobs"]],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
           }],

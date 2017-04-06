@@ -13,6 +13,7 @@ class guiStore extends ReduceStore {
    getInitialState() {
        return { href: "",
                 gui: new dat.GUI(),
+                lessonName: "",
                 parameter: {},
                 options: {}
          };
@@ -28,6 +29,7 @@ class guiStore extends ReduceStore {
         }
         case lessonActions.SET_LESSON:
             clone.parameter = action.data.parameter
+            clone.lessonName = action.data.lessonName
             return clone
         default:
             return state;
