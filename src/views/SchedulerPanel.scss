@@ -25,7 +25,6 @@ svg {
    position: relative;
    border: 0px solid black;
    rect.queue {
-       fill: white;
        stroke-width: $border;
        stroke: black;
    }
@@ -55,10 +54,9 @@ svg {
        circle.back {
            stroke-width: 1;
            stroke: black;
-           fill: white;
        }
        circle.clockfill {
-           fill: white;
+           fill: transparent;
            transform: rotate(-90deg);
        }
        &[data-selected="true"] circle.border {

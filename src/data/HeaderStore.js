@@ -10,7 +10,7 @@ import { actions as lessonActions } from "./lessons"
 class HeaderStore extends ReduceStore {
    getInitialState() {
       return immut({
-         selectedLesson: "EXPLORE"
+         selectedLesson: ""
       })
    }
    reduce(state, action) {
