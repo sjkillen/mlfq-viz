@@ -1,7 +1,7 @@
 export default {
    lessonName: "BASIC IO",
    simulation: {
-      timeQuantums: [5, 5, 5, 5, 5, 5],
+      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
