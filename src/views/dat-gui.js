@@ -142,7 +142,7 @@ var JobGeneratorPannel = {
 //this is what is connected to the store
 function datGui(props){
     gui = props.gui;
-
+    console.log(props);
     render(gui);
     return null;
 }
@@ -194,7 +194,7 @@ function displayJobGenerator(gui, workload){
 }
 
 function displayPannels(pannelList){
-  
+
 }
 
 //--------------------------------------for clearing the pannels

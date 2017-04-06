@@ -49,7 +49,7 @@ export default {
    },
    parameter: {
       attributes: [],
-      options: {}
+      options: {"Simulations" : "", "Scheduler Parameters": "", "Job Generator": ""},
    },
    details: {
       attributes: []
