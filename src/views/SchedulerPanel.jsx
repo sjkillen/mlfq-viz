@@ -118,7 +118,7 @@ function jobLife(svg, scheduler, scales) {
 
 function colourPriority(job, scheduler, scales) {
    return job.attr("fill", d =>
-      scales.priority(d.running.priority)
+      scales.priority(scales.getJobPriority(d))
    )
 }
 
@@ -220,6 +220,10 @@ function getScales(svg, scheduler) {
       jobY: cpu.y,
       jobX: requeue.lowerLeft - queueWidth * 3,
    }
+   const legend = {
+      x: io.left + 25,
+      y: io.up - 75
+   };
    const dead = {
       exit: requeue.sidePipeJob + radius * 3
    }
@@ -236,8 +240,10 @@ function getScales(svg, scheduler) {
       radius,
       width,
       height,
+      legend,
       cpu,
       io,
+      getJobPriority: d => d.running.priority,
       access,
       timer,
       priority: priorityScale(scheduler, access),
@@ -383,7 +389,7 @@ function jobClockFill(group, scheduler, scales) {
       .style("stroke", d => {
          let fill = scales.fillColour;
          if (scales.access.usePriority) {
-            fill = scales.priority(d.running.priority + 1);
+            fill = scales.priority(scales.getJobPriority(d) + 1);
          }
          return fill;
       })
@@ -482,7 +488,13 @@ function queues(svg, scheduler, scales) {
 function singleQueue(queue, scheduler, scales) {
    return queue.attr("fill", d => {
       if (scales.access.usePriority) {
-         return scales.priority(d.priority)
+         let colour = scales.priority(d.priority);
+         if (scales.access.shading === "rainbow") {
+            colour = d3.color(colour);
+            colour = colour.brighter(0.25);
+            colour = colour.rgb();
+         }
+         return colour;
       } else {
          return "white";
       }
@@ -501,9 +513,9 @@ function requeuePipe(svg, scheduler, scales) {
    const join = update.enter().append("g").classed("requeueGroup", true);
    join.append("rect").classed("requeue lower", true)
       .call(lower)
-   
+
    update.selectAll(".lower").call(lower)
-   .call(lower)
+      .call(lower)
    function lower(rect) {
       return rect
          .attr("width", scales.requeue.lowerWidth)
@@ -607,6 +619,65 @@ function io(svg, scheduler, scales) {
       .attr("y", scales.io.textY)
       .text("IO")
 }
+
+function legend(svg, scheduler, scales) {
+   const update = svg.selectAll("g.legend").data([
+      {
+         displace: 0,
+         init: {
+            id: -1
+         },
+         running: {
+            priority: 0
+         }
+      },
+      {
+         displace: 2,
+         init: {
+            id: -2
+         },
+         running: {
+            priority: 5
+         }
+      }
+   ]);
+
+   const enter = update.enter().append("g").classed("legend job", true);
+   const legendScale = Object.create(scales);
+   //leg
+   legendScale.radius = 25;
+   update.style("transform",
+      `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
+   update.call(colourPriority, scheduler, legendScale)
+   update.call(jobClockFill, scheduler, legendScale);
+   update.call(jobFillup, scheduler, legendScale);
+   update.selectAll(".back")
+      .call(colourPriority, scheduler, scales)
+   update.selectAll("circle").attr("r", d => legendScale.radius + "px")
+      .style("transform",
+      d => `translate(${legendScale.legend.x + (d.displace * 50)}px, ${legendScale.legend.y}px)`)
+
+   enter.style("transform",
+      `translate(${scales.legend.x}px, ${scales.legend.y}px)`)
+   enter.append("circle")
+      .classed("back", true)
+      .call(colourPriority, scheduler, scales)
+   enter.append("circle")
+      .classed("clockfill", true)
+      .call(jobClockFill, scheduler, legendScale);
+   enter.call(makeFillupGradient, scheduler, legendScale)
+   enter.append("circle")
+      .classed("fillup", true)
+
+   enter.call(colourPriority, scheduler, legendScale)
+   enter.call(jobClockFill, scheduler, legendScale);
+   enter.call(jobFillup, scheduler, legendScale);
+   enter.selectAll("circle").attr("r", d => legendScale.radius + "px")
+      .style("transform",
+      d => `translate(${d.displace * 50}px, ${0}px)`)
+
+}
+
 /**
  * Update the drawing
  */
@@ -621,4 +692,5 @@ function update(svgElement, scheduler) {
    svg.call(cpu, scheduler, scales);
    svg.call(io, scheduler, scales);
    svg.call(jobLife, scheduler, scales);
+   svg.call(legend, scheduler, scales);
 }
