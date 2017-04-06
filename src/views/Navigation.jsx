@@ -2,6 +2,7 @@
  * Handles application routing and places views
  */
 import SPLOMPanel from "../views/SPLOMPanel";
+import PAPanel from "../views/PAPanel";
 import SchedulerPanel from "../views/SchedulerPanel";
 import TableView from "./TableView";
 import React, { Component } from 'react'
@@ -17,7 +18,7 @@ class App extends Component {
           <IndexRoute component={TableView}/>
           <Route path='/Scheduler' component={SchedulerPanel} />
           <Route path='/SPLOM' component={SPLOMPanel} />
-          <Route path="/PAPanel" component={SPLOMPanel} />
+          <Route path='/PAPanel' component={PAPanel} />
         </Route>
       </Router>
     );
