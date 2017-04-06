@@ -11,9 +11,6 @@ import * as d3 from "d3";
  * .calcDomain(scheduler) -> return domain of value [min, max]
  */
 const props = {
-    ["tq"]: {
-        label: "Time Quantum"
-    },
     [".init.ioFreq"]: {
         access(d) {
             return d.init.ioFreq;
@@ -58,6 +55,9 @@ const props = {
         calcDomain(scheduler) {
             return [0, 0];
         }
+    },
+    ["tq"]: {
+        label: "Time Quantum"
     }
 };
 
