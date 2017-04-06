@@ -28,11 +28,11 @@ const config = {
   "Boost Time" : 10,
   "numOfQues" : 8,
   "timeQuantums" : [],
-  "numOfJobs" : 600,
-  "IO Frequency Min" : 40,
-  'IO Frequency Max' : 70,
-  "IO Length Min" : 40,
-  "IO Length Max" : 30,
+  "numOfJobs" : 10,
+  "IO Frequency Min" : 10,
+  'IO Frequency Max' : 10,
+  "IO Length Min" : 10,
+  "IO Length Max" : 10,
   "Duration": 10,
   "generation": [],
 }
@@ -127,25 +127,32 @@ var JobGeneratorPannel = {
     'Queue 12': 12
   }
 
-var RestartScheduler = {
-  "Reload" : function () {
-    render(gui)
-    refreshScheduler(config);
+  var lessons = {
+    "EXPLORE": render,
+    "GETTING STARTED": "",
+    "JOB LIFE CYCLE": "",
+    "BASIC IO": "",
+    "THE TIME QUANTUM": "",
+    "IO FREQUENCY AND PRIORITY": "",
+    "PERSISTENT TIME QUANTUMS": "",
+    "THE BOOST TIMER": "",
   }
-}
 
 
+//this is what is connected to the store
 function datGui(props){
-
-  
     gui = props.gui;
+
     render(gui);
     return null;
 }
 
+
+
 export default Container.createFunctional(datGui, () => [guiStore], () => {
    return guiStore.getState()
 });
+
 
 
 //---------------------------------- simulator panel ---------------------------------------------- 
@@ -155,6 +162,7 @@ function displaySimulations(gui, simulator) {
 	menu.add(simulator, 'Share Link');
 	menu.add(simulator, 'Load');
   menu.add(simulator, 'Save');
+  pannelNames["Simulations"] = 1;
   return gui;
 }
 //------------------------------------- scheduler panel -------------------------------------------
@@ -163,12 +171,11 @@ function displaySimulations(gui, simulator) {
       menu2.add(scheduler, 'Boost Time', 10, 100);
       menu2.add(scheduler, 'Trigger Boost')
       menu2.add(scheduler, 'Number of Queues',[1,2,3,4,5,6,7,8,9,10,11,12]);
-
       var Timequantum = menu2.addFolder("Time Quantums");
-
       for (var i = 1; i <= numberOfQues; i++){
         Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
       }
+      pannelNames["Scheduler Parameters"] = 1;
       return gui;
   }
 //-------------------------------------- work load panel ------------------------------------------     
@@ -182,34 +189,64 @@ function displayJobGenerator(gui, workload){
     menu3.add(workload,'IO Length Min',1,10);
     menu3.add(workload,'IO Length Max',1,10);
     menu3.add(workload,'Generate Jobs');
+    pannelNames["Job Generator"] = 1;
     return gui;
 }
 
-var reloadReference = 0;
+function displayPannels(pannelList){
+  
+}
+
+//--------------------------------------for clearing the pannels
 function render(gui) {
-  gui.removeFolder("Simulations");
-  gui.removeFolder("Scheduler Parameters");
-  gui.removeFolder("Job Generator");
+  clearPanels(gui);
   gui = displaySimulations(gui, SimulationsPannel);
   gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config.numOfQues);
   gui = displayJobGenerator(gui, JobGeneratorPannel);
+  retainSpeed(gui);
+  
+}
+
+
+var reloadReference = 0;
+function retainSpeed(gui){
   if (reloadReference === 0)
     reloadReference = gui.add(SchedulerParametersPannel,'Speed',100,6000);
   else {
     gui.remove(reloadReference);
     reloadReference = gui.add(SchedulerParametersPannel,'Speed',100,6000);
-
   }
 }
+
+const pannelNames = {
+  "Simulations" : 0,
+  "Scheduler Parameters": 0,
+  "Job Generator": 0
+}
+
+function clearPanels(gui){
+  const pannels = Object.getOwnPropertyNames(pannelNames);
+ gui.removeFolder("Simulations");
+ gui.removeFolder("Scheduler Parameters");
+ gui.removeFolder("Job Generator");
+
+/*  for (var i = 0; i < pannels.length; i++)
+    console.log(pannelNames[pannels[i]])
+    if(pannelNames[pannels[i]] === 1)
+      gui.removeFolder(pannelNames[i]);
+      */
+}
+
+
 function createTQs() {
   const myArray = [];
   for (var i = 1; i <= config["numOfQues"]; i++)
     myArray.push(TimeQuantum["Queue " + i]);
   return myArray;
 }
-//i suposed to restart the scheduler
-  function refreshScheduler(config){
 
+//i suposed to restart the scheduler
+function refreshScheduler(config){
     restartScheduler({
           timeQuantums: createTQs(),
           boostTime: config["Boost Time"],
