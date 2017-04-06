@@ -117,7 +117,7 @@ function jobLife(svg, scheduler, scales) {
 }
 
 function colourPriority(job, scheduler, scales) {
-   return job.attr("fill", d => 
+   return job.attr("fill", d =>
       scales.priority(d.running.priority)
    )
 }
@@ -300,6 +300,7 @@ function buildAccessor(scheduler) {
          .x(other)
          .y(".running.priority")
          .accessors;
+      access.usePriority = true;
       if (attr.match("greyscale")) {
          access.shading = "greyscale";
       } else {
@@ -379,7 +380,13 @@ function jobClockFill(group, scheduler, scales) {
    return group.select("circle.clockfill")
       .attr("visibility", scheduler.fillAttr === "tq" ? "visible" : "hidden")
       .attr("r", scales.radius / 2)
-      .style("stroke", scales.fillColour)
+      .style("stroke", d => {
+         let fill = scales.fillColour;
+         if (scales.access.usePriority) {
+            fill = scales.priority(d.running.priority + 1);
+         }
+         return fill;
+      })
       .style("stroke-width", `${scales.radius}px`)
       .attr("stroke-dasharray", d => scales.timer(d))
 }
@@ -464,14 +471,27 @@ function drawJob(selection, scheduler, scales) {
  */
 function queues(svg, scheduler, scales) {
    const join = svg.selectAll("rect.queue").data(scheduler.queues);
+   join.call(singleQueue, scheduler, scales)
    join.enter()
       .append("rect")
       .classed("queue", true)
+      .call(singleQueue, scheduler, scales)
+   join.exit().remove();
+}
+
+function singleQueue(queue, scheduler, scales) {
+   return queue.attr("fill", d => {
+      if (scales.access.usePriority) {
+         debugger;
+         return scales.priority(d.priority)
+      } else {
+         return "white";
+      }
+   })
       .attr("width", scales.queueWidth)
       .attr("height", scales.queueHeight)
       .attr("x", d => scales.queue(d.priority))
       .attr("y", scales.queueTop)
-   join.exit().remove();
 }
 
 /**

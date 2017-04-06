@@ -24,14 +24,14 @@ export default {
    },
    scheduler: {
       attributes: [
+         "none",
          ".init.ioFreq",
          ".init.ioLength",
          "tq",
          "none&priority=greyscale",
          "tq&priority=greyscale",
          "none&priority=rainbow",
-         "tq&priority=rainbow",
-         "none"
+         "tq&priority=rainbow"
       ],
       options: {
          showBoostTimer: true
