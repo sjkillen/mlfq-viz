@@ -40,7 +40,7 @@ class SchedulerPanel extends Component {
                   className="image">
                </svg>
                <div className="controls">
-                  <select onChange={e => setJobFillAttribute(e.target.value)}>
+                  <select value={scheduler.fillAttr} onChange={e => setJobFillAttribute(e.target.value)}>
                      {scheduler.displayAttr.map((attr, i) => {
                         return (<option key={i} value={attr}>{getLabel(attr)}</option>)
                      })}
@@ -221,7 +221,7 @@ function getScales(svg, scheduler) {
       jobX: requeue.lowerLeft - queueWidth * 3,
    }
    const legend = {
-      x: io.left + 25,
+      x: io.left + 50,
       y: io.up - 75
    };
    const dead = {
@@ -317,6 +317,15 @@ function buildAccessor(scheduler) {
       access = accessorFactoryFactory()
          .x(attr)
          .accessors;
+   }
+   if (attr.match("tq")) {
+      access.useTQ = true;
+   }
+   if (attr === "none") {
+      access.none = true
+   }
+   if (!access.useTQ && !access.usePriority && !attr.match("none")) {
+      access.useFill = true;
    }
    return access
 }
@@ -628,8 +637,11 @@ function legend(svg, scheduler, scales) {
             id: -1
          },
          running: {
-            priority: 0
-         }
+            priority: 0,
+         },
+         clock: 3.7,
+         text: 0,
+         fill: scales.access.useFill ? 10 : 0
       },
       {
          displace: 2,
@@ -637,31 +649,46 @@ function legend(svg, scheduler, scales) {
             id: -2
          },
          running: {
-            priority: 5
-         }
+            priority: scales.access.useTQ ? 0 : 5
+         },
+         clock: 1.3,
+         text: 1,
+         fill: scales.access.useFill ? 80 : 0
       }
-   ]);
-
+   ], d => d.init.id);
+   const mov = 70
    const enter = update.enter().append("g").classed("legend job", true);
    const legendScale = Object.create(scales);
-   //leg
+   legendScale.timer = d => `${Math.PI * legendScale.radius / d.clock}, ${Math.PI * legendScale.radius}`;
+   legendScale.fillup = Object.create(scales.fillup)
+   legendScale.fillup.attr = d => d.fill
    legendScale.radius = 25;
    update.style("transform",
       `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
+   update.selectAll("circle:not(.clockfill)").attr("r", d => legendScale.radius + "px")
+      .attr("cx", d => d.displace * mov)
+   update.selectAll("circle.clockfill").attr("r", d => legendScale.radius + "px")
+      .attr("cy", d => d.displace * mov)
    update.call(colourPriority, scheduler, legendScale)
    update.call(jobClockFill, scheduler, legendScale);
    update.call(jobFillup, scheduler, legendScale);
    update.selectAll(".back")
-      .call(colourPriority, scheduler, scales)
-   update.selectAll("circle").attr("r", d => legendScale.radius + "px")
-      .style("transform",
-      d => `translate(${legendScale.legend.x + (d.displace * 50)}px, ${legendScale.legend.y}px)`)
-
+      .call(colourPriority, scheduler, legendScale)
+   const pri = ["Low Priority", "High Priority"];
    enter.style("transform",
-      `translate(${scales.legend.x}px, ${scales.legend.y}px)`)
+      `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
+   enter.append("text")
+      .text(d => {
+         if (!scales.access.useTQ && scales.access.usePriority) {
+            return pri[d.text];
+         }
+         return legendScale.access.legendX[d.text]
+      })
+      .attr("text-anchor", "middle")
+      .attr("x", d => d.displace * mov)
    enter.append("circle")
       .classed("back", true)
-      .call(colourPriority, scheduler, scales)
+      .call(colourPriority, scheduler, legendScale)
    enter.append("circle")
       .classed("clockfill", true)
       .call(jobClockFill, scheduler, legendScale);
@@ -669,12 +696,14 @@ function legend(svg, scheduler, scales) {
    enter.append("circle")
       .classed("fillup", true)
 
+   enter.selectAll("circle:not(.clockfill)").attr("r", d => legendScale.radius + "px")
+      .attr("cx", d => d.displace * mov)
+   enter.selectAll("circle.clockfill").attr("r", d => legendScale.radius + "px")
+      .attr("cy", d => d.displace * mov)
+
    enter.call(colourPriority, scheduler, legendScale)
    enter.call(jobClockFill, scheduler, legendScale);
    enter.call(jobFillup, scheduler, legendScale);
-   enter.selectAll("circle").attr("r", d => legendScale.radius + "px")
-      .style("transform",
-      d => `translate(${d.displace * 50}px, ${0}px)`)
 
 }
 

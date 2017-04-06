@@ -37,7 +37,7 @@ function update(svgElement, { scheduler, PAAttr }) {
                .attr("height", newScale.height)
                 .attr("width", newScale.width)
    //Main svg
-   debugger;
+  // debugger;
    const AxisJoin = svg.selectAll("g.Axis")
                         .data(PAAttr,d => unique++);
    const enter = AxisJoin.enter()
@@ -52,7 +52,19 @@ function update(svgElement, { scheduler, PAAttr }) {
                                                       .attr("style",`transform: translate(+${shiftX}px, +${0}px)`)
                                                       .call(parallelAxis,scheduler,d,newScale,shiftX)
                      })
-  
+   // debugger;
+
+    var lineData = [[ { "x": 0,   "y":0},  { "x": 20,  "y": 20},
+                 { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+                 { "x": 80,  "y": 5},  { "x": 100, "y": 60}],
+
+                 [ { "x":0,   "y": 0},  { "x": 20,  "y": 20},
+                 { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+                 { "x": 80,  "y": 5},  { "x": 100, "y": 0}]];
+      
+   lineData.forEach(function(job,i){
+         drawLine(svg,scheduler,newScale,job)
+   })
 }
 /**
  * Generate a parallelAxis
@@ -75,13 +87,13 @@ function parallelAxis(svg, scheduler, accessor, scale, shiftX) {
       jobEnter.append("g")
               .classed("axis y",true)
               .call(yAxis);
+              
       //Add label for Y axis
       jobEnter.append("text")  
-                  .style("text-anchor", "middle")
-                   .style("font-size", `${scale.size/15}px`)
-                  .attr("transform", `translate(${0},${scale.height-scale.padding}) `)
-                  .text(accessor.labelY);
-      return yAxis;
+            .style("text-anchor", "middle")
+            .style("font-size", `${scale.size/15}px`)
+            .attr("transform", `translate(${0},${scale.height-scale.padding}) `)
+            .text(accessor.labelY);
 }
 /**
  * draw lines on parallelAxis
@@ -90,28 +102,25 @@ function parallelAxis(svg, scheduler, accessor, scale, shiftX) {
  * @param accessor
  * @param scale  
  */
-function drawLines(svg, scheduler, accessor, scale) {
+function drawLine(svg, scheduler, scale,data) {
       const update = svg.selectAll("path.job")
                         .classed("job", true)
-                        .data(scheduler.allJobs, d => d.init.id)
 
       const enter = update.enter()
+      
 
-      var data = [{x:1,y:1},{x:1,y:3},{x:4,y:3},{x:5,y:2},{x:6,y:2},{x:7,y:1}];
       //Prepare line
-      var line = d3.line()
-                   .x(function(d,i) {return d.x*6;})
-                   .y(function(d,i) {return d.y*4;})
+       var lineFunction = d3.line()
+                              .x(function(d) { return d.x; })
+                              .y(function(d) { return -d.y; })
 
       //Creating dots
-      enter.append("path")
-            .classed("job", true)
-             .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("d", line(data))
+      var lineGraph = svg.append("path")
+                                    .attr("d", lineFunction(data))
+                                    .attr("stroke", "blue")
+                                    .attr("stroke-width", 2)
+                                    .attr("fill", "none")
+                                    .attr("transform",`translate(${scale.padding},${scale.height - 2.5*scale.padding}) `);
 }  
 /**
  * Generate all the needed scales

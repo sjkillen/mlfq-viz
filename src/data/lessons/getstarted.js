@@ -1,7 +1,7 @@
 export default {
    lessonName: "GETTING STARTED",
    simulation: {
-      timeQuantums: [3, 4, 5, 6, 9, 10],
+      timeQuantums: [3, 4, 5, 6, 9, 10, 12, 13],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
@@ -25,9 +25,6 @@ export default {
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq",
          "none"
       ],
       options: {

@@ -1,26 +1,23 @@
 export default {
    lessonName: "IO FREQUENCY AND PRIORITY",
    simulation: {
-      timeQuantums: [5, 5, 5, 5, 5, 5,],
+      timeQuantums: [4, 5, 6, 7, 8, 10, 11, 12],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 5],
-            jobRuntimeRange: [10, 10],
-            numJobsRange: [3, 3],
-            jobCreateTimeRange: [1, 5],
+            ioFrequencyRange: [1, 3],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [5, 5],
+            jobCreateTimeRange: [1, 1],
             ioLengthRange: [3, 3]
          },
-
       ]
    },
    scheduler: {
       attributes: [
-         ".init.ioFreq",
-         ".init.ioLength",
-         "tq",
+        ".init.ioFreq",
          "none"
       ],
       options: {
@@ -44,17 +41,16 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Boost Time": 50,
-            "Number of Queues": 8,
-            "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
+            "Number of Queues": 6,
+            "timeQuantums": [4, 5, 6, 7, 8, 10],
         },
         "Job Generator": {
-            "Number of Jobs": 10, 
-            "IO Frequency Min" : 10,
+            "Number of Jobs": 5,
+            "IO Frequency Min" : 1,
             'IO Frequency Max' : 20,
-            "Duration": 10,
-            "IO Length Min" : 10,
-            "IO Length Max" : 15,
+            "Duration": 50,
+            "IO Length Min" : 3,
+            "IO Length Max" : 3,
         },
    },
    details: {
