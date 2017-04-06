@@ -41,8 +41,8 @@ class SchedulerPanel extends Component {
                </svg>
                <div className="controls">
                   <select onChange={e => setJobFillAttribute(e.target.value)}>
-                     {scheduler.displayAttr.map(attr => {
-                        return (<option value={attr}>{getLabel(attr)}</option>)
+                     {scheduler.displayAttr.map((attr, i) => {
+                        return (<option key={i} value={attr}>{getLabel(attr)}</option>)
                      })}
                   </select>
                   <div>

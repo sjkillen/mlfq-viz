@@ -1,5 +1,5 @@
 export default {
-   lessonName: "",
+   lessonName: "IO FREQUENCY AND PRIORITY",
    simulation: {
       timeQuantums: [50, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
@@ -7,20 +7,27 @@ export default {
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [5, 5],
-            jobRuntimeRange: [Infinity, Infinity],
+            ioFrequencyRange: [1, 1],
+            jobRuntimeRange: [100, 200],
+            numJobsRange: [10, 10],
+            jobCreateTimeRange: [5, 10],
+            ioLengthRange: [50, 100]
+         },
+         {
+            ioFrequencyRange: [30, 40],
+            jobRuntimeRange: [60, 1000],
             numJobsRange: [1, 1],
             jobCreateTimeRange: [1, 1],
-            ioLengthRange: [50, 100]
+            ioLengthRange: [1, 49]
          }
       ]
    },
    scheduler: {
       attributes: [
-         "none",
          ".init.ioFreq",
          ".init.ioLength",
-         "tq"
+         "tq",
+         "none"
       ],
       options: {
          showBoostTimer: true
@@ -28,10 +35,9 @@ export default {
    },
    splom: {
       attributes: [
+         ".init.runTime",
          ".init.createTime",
-         ".init.ioLength",
-         ".init.ioFreq",
-         ".init.runTime"
+         ".init.ioFreq"
       ]
    },
    parallel: {
