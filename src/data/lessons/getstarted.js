@@ -28,7 +28,7 @@ export default {
          "none"
       ],
       options: {
-         showBoostTimer: true
+         showBoostTimer: false
       }
    },
    splom: {

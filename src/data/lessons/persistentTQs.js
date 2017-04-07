@@ -22,7 +22,7 @@ export default {
          "tq&priority=rainbow"
       ],
       options: {
-         showBoostTimer: true
+         showBoostTimer: false
       }
    },
    splom: {
