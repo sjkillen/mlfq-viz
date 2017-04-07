@@ -82,5 +82,8 @@ svg {
        &[data-selected="true"] circle.border {
            transform: scale(1.3, 1.3);
        }
+       &.evil circle.back {
+           fill: rgb(234, 43, 44);
+       }
    }
 }

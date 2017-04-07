@@ -97,6 +97,10 @@ function jobLife(svg, scheduler, scales) {
       const group = jobJoin.enter()
             .append("g")
             .classed("job", true)
+            .each(function (d) {
+                  const select = d3.select(this);
+                  select.classed(d.flags.join(" "), true)
+            })
             .on("click", selectJob)
       group.append("circle")
             .classed("border", true)
@@ -433,7 +437,7 @@ function boostTimer(svg, scheduler, scales) {
       const radius = 45;
       const timerFull = Math.PI * radius;
       const trans = `translate(${scales.boost.x}px,${scales.boost.y}px)`;
-      const text = `Boost in ${scheduler.boostLeft|0}`;
+      const text = `Boost in ${scheduler.boostLeft | 0}`;
       const show = scheduler.lessonOptions.showBoostTimer ? "visible" : "hidden";
 
       const circle = d3.scaleLinear()
@@ -447,13 +451,13 @@ function boostTimer(svg, scheduler, scales) {
       const group = enter.append("g").classed("boostTime", true)
             .style("transform", trans)
 
-      
+
       update.selectAll(".frame")
             .attr("visibility", show)
 
       group.append("circle")
             .classed("clock", true)
-            .call(boost)      
+            .call(boost)
 
       group.append("circle")
             .classed("frame", true)

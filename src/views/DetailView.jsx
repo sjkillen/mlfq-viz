@@ -97,7 +97,7 @@ function calcLesson(scheduler, details) {
       if (scheduler.globalTick === atCycle && scheduler.globalTick > 1) {
          pauseScheduler(scheduler);
       }
-      if (scheduler.globalTick >= atCycle) {
+      if (scheduler.globalTick >= (atCycle - 1)) {
          let next = "Lesson Complete";
          const nextLesson = details.lesson[i + 1];
          if (nextLesson) {

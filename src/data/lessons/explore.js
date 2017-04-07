@@ -9,14 +9,15 @@ export default {
          {
             ioFrequencyRange: [1, 1],
             jobRuntimeRange: [100, 200],
-            numJobsRange: [10, 10],
-            jobCreateTimeRange: [5, 10],
-            ioLengthRange: [50, 100]
+            numJobsRange: [1, 1],
+            jobCreateTimeRange: [5, 5],
+            ioLengthRange: [50, 100],
+            flags: ["evil"]
          },
          {
             ioFrequencyRange: [30, 40],
             jobRuntimeRange: [60, 1000],
-            numJobsRange: [1, 1],
+            numJobsRange: [5, 5],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [1, 49]
          }
@@ -39,13 +40,13 @@ export default {
    },
    splom: {
       attributes: [
-        ".init.ioFreq",
-        ".perf.responseTime",
-        ".perf.turnaroundTime",
-        ".running.avgPriority",
-        ".init.runTime",
-        ".init.createTime",
-        ".init.ioLength",
+         ".init.ioFreq",
+         ".perf.responseTime",
+         ".perf.turnaroundTime",
+         ".running.avgPriority",
+         ".init.runTime",
+         ".init.createTime",
+         ".init.ioLength",
       ]
    },
    parallel: {
@@ -57,22 +58,22 @@ export default {
    },
 
    parameter: {
-        "render": true,
-        "Scheduler Parameters": {
-            "Boost Time": 100,
-            "Scheduler Height": 30,
-            "Number of Queues": 8,
-            "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
-            
-        },
-        "Job Generator": {
-            "Duration": 10,
-            "Number of Jobs": 10, 
-            "IO Frequency Min" : 10,
-            'IO Frequency Max' : 20,
-            "IO Length Min" : 10,
-            "IO Length Max" : 15,
-        },
+      "render": true,
+      "Scheduler Parameters": {
+         "Boost Time": 100,
+         "Scheduler Height": 30,
+         "Number of Queues": 8,
+         "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
+
+      },
+      "Job Generator": {
+         "Duration": 10,
+         "Number of Jobs": 10,
+         "IO Frequency Min": 10,
+         'IO Frequency Max': 20,
+         "IO Length Min": 10,
+         "IO Length Max": 15,
+      },
    },
    details: {
       lesson: [
