@@ -49,8 +49,9 @@ function DetailView({ select, scheduler, details }) {
                   {attrCol
                      .map(attr => [attr, props[attr]])
                      .map(([id, attr]) => {
+                        const selected = isSelected(scheduler, id)
                         return (
-                           <tr key={id} className="attr">
+                           <tr key={id} className={"attr" + selected}>
                               <td className="key">
                                  <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
                               </td>
@@ -67,8 +68,18 @@ function DetailView({ select, scheduler, details }) {
    );
 }
 
+function isSelected(scheduler, id) {
+   const yes = " selected";
+   const tq = /t[^.]*q/i;
+   const pri = /priority/i;
+   if (scheduler.fillAttr === id) return yes;
+   if (scheduler.fillAttr.match(tq) && id.match(tq)) return yes;
+   if (scheduler.fillAttr.match(pri) && id.match(pri)) return yes;
+   return "";
+}
 
 function round(num) {
+   if (!Number(num)) return num;
    return ((num * 1000) | 0) / 1000;
 }
 

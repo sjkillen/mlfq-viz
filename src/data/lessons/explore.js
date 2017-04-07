@@ -56,7 +56,6 @@ export default {
          ".init.ioFreq"
       ]
    },
-
    parameter: {
       "render": true,
       "Scheduler Parameters": {
@@ -87,13 +86,17 @@ export default {
          }
       ],
       attributes: [
+         ".init.ioFreq",
          ".init.runTime",
          ".init.createTime",
-         ".init.ioFreq",
+         "timeQuantum",
          ".perf.turnaroundTime",
          ".running.serviceTime",
+         ".running.priority",
+         ".running.serviceTime",
          ".running.totalWaitingTime",
-         ".running.avgPriority"
+         ".running.avgPriority",
+         ".perf.responseTime"
       ]
    },
    navigation: [

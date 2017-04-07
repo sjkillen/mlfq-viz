@@ -111,12 +111,15 @@ export const props = {
         }
     },
     ["tq"]: {
+        label: "Time Quantum",
+        legend: ["Barely Depleted", "Almost Depleted"],
+    },
+    ["timeQuantum"]: {
         access(d) {
             return `${d.running.quantumLeft} / ${d.running.quantumFull}`;
         },
         label: "Time Quantum",
-        tooltip: "Time Quantum the number of cycles a job may run on the CPU before being kicked off and deprioritized",
-        legend: ["Barely Depleted", "Almost Depleted"],
+        tooltip: "Time Quantum the number of cycles a job may run on the CPU before being kicked off and deprioritized"
     },
     ["none"]: {
         access(d) {
