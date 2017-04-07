@@ -462,6 +462,9 @@ function drawJob(selection, scheduler, scales) {
             case "waiting|cpu":
                job.call(anim.queueToCPU, scheduler, scales);
                return;
+            case "cpu|cpu":
+               job.call(anim.cpuToCPU, scheduler, scales);
+               return;
             case "cpu|finished":
                job.call(anim.finishJob, scheduler, scales);
                return;
@@ -476,6 +479,9 @@ function drawJob(selection, scheduler, scales) {
                return;
             case "io|cpu":
                job.call(anim.leaveIOToCPU, scheduler, scales);
+               return;
+            case "io|io":
+               job.call(anim.enterIO, scheduler, scales);
                return;
          }
       });
