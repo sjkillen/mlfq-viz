@@ -17,7 +17,6 @@ export default {
    },
    scheduler: {
       attributes: [
-         "none",
          "tq",
          "tq&priority=greyscale",
          "tq&priority=rainbow"
@@ -28,34 +27,48 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parallel: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parameter: {
        "render": true,
         "Scheduler Parameters": {
             "Number of Queues": 8,
-            "timeQuantums": [3, 4, 5, 6, 7, 8, 10, 12],
+            "timeQuantums": [5, 7, 9, 11, 15, 20, 22, 28],
         },
         "Job Generator": {
-            "Number of Jobs": 5, 
-            "IO Frequency Min" : 10,
-            'IO Frequency Max' : 20,
-            "Duration": 10,
-            "IO Length Min" : 10,
-            "IO Length Max" : 15,
+
         },
    },
    details: {
+        lesson: [
+         {
+            message: "The best way to prevent a job from"+
+                    " stealing all of the CPU's time, and from"+ 
+                    " a malicious user potentially gaming the"+ 
+                    " scheduler, is to keep track of how long"+
+                    " each job has run on the cpu - keeping"+ 
+                    " track of the time quantum.",
+
+
+
+            atCycle: 1
+         },
+         {
+            message: "See how when jobs get scheduled "+
+                    " to perform IO they keep track of their time quantum."+
+                    " This will prevent IO heavy jobs from"+
+                    " stealing all the cpu's resources.",
+
+
+
+            atCycle: 12
+         },
+
+        ],
       attributes: []
    },
    navigation: [
