@@ -10,7 +10,7 @@ $border: 3px;
     width: 600px;
     margin-bottom: 275px;
     select {
-        width: 400;
+        width: 550;
         height: 50;
         font-size: 30;
     }
@@ -26,9 +26,18 @@ svg {
    border: solid 1px black;
    position: relative;
    border: 0px solid black;
-   rect.queue {
-       stroke-width: $border;
-       stroke: black;
+   g.queueGroup {
+       rect.queue {
+          stroke-width: $border;
+          stroke: black;
+       }
+       text.label {
+           font-size: 60px;
+           font-weight: bolder;
+           stroke: black;
+           stroke-width: 2px;
+           fill: white;
+       }
    }
    rect.requeue {
        fill: #444;
@@ -55,7 +64,7 @@ svg {
        .clock {
            fill: transparent;
            transform: rotate(-90deg);
-           stroke: orange;
+           stroke: rgb(255, 139, 15);
        }
        .frame {
            stroke-width: 4px;
@@ -81,6 +90,9 @@ svg {
        }
        &[data-selected="true"] circle.border {
            transform: scale(1.3, 1.3);
+       }
+       &.evil circle.back {
+           fill: rgb(234, 43, 44);
        }
    }
 }

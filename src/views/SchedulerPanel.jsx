@@ -97,6 +97,10 @@ function jobLife(svg, scheduler, scales) {
       const group = jobJoin.enter()
             .append("g")
             .classed("job", true)
+            .each(function (d) {
+                  const select = d3.select(this);
+                  select.classed(d.flags.join(" "), true)
+            })
             .on("click", selectJob)
       group.append("circle")
             .classed("border", true)
@@ -433,7 +437,7 @@ function boostTimer(svg, scheduler, scales) {
       const radius = 45;
       const timerFull = Math.PI * radius;
       const trans = `translate(${scales.boost.x}px,${scales.boost.y}px)`;
-      const text = `Boost in ${scheduler.boostLeft|0}`;
+      const text = `Boost in ${scheduler.boostLeft | 0}`;
       const show = scheduler.lessonOptions.showBoostTimer ? "visible" : "hidden";
 
       const circle = d3.scaleLinear()
@@ -447,13 +451,13 @@ function boostTimer(svg, scheduler, scales) {
       const group = enter.append("g").classed("boostTime", true)
             .style("transform", trans)
 
-      
+
       update.selectAll(".frame")
             .attr("visibility", show)
 
       group.append("circle")
             .classed("clock", true)
-            .call(boost)      
+            .call(boost)
 
       group.append("circle")
             .classed("frame", true)
@@ -544,13 +548,30 @@ function drawJob(selection, scheduler, scales) {
  * Draw the queues to hold jobs
  */
 function queues(svg, scheduler, scales) {
-      const join = svg.selectAll("rect.queue").data(scheduler.queues);
-      join.call(singleQueue, scheduler, scales)
-      join.enter()
-            .append("rect")
+      const update = svg.selectAll("g.queueGroup").data(scheduler.queues);
+      const trans = d => `translate(${scales.queue(d.priority)}px, ${scales.queueTop}px)`;
+      const textTrans = `translate(${scales.queueWidth / 2}px, ${50}px)`;
+
+      update.style("transform", trans)
+      update.selectAll("rect.queue")
+            .call(singleQueue, scheduler, scales)
+      update.selectAll("text")
+            .style("transform", textTrans)
+
+      const enter = update.enter()
+            .append("g")
+            .classed("queueGroup", true)
+            .style("transform", trans)
+      enter.append("rect")
             .classed("queue", true)
             .call(singleQueue, scheduler, scales)
-      join.exit().remove();
+      enter.append("text")
+            .text(d => d.priority)
+            .attr("text-anchor", "middle")
+            .classed("label", true)
+            .style("transform", textTrans)
+
+      update.exit().remove();
 }
 
 function singleQueue(queue, scheduler, scales) {
@@ -569,8 +590,6 @@ function singleQueue(queue, scheduler, scales) {
       })
             .attr("width", scales.queueWidth)
             .attr("height", scales.queueHeight)
-            .attr("x", d => scales.queue(d.priority))
-            .attr("y", scales.queueTop)
 }
 
 /**

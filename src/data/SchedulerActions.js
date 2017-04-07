@@ -49,6 +49,15 @@ export function setPlayback(mode) {
 }
 
 /**
+ * Pause the scheduler (mid-render)
+ */
+export function pauseScheduler({ speed }) {
+   setTimeout(() => {
+      setPlayback(playback.paused);
+   }, speed);
+}
+
+/**
  * Restart the scheduler
  */
 export function restartScheduler(config) {

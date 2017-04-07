@@ -13,6 +13,7 @@ import DetailStore from "../data/DetailStore";
 import { props } from "../data/dataAccessors";
 import "./DetailView.scss";
 import { externalJob } from "./SchedulerPanel";
+import { pauseScheduler } from "../data/SchedulerActions";
 
 export default Container.createFunctional(DetailView, () => [SchedulerStore, DetailStore], () => {
    const scheduler = SchedulerStore.getScheduler();
@@ -22,6 +23,7 @@ export default Container.createFunctional(DetailView, () => [SchedulerStore, Det
       scheduler
    };
 });
+
 /**
  * Called every state change
  */
@@ -31,26 +33,17 @@ function DetailView({ select, scheduler, details }) {
       <div className="DetailView">
          <svg ref={el => update(el, scheduler, select)} className="preview">
          </svg>
-         <div className="content">
-            <div className="lesson">
-               <div className="message">
-                  {lesson.message}
-               </div>
-               <div className="next">
-                  {lesson.next}
-               </div>
-            </div>
-         </div>
          {divideAttrColumns(details.attributes).map((attrCol, i) => {
             return (<table key={i} className="attributes">
                <tbody>
                   {attrCol
                      .map(attr => [attr, props[attr]])
                      .map(([id, attr]) => {
+                        const selected = isSelected(scheduler, id)
                         return (
-                           <tr key={id} className="attr">
+                           <tr key={id} className={"attr" + selected}>
                               <td className="key">
-                                 {attr.label}
+                                 <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
                               </td>
                               <td className="value">
                                  {select ? round(attr.access(select)) : "-"}
@@ -61,12 +54,32 @@ function DetailView({ select, scheduler, details }) {
                </tbody>
             </table>);
          })}
+         <div className="content">
+            <div className="lesson">
+               <div className="message">
+                  {lesson.message}
+               </div>
+               <div className="next">
+                  {lesson.next}
+               </div>
+            </div>
+         </div>
       </div>
    );
 }
 
+function isSelected(scheduler, id) {
+   const yes = " selected";
+   const tq = /t[^.]*q/i;
+   const pri = /priority/i;
+   if (scheduler.fillAttr === id) return yes;
+   if (scheduler.fillAttr.match(tq) && id.match(tq)) return yes;
+   if (scheduler.fillAttr.match(pri) && id.match(pri)) return yes;
+   return "";
+}
 
 function round(num) {
+   if (!Number(num)) return num;
    return ((num * 1000) | 0) / 1000;
 }
 
@@ -88,11 +101,21 @@ function divideAttrColumns(arr) {
    return cols;
 }
 
+function ToolTip({ children, text }) {
+   return (
+      <span onClick={e => alert(text)} className="tooltip">
+         {children}
+      </span>
+   )
+}
 
 function calcLesson(scheduler, details) {
    for (let i = details.lesson.length - 1; i >= 0; i--) {
-      const { message, atCycle } = details.lesson[i];
-      if (scheduler.globalTick >= atCycle) {
+      const { message, atCycle, dontPause } = details.lesson[i];
+      if (scheduler.globalTick === atCycle && scheduler.globalTick > 1 && !dontPause) {
+         pauseScheduler(scheduler);
+      }
+      if (scheduler.globalTick >= (atCycle - 1)) {
          let next = "Lesson Complete";
          const nextLesson = details.lesson[i + 1];
          if (nextLesson) {

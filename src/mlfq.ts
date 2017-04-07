@@ -26,6 +26,7 @@ interface Random {
 interface JobConfig {
    id: number;
    createTime: number;
+   flags: {}[];
    runTime: number;
    ioFreq: number;
    ioLength: number;
@@ -35,6 +36,8 @@ interface JobConfig {
  * A single job in the simulation
  */
 class Job {
+   // Usage determined fields
+   flags: {}[];
    // Values the job is created with
    init: {
       // unique job id
@@ -204,7 +207,8 @@ class Job {
    doingIO(): boolean {
       return this.running.ioLeft > 0;
    }
-   constructor({ createTime, runTime, ioFreq, ioLength, id }: JobConfig) {
+   constructor({ createTime, runTime, ioFreq, ioLength, id, flags }: JobConfig) {
+      this.flags = flags;
       this.init = {
          id,
          createTime,
@@ -246,6 +250,8 @@ interface Configuration {
       jobRuntimeRange: [number, number];
       numJobsRange: [number, number];
       jobCreateTimeRange: [number, number];
+      // usage determined flags added to all jobs in generation
+      flags: {}[] | void;
    }[];
 }
 
@@ -539,7 +545,8 @@ export default class Scheduler {
             jobCreateTimeRange,
             ioFrequencyRange,
             ioLengthRange,
-            jobRuntimeRange
+            jobRuntimeRange,
+            flags
          } = generate;
          const ran = this.random.range.bind(this.random);
          const numJobs = ran(numJobsRange);
@@ -547,6 +554,7 @@ export default class Scheduler {
          for (id; id <= limit; id++) {
             this.futureJobs.push(new Job({
                id,
+               flags: flags || [],
                createTime: ran(jobCreateTimeRange),
                runTime: ran(jobRuntimeRange),
                ioFreq: ran(ioFrequencyRange),
