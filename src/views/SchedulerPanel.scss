@@ -35,7 +35,7 @@ svg {
    }
    .cpu {
        text {
-           font-size: 50px;
+           font-size: 25px;
        }
        .slot {
           fill: #EFEFEF;
@@ -49,6 +49,18 @@ svg {
        }
        text {
            font-size: 50px;
+       }
+   }
+   g.boostTime {
+       .clock {
+           fill: transparent;
+           transform: rotate(-90deg);
+           stroke: orange;
+       }
+       .frame {
+           stroke-width: 4px;
+           fill: transparent;
+           stroke: black;
        }
    }
    g.job {
