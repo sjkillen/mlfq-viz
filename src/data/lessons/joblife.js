@@ -60,20 +60,13 @@ export default {
    details: {
         lesson: [
          {
-            message: "Lets talk about the life cycle of a job."+
-                    " When a job enters the system, it is scheduled in"+
-                    " the first queue. Next it will either get rescheduled,"+
-                    " or exit the system. Lets create a couple jobs now",
-
+            message: "Lets talk about the life cycle of a job. When a job is finished running on the CPU it will either return to a queue to be run again or exit the system. Lets create a couple jobs now",
 
             atCycle: 1
          },
          {
-            message: "See how the jobs left the system? They were run"+ 
-                    " to completion because their runtime (the amount of"+
-                    " time a job needs to runs on the system) was low."+
+            message: "See how the jobs left the system? They were run to completion because their runtime was low."+
                     " Let's create a job that lasts a little longer!",
-
 
             atCycle: 10
          },
@@ -83,8 +76,6 @@ export default {
                     " to see a scatterplot of the jobs! The y axis is"+ 
                     " create time, while the x axis is runtime. Can you tell" +
                     " which job was the longer job??",
-
-
 
             atCycle: 15
          },

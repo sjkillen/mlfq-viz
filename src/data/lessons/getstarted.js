@@ -4,7 +4,7 @@ export default {
       timeQuantums: [3, 4, 5, 6, 9, 10, 12, 13],
       boostTime: Infinity,
       resetTQsOnIO: false,
-      speed: 1000,
+      speed: 3000,
       generation: [
          {
             ioFrequencyRange: [10, 20],
@@ -20,7 +20,6 @@ export default {
             jobCreateTimeRange: [30, 40],
             ioLengthRange: [10, 20]
          },
-
       ]
    },
    scheduler: {
@@ -46,25 +45,14 @@ export default {
         "Job Generator": {
         },
    },
-   details: {
-             
+   details: {     
         lesson: [
          {
-            message: "Welcome to the MLFQ scheduling simulator, " +
-                    "thanks for taking an interest in computer systems! " +
-                    "Let's start with the basics! When a job is created," +
-                    "it is scheduled and placed into the first queue." +
-                    "Let's' create some jobs now!",
-
+            message: "Welcome to the MLFQ Operating System Scheduler Visualization! Wow, what a mouthful, what is MLFQ anyway? In these short lessons we'll guide you through the basics of the algorithm. Begin a simulation by pressing the Play button. CPU jobs are represented by white hollow circles.",
             atCycle: 1
          },
          {
-            message: "Next, jobs proceed to the CPU where they are run " +
-                    "for a little while then either enter IO, gets re-scheduled, " +
-                    "or exits the MLFQ. Let's let it run for a bit and get an " +
-                    "overview of the whole system, if you don't understand " +
-                    "everything yet, don't worry this is just an overview lesson!",
-
+            message: "When jobs enter the simulation, they are assigned the highest priority (priority 0). Job's are placed in queues, delineated by the numbered rectangles above, according to their priority. Jobs remain in their queue while they are waiting to be scheduled and run on the CPU. When a job is scheduled, the circle moves from it's queue to the CPU. With each cycle that the simulation runs, the timer next to the CPU will increment",
             atCycle: 5
          }
       ],
