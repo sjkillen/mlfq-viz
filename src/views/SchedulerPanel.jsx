@@ -707,11 +707,9 @@ function legend(svg, scheduler, scales) {
 }
 
 export function externalJob(svg, scheduler, selected) {
-   if (!selected) return;
+   const data = selected ? [selected] : [];
    svg = d3.select(svg);
-   const update = svg.selectAll("g.external").data([
-      selected
-   ], d => d.init.id);
+   const update = svg.selectAll("g.external").data(data, d => d.init.id);
    const radius = 120;
    const scales = getScales(svg, scheduler, radius);
    const enter = update.enter().append("g").classed("external job", true);
