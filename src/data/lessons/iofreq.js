@@ -75,9 +75,9 @@ export default {
    details: {
         lesson: [
          {
-            message: "Interactive jobs have a high frequency of IO"+
+            message: "Interactive jobs have a high frequency of IO,"+
                     " this means that they often receive input from"+ 
-                    " the user. Lets watch how high frequency jobs"+ 
+                    " the user. Let's watch how high frequency jobs"+ 
                     " get prioritized! (feel free to play with the speed!)",
 
 
@@ -87,7 +87,7 @@ export default {
          },
         {
             message: "See how the high frequency jobs get run more often?"+
-                    " thats because they get set back to the queue that"+
+                    " That's because they get set back to the queue that"+
                     " they came from when they leave IO. This lets"+
                     " them get a higher priority! Click the left"+
                     " arrow to see a scatterplot, the higher the"+

@@ -67,21 +67,17 @@ export default {
                     " some jobs and see it in action! (try changing what's encoded!"+
                     " click the drop down bar underneath the scheduler!)",
 
-
-
             atCycle: 1
          },
         {
-            message: "see how the jobs take more time on the cpu the further it gets"+
-                    " deprioritized? this lets longer jobs get"+
+            message: "sSe how the jobs take more time on the cpu the further it gets"+
+                    " deprioritized? This lets longer jobs get"+
                     " deprioritized  while shorter (more interactive ones"+
-                    " get run more frequently) lets add some interactive"+
+                    " get run more frequently) .Let's add some interactive"+
                     " jobs and see what happens! \n "+
                     " Click on the scheduler parameters panel in the"+
                     " top left to see the time quantum for each que."+
                     " keep in mind that for lessons, this is read only.",
-
-
 
 
             atCycle: 15

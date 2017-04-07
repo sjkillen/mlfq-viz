@@ -55,7 +55,7 @@ export default {
          {
             message: "Sometimes a job needs to perform IO, this means that"+
                     " it is receiving some input from another program."+
-                    " when IO happens, the job is placed in the IO box,"+
+                    " When IO happens, the job is placed in the IO box,"+
                     " when it is finished it gets placed right back in the que where it"+
                     " came from. This is to prevent interactive jobs being pushed back "+
                     " to lower priority, and helps maintain a interactive system.",
