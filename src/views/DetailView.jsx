@@ -52,7 +52,7 @@ function DetailView({ select, scheduler, details }) {
                         return (
                            <tr key={id} className="attr">
                               <td className="key">
-                                 {attr.label}
+                                 <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
                               </td>
                               <td className="value">
                                  {select ? round(attr.access(select)) : "-"}
@@ -90,6 +90,13 @@ function divideAttrColumns(arr) {
    return cols;
 }
 
+function ToolTip({ children, text }) {
+   return (
+      <span onClick={e => alert(text)} className="tooltip">
+         {children}
+      </span>
+   )
+}
 
 function calcLesson(scheduler, details) {
    for (let i = details.lesson.length - 1; i >= 0; i--) {

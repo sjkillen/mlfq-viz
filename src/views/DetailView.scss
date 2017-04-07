@@ -8,6 +8,12 @@ $dim: 250px;
    position: absolute;
 }
 
+.tooltip {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
+
 svg {
    background: rgba(250, 250, 250, 0.4);
    height: $dim;

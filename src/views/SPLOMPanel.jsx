@@ -158,6 +158,8 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
 function drawLabelPanel(jobEnter, accessor, scale) {
    jobEnter.append("text")
       .style("text-anchor", "middle")
+      .style("cursor", "pointer")
+      .on("click", e => alert(accessor.tooltipX))
       .attr("x", scale.size / 2 + scale.padding / 2)
       .attr("y", scale.size / 2 + scale.padding / 2)
       .style("font-size", `${scale.size / 8}px`)

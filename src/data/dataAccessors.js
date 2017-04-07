@@ -16,6 +16,7 @@ export const props = {
             return d.init.ioFreq;
         },
         label: "IO Frequency",
+        tooltip: "A job's IO Frequency is how many cycles a job will run on the CPU before being interupted and moved to IO. Interactive jobs have high IO Frequency, while CPU bound jobs will have low IO frequency",
         legend: ["High IO Freq.", "Low IO Freq."],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
@@ -27,6 +28,7 @@ export const props = {
         },
         label: "Response Time",
         legend: ["Quick Response", "Slow Response"],
+        tooltip: "A job's Response Time is the measured number of CPU cycles from when a job first entered the system to when it was first run on the CPU",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.responseTime)]
         }
@@ -37,6 +39,7 @@ export const props = {
         },
         label: "Turnaround Time",
         legend: ["Short Turnaround", "Long Turnaround"],
+        tooltip: "A job's Turnaround Time time is the measured number of CPU cycles from when the job entered the system to when it finished and left the system",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.turnaroundTime)]
         }
@@ -46,6 +49,7 @@ export const props = {
             return d.running.serviceTime;
         },
         label: "Service Time",
+        tooltip: "Service Time is amount of cycles a job has been run on the CPU.",
         legend: ["Little Service Time", "Lots of Service Time"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.serviceTime)]
@@ -56,6 +60,7 @@ export const props = {
             return d.running.totalWaitingTime;
         },
         label: "Total Waiting Time",
+        tooltip: "Total Waiting Time is the amount of CPU cycles a job has spent waiting in a queue",
         legend: ["Little Waiting", "Lots of Waiting"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.totalWaitingTime)]
@@ -66,6 +71,7 @@ export const props = {
             return d.running.avgPriority;
         },
         label: "Average Priority",
+        tooltip: "Average Priority represents the queue a job has spent the most time in",
         legend: ["Usually Low Priority", "Usually High Priority"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.running.avgPriority)]
@@ -76,6 +82,7 @@ export const props = {
             return d.init.runTime;
         },
         label: "Run Time",
+        tooltip: "Run Time is the number of cycles a job needs to be run on the CPU to be completed",
         legend: ["Short Job", "Long Job"],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.runTime)]
@@ -87,6 +94,7 @@ export const props = {
         },
         label: "Create Time",
         legend: ["Early Job", "Late Job"],
+        tooltip: "Create time stores the CPU cycle number that a job entered (or will enter) the simulation at",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.createTime)]
         }
@@ -97,12 +105,17 @@ export const props = {
         },
         label: "Job IO Length",
         legend: ["Short IO", "Long IO"],
+        tooltip: "IO length is a fixed number of CPU cycles that will pass after a job has entered IO before the job leaves IO",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioLength)]
         }
     },
     ["tq"]: {
+        access(d) {
+            return `${d.running.quantumLeft} / ${d.running.quantumFull}`;
+        },
         label: "Time Quantum",
+        tooltip: "Time Quantum the number of cycles a job may run on the CPU before being kicked off and deprioritized",
         legend: ["Barely Depleted", "Almost Depleted"],
     },
     ["none"]: {
@@ -110,6 +123,7 @@ export const props = {
             return 0;
         },
         label: "None",
+        tooltip: "This is a blank attribute... Why are you reading this?",
         legend: ["No Encoding", ""],
         calcDomain(scheduler) {
             return [0, 0];
@@ -120,6 +134,7 @@ export const props = {
             return d.running.priority;
         },
         label: "Priority",
+        tooltip: "The MLFQ algorithm decides which job to run based on priority. The highest priority waiting job is always selected to be run on the CPU",
         legend: ["Low Priority", "High Priority"],
         calcDomain(scheduler) {
             return [0, scheduler.numQueues]
@@ -157,12 +172,13 @@ for (const prop in props) {
 function propSetter(axis) {
     return function (propName) {
         if (!(propName in props)) propName = "none";
-        const { access, label, calcDomain, colour, legend } = props[propName];
+        const { access, label, calcDomain, colour, legend, tooltip } = props[propName];
         this.accessors["get" + axis] = access;
         this.accessors["getDomain" + axis] = calcDomain;
         this.accessors["label" + axis] = label;
         this.accessors["colour" + axis] = colour;
         this.accessors["legend" + axis] = legend;
+        this.accessors["tooltip" + axis] = tooltip;
         return this;
     };
 }
