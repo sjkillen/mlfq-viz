@@ -26,9 +26,18 @@ svg {
    border: solid 1px black;
    position: relative;
    border: 0px solid black;
-   rect.queue {
-       stroke-width: $border;
-       stroke: black;
+   g.queueGroup {
+       rect.queue {
+          stroke-width: $border;
+          stroke: black;
+       }
+       text.label {
+           font-size: 60px;
+           font-weight: bolder;
+           stroke: black;
+           stroke-width: 2px;
+           fill: white;
+       }
    }
    rect.requeue {
        fill: #444;

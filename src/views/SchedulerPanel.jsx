@@ -548,13 +548,30 @@ function drawJob(selection, scheduler, scales) {
  * Draw the queues to hold jobs
  */
 function queues(svg, scheduler, scales) {
-      const join = svg.selectAll("rect.queue").data(scheduler.queues);
-      join.call(singleQueue, scheduler, scales)
-      join.enter()
-            .append("rect")
+      const update = svg.selectAll("g.queueGroup").data(scheduler.queues);
+      const trans = d => `translate(${scales.queue(d.priority)}px, ${scales.queueTop}px)`;
+      const textTrans = `translate(${scales.queueWidth / 2}px, ${50}px)`;
+
+      update.style("transform", trans)
+      update.selectAll("rect.queue")
+            .call(singleQueue, scheduler, scales)
+      update.selectAll("text")
+            .style("transform", textTrans)
+
+      const enter = update.enter()
+            .append("g")
+            .classed("queueGroup", true)
+            .style("transform", trans)
+      enter.append("rect")
             .classed("queue", true)
             .call(singleQueue, scheduler, scales)
-      join.exit().remove();
+      enter.append("text")
+            .text(d => d.priority)
+            .attr("text-anchor", "middle")
+            .classed("label", true)
+            .style("transform", textTrans)
+
+      update.exit().remove();
 }
 
 function singleQueue(queue, scheduler, scales) {
@@ -573,8 +590,6 @@ function singleQueue(queue, scheduler, scales) {
       })
             .attr("width", scales.queueWidth)
             .attr("height", scales.queueHeight)
-            .attr("x", d => scales.queue(d.priority))
-            .attr("y", scales.queueTop)
 }
 
 /**
