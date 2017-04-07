@@ -47,6 +47,28 @@ export default {
         },
    },
    details: {
+             
+        lesson: [
+         {
+            message: "Welcome to the MLFQ scheduling simulator, " +
+                    "thanks for taking an interest in computer systems! " +
+                    "lets start with the basics! when a job is created " +
+                    "it is scheduled and placed into the first queue " +
+                    "lets create some jobs now!",
+
+            atCycle: 1
+         },
+         {
+            message: "next, jobs proceed to the CPU where they are run " +
+                    "for a little while then either enter IO, gets re-scheduled, " +
+                    "or exits the MLFQ. Let's let it run for a bit and get an " +
+                    "overview of the whole system, if you don't understand " +
+                    "everything yet, don't worry this is just an overview lesson!",
+
+            atCycle: 5
+         }
+      ],
+
       attributes: []
    },
    navigation: [

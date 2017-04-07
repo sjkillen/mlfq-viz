@@ -7,13 +7,6 @@ export default {
       speed: 1000,
       generation: [
          {
-            ioFrequencyRange: [1, 1],
-            jobRuntimeRange: [50, 50],
-            numJobsRange: [0, 0],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [3, 3]
-         },
-        {
             ioFrequencyRange: [2, 2],
             jobRuntimeRange: [50, 50],
             numJobsRange: [0, 0],
@@ -29,6 +22,13 @@ export default {
          },
         {
             ioFrequencyRange: [4, 4],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [5, 5],
             jobRuntimeRange: [50, 50],
             numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
@@ -68,19 +68,56 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Number of Queues": 8,
-            "timeQuantums": [4, 5, 6, 7, 8, 10, 11, 12],
         },
         "Job Generator": {
-            "Number of Jobs": 5,
-            "IO Frequency Min" : 1,
-            'IO Frequency Max' : 5,
-            "Duration": 50,
-            "IO Length Min" : 3,
-            "IO Length Max" : 3,
         },
    },
    details: {
+        lesson: [
+         {
+            message: "Interactive jobs have a high frequency of IO"+
+                    " this means that they often receive input from"+ 
+                    " the user. Lets watch how high frequency jobs"+ 
+                    " get prioritized! (feel free to play with the speed!)",
+
+
+
+
+            atCycle: 1
+         },
+        {
+            message: "See how the high frequency jobs get run more often?"+
+                    " thats because they get set back to the queue that"+
+                    " they came from when they leave IO. This lets"+
+                    " them get a higher priority! Click the left"+
+                    " arrow to see a scatterplot, the higher the"+
+                    " IO frequency, the higher priority!"+ 
+                    " Can you think of any problems? Let's add"+
+                    " a really interactive jobs.",
+
+
+
+
+
+            atCycle: 30
+        },
+        {
+            message: "See how the new job takes up all the cpu time? Although"+
+                    " the scheduler lets highly interactive"+
+                    " jobs run, it neglects longer running jobs"+
+                    " this phenomenon is called Starvation."+
+                    " Furthermore, a clever user may try to game"+
+                    " the scheduler by organizing his program to run"+
+                    " lots of IO.",
+
+
+
+
+
+
+            atCycle: 45
+        }
+        ],
       attributes: []
    },
    navigation: [
