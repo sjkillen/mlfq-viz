@@ -8,6 +8,7 @@ $border: 3px;
     position: relative;
     left: 10%;
     width: 600px;
+    margin-bottom: 275px;
     select {
         width: 400;
         height: 50;
@@ -21,6 +22,7 @@ $border: 3px;
     }
 }
 svg {
+   margin-top: 110px;
    border: solid 1px black;
    position: relative;
    border: 0px solid black;
@@ -50,7 +52,7 @@ svg {
        }
    }
    g.job {
-       &:not(.legend) {
+       &:not(.legend):not(.external) {
            cursor: pointer;
        }
        text {

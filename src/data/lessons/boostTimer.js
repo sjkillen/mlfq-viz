@@ -1,25 +1,34 @@
 export default {
    lessonName: "THE BOOST TIMER",
    simulation: {
-      timeQuantums: [2, 1, 2, 1, 2, 1, 3, 20],
-      boostTime: 15,
+      timeQuantums: [2, 1, 2, 1, 2, 1, 3, 2],
+      boostTime: 25,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
-         {
-            ioFrequencyRange: [1, 10],
+          //long job to starve
+        {
+            ioFrequencyRange: [100, 100],
             jobRuntimeRange: [100, 100],
-            numJobsRange: [4, 4],
+            numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+
+         {
+            ioFrequencyRange: [1, 1],
+            jobRuntimeRange: [100, 100],
+            numJobsRange: [5, 5],
+            jobCreateTimeRange: [10, 10],
             ioLengthRange: [3, 3]
          },
       ]
    },
    scheduler: {
       attributes: [
+        "none&priority=rainbow",
          "none",
          "none&priority=greyscale",
-         "none&priority=rainbow",
       ],
       options: {
          showBoostTimer: true
@@ -42,20 +51,41 @@ export default {
    parameter: {
        "render": true,
         "Scheduler Parameters": {
-            "Boost Time": 30,
+            "Boost Time": 25,
             "Number of Queues": 8,
-            "timeQuantums": [3, 4, 5, 6, 7, 8, 10, 12]
+            "timeQuantums": [2, 1, 2, 1, 2, 1, 3, 2]
         },
         "Job Generator": {
-            "Number of Jobs": 5, 
-            "IO Frequency Min" : 10,
-            'IO Frequency Max' : 20,
-            "Duration": 10,
-            "IO Length Min" : 10,
-            "IO Length Max" : 15,
         },
    },
    details: {
+      lesson: [
+         {
+            message: "We have one last issue to deal with,"+
+                    " starvation! How do we stop new jobs"+
+                    " from preventing older jobs from running?"+
+                    " The answer is to BOOST!",
+
+            atCycle: 1
+         },
+         {
+            message: "Lets increase a job's priority first, this"+
+                     " will help us see the importance of the boost!",
+
+            atCycle: 5
+         },
+         {
+            message: "Lets add some interactive jobs, See how they gobble "+
+                     " up the cpu?",
+
+            atCycle: 10
+         },         
+          {
+            message: "BOOST NOW!!! GO GO GO! ",
+
+            atCycle: 25
+         },
+      ],
       attributes: []
    },
    navigation: [

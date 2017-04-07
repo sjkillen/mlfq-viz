@@ -3,7 +3,7 @@ export default {
    simulation: {
       timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
-      resetTQsOnIO: false,
+      resetTQsOnIO: true,
       speed: 1000,
       generation: [
          {
@@ -33,16 +33,10 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parallel: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parameter: { 
@@ -50,13 +44,27 @@ export default {
         "Scheduler Parameters": {
         },
         "Job Generator": {
-            "Number of Jobs": 10, 
-            "Duration": 10,
+            "Number of Jobs": 6, 
+            "Duration": 5,
             "IO Length Min" : 3,
             "IO Length Max" : 3,
         },
    },
    details: {
+        lesson: [
+         {
+            message: "Sometimes a job needs to perform IO, this means that"+
+                    " it is receiving some input from another program."+
+                    " When IO happens, the job is placed in the IO box,"+
+                    " when it is finished it gets placed right back in the que where it"+
+                    " came from. This is to prevent interactive jobs being pushed back "+
+                    " to lower priority, and helps maintain a interactive system.",
+
+
+
+            atCycle: 1
+         }
+        ],
       attributes: []
    },
    navigation: [

@@ -44,6 +44,18 @@ export function queueToCPU(job, scheduler, scales) {
 }
 
 /**
+ * Animate a job staying on the CPU
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function cpuToCPU(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job.transition(linear(time, 1))
+      .call(transXY, scales.cpu.x, scales.cpu.y)
+}
+
+/**
  * Animate a job inside a queue
  * @param job d3 selection of the job element
  * @param scheduler MLFQ

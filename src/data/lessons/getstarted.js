@@ -33,16 +33,10 @@ export default {
    },
    splom: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parallel: {
       attributes: [
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioFreq"
       ]
    },
    parameter: {
@@ -53,6 +47,28 @@ export default {
         },
    },
    details: {
+             
+        lesson: [
+         {
+            message: "Welcome to the MLFQ scheduling simulator, " +
+                    "thanks for taking an interest in computer systems! " +
+                    "Let's start with the basics! When a job is created," +
+                    "it is scheduled and placed into the first queue." +
+                    "Let's' create some jobs now!",
+
+            atCycle: 1
+         },
+         {
+            message: "Next, jobs proceed to the CPU where they are run " +
+                    "for a little while then either enter IO, gets re-scheduled, " +
+                    "or exits the MLFQ. Let's let it run for a bit and get an " +
+                    "overview of the whole system, if you don't understand " +
+                    "everything yet, don't worry this is just an overview lesson!",
+
+            atCycle: 5
+         }
+      ],
+
       attributes: []
    },
    navigation: [

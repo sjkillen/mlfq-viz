@@ -10,13 +10,13 @@ import * as d3 from "d3";
  * .label -> text display of prop
  * .calcDomain(scheduler) -> return domain of value [min, max]
  */
-const props = {
+export const props = {
     [".init.ioFreq"]: {
         access(d) {
             return d.init.ioFreq;
         },
         label: "IO Frequency",
-        legend: ["Low IO Freq.", "High IO Freq."],
+        legend: ["High IO Freq.", "Low IO Freq."],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
         }
@@ -110,7 +110,7 @@ const props = {
             return 0;
         },
         label: "None",
-        legend: ["No Enconding", ""],
+        legend: ["No Encoding", ""],
         calcDomain(scheduler) {
             return [0, 0];
         }
