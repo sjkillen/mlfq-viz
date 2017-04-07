@@ -18,6 +18,7 @@ class SchedulerStore extends ReduceStore {
       return immut({
          scheduler: freezeSched(scheduler),
          prevJobStates: prev,
+         lessonOptions: {},
          selectedJobId: -1,
          fillAttr: "none",
          displayAttr: [],
@@ -32,6 +33,7 @@ class SchedulerStore extends ReduceStore {
       scheduler.fillAttr = state.get("fillAttr");
       scheduler.playMode = state.get("playBackMode");
       scheduler.displayAttr = state.get("displayAttr").toJS();
+      scheduler.lessonOptions = state.get("lessonOptions").toJS();
       return scheduler;
    }
    reduce(state, action) {
@@ -107,7 +109,8 @@ function configLesson(state, lesson) {
    if (lesson.scheduler.attributes.indexOf(state.get("fillAttr")) === -1) {
       state = state.set("fillAttr", lesson.scheduler.attributes[0]);
    }
-   return state.set("displayAttr", immut(lesson.scheduler.attributes));
+   return state.set("displayAttr", immut(lesson.scheduler.attributes))
+            .set("lessonOptions", immut(lesson.scheduler.options))
 }
 
 function schedulerLoop(scheduler) {
