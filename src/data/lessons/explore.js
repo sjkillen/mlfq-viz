@@ -109,13 +109,10 @@ export default {
       attributes: [
          ".init.ioFreq",
          ".init.runTime",
-         ".init.createTime",
          "timeQuantum",
          ".perf.turnaroundTime",
-         ".running.serviceTime",
          ".running.priority",
          ".running.serviceTime",
-         ".running.totalWaitingTime",
          ".running.avgPriority",
          ".perf.responseTime",
          ".init.ioLength",

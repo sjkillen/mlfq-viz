@@ -101,7 +101,10 @@ export default {
             atCycle: 45
         }
         ],
-      attributes: []
+      attributes: [
+         ".init.ioFreq",
+         ".init.ioLength"
+      ]
    },
    navigation: [
       "scheduler",

@@ -69,7 +69,7 @@ export default {
             atCycle: 1
          },
          {
-            message: "Lets increase a job's priority first, this"+
+            message: "Lets decrease a job's priority first, this"+
                      " will help us see the importance of the boost!",
 
             atCycle: 5
@@ -94,7 +94,12 @@ export default {
             atCycle: 28
          },
       ],
-      attributes: []
+      attributes: [
+         ".init.ioFreq",
+         "timeQuantum",
+         ".running.priority",
+         ".running.avgPriority",
+      ]
    },
    navigation: [
       "scheduler",

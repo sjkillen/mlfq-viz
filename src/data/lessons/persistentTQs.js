@@ -50,7 +50,11 @@ export default {
             atCycle: 1
          },
         ],
-      attributes: []
+      attributes: [
+         "timeQuantum",
+         ".running.priority",
+         ".init.ioFreq"
+      ]
    },
    navigation: [
       "scheduler",

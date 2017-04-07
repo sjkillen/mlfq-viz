@@ -72,7 +72,10 @@ export default {
             atCycle: 15
          },
         ],
-      attributes: []
+      attributes: [
+         ".init.createTime",
+         ".init.runTime"
+      ]
    },
    navigation: [
       "scheduler",

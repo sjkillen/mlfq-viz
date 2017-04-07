@@ -59,15 +59,19 @@ export default {
    details: {
         lesson: [
          {
-            message: "So how does the MLFQ determine how long a job should run on the cpu before kicking it off? Each queue is given a fixed time length in cycles that jobs moving from the queue to the CPU should be able to run on CPU uninterupted. If a job exceeds it's Time Quantum (the job doesn't perform IO) the job is deprioritized and placed back in a lower queue. Let's add some jobs and see it in action! Try changing what's encoded inside the jobs by clicking the drop down bar underneath the scheduler",
+            message: "So how does the MLFQ determine how long a job should run on the cpu before kicking it off? Each queue is given a fixed time length in cycles that jobs moving from the queue to the CPU should be able to run on CPU uninterupted. If a job exceeds it's Time Quantum (the job doesn't perform IO) the job is deprioritized and placed back in a lower queue. Try changing what's encoded inside the jobs by clicking the drop down bar underneath the scheduler",
             atCycle: 1
          },
         {
-            message: "Notice how Time Quantums are greater for lower priority jobs? This causes the MLFQ to balance itself out, giving priority to more interactive jobs and allowing CPU-bound jobs to run on the CPU longer. Let's add some interactive jobs and see what happens!\nClick on the scheduler parameters panel in the top right to see the time quantum for each queue. keep in mind that for lessons, this is read only.",
+            message: "Notice how Time Quantums are greater for lower priority jobs? This causes the MLFQ to balance itself out, giving priority to more interactive jobs and allowing CPU-bound jobs to run on the CPU longer. Let's add some interactive jobs and see what happens!\nClick on the scheduler parameters panel in the top right to see the time quantum for each queue.",
             atCycle: 15
         }
         ],
-      attributes: []
+      attributes: [
+         "timeQuantum",
+         ".running.priority",
+         ".init.ioFreq"
+      ]
    },
    navigation: [
       "scheduler",
