@@ -8,6 +8,7 @@ import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import SPLOMStore from "../data/SPLOMStore";
 import "./SPLOMPanel.scss";
+import { selectJob } from "../data/SchedulerActions";
 
 export default Container.createFunctional(SPLOMPanel, () => [SchedulerStore, SPLOMStore], () => {
    return {
@@ -36,7 +37,7 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
 
    //MAIN svg
    const svg = d3.select(svgElement)
-      .attr("height", newScale.height)
+      .attr("height", newScale.height + 10)
       .attr("width", newScale.width)
 
    const chartJoin = svg.selectAll("g.chart")
@@ -135,10 +136,17 @@ function scatterPlotDots(svg, scheduler, accessor, scale) {
    //Creating dots
    enter.append("circle")
       .classed("job", true)
-      .attr("r", scale.size / 100)
+      .on("click", selectJob)
+      .call(dot);
+
+   update.call(dot);
+
+   function dot(select) {
+      return select.attr("r", scale.size / 100)
       .attr("cx", d => scale.xScale(accessor.getX(d)))
       .attr("cy", d => scale.yScale(accessor.getY(d)))
       .attr("transform", `translate(${(scale.size / 100) },${scale.size / 100})`);
+   }
 }
 
 /**

@@ -1,20 +1,18 @@
 $border: 3px;
 
 svg {
-   border: solid 1px black;
-   position: absolute;
+   position: relative;
    left: 20%;
    rect.frame {
        fill: transparent;
        stroke-width: $border;
        stroke: black;
-   }
-  
+   }  
    circle.job {
        cursor: pointer;
        stroke-width: 1;
-       stroke: red;
-       fill: black;
+       stroke: black;
+       fill: white;
        &[data-selected="true"] {
            stroke-width: 8px;
        }

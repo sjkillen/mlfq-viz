@@ -41,22 +41,24 @@ function DetailView({ select, scheduler, details }) {
                </div>
             </div>
          </div>
-         {divideAttrColumns(details.attributes).map(attrCol => {
-            return (<table className="attributes">
-               {attrCol
-                  .map(attr => [attr, props[attr]])
-                  .map(([id, attr]) => {
-                     return (
-                        <tr key={id} className="attr">
-                           <td className="key">
-                              {attr.label}
-                           </td>
-                           <td className="value">
-                              {select ? round(attr.access(select)) : "-"}
-                           </td>
-                        </tr>
-                     )
-                  })}
+         {divideAttrColumns(details.attributes).map((attrCol, i) => {
+            return (<table key={i} className="attributes">
+               <tbody>
+                  {attrCol
+                     .map(attr => [attr, props[attr]])
+                     .map(([id, attr]) => {
+                        return (
+                           <tr key={id} className="attr">
+                              <td className="key">
+                                 {attr.label}
+                              </td>
+                              <td className="value">
+                                 {select ? round(attr.access(select)) : "-"}
+                              </td>
+                           </tr>
+                        )
+                     })}
+               </tbody>
             </table>);
          })}
       </div>
@@ -65,7 +67,7 @@ function DetailView({ select, scheduler, details }) {
 
 
 function round(num) {
-   return ((num * 1000) | 0 ) / 1000;
+   return ((num * 1000) | 0) / 1000;
 }
 
 /**
