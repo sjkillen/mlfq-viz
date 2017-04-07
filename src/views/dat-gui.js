@@ -321,7 +321,7 @@ function refreshScheduler(config){
             ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
             jobRuntimeRange: [1, config["Duration"]],
             numJobsRange: [config["Number of Jobs"], config["Number of Jobs"]],
-            jobCreateTimeRange: [1, 15],
+            jobCreateTimeRange: [1, 10],
             ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
           }],
       });

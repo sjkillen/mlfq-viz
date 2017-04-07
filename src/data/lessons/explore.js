@@ -62,7 +62,7 @@ export default {
             "Boost Time": 100,
             "Scheduler Height": 30,
             "Number of Queues": 8,
-            "timeQuantums": [50, 5, 5, 5, 5, 5, 5, 5],
+            "timeQuantums": [5, 5, 5, 5, 5, 5, 5, 5],
             
         },
         "Job Generator": {

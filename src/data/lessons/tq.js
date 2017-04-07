@@ -72,11 +72,11 @@ export default {
         {
             message: "sSe how the jobs take more time on the cpu the further it gets"+
                     " deprioritized? This lets longer jobs get"+
-                    " deprioritized  while shorter (more interactive ones"+
-                    " get run more frequently) .Let's add some interactive"+
+                    " deprioritized  while shorter and/or more interactive jobs"+
+                    " get run more frequently. Let's add some interactive"+
                     " jobs and see what happens! \n "+
                     " Click on the scheduler parameters panel in the"+
-                    " top left to see the time quantum for each que."+
+                    " top right to see the time quantum for each que."+
                     " keep in mind that for lessons, this is read only.",
 
 

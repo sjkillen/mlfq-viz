@@ -85,6 +85,14 @@ export default {
 
             atCycle: 25
          },
+
+         {
+            message: "See how the jobs all got reprioritized? thats how the MLFQ manages starvation!"+
+                     " CONGRATULATIONS!! you have completeted the MLFQ training program! check out the"+
+                     " lesson labeled EXPLORE to further explore the MLFQ!",
+
+            atCycle: 28
+         },
       ],
       attributes: []
    },

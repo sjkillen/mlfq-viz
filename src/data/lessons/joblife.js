@@ -69,7 +69,7 @@ export default {
             atCycle: 1
          },
          {
-            message: "See how the jobs left the system? They were run"+ 
+            message: "See how the jobs left the system? They ran"+ 
                     " to completion because their runtime (the amount of"+
                     " time a job needs to runs on the system) was low."+
                     " Let's create a job that lasts a little longer!",

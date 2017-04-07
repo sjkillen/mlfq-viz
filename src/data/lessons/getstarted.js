@@ -52,7 +52,7 @@ export default {
          {
             message: "Welcome to the MLFQ scheduling simulator, " +
                     "thanks for taking an interest in computer systems! " +
-                    "Let's start with the basics! When a job is created," +
+                    "Let's start with the basics! When a job is created, " +
                     "it is scheduled and placed into the first queue." +
                     "Let's' create some jobs now!",
 
