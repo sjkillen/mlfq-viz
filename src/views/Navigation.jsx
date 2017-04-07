@@ -7,7 +7,7 @@ import SchedulerPanel from "../views/SchedulerPanel";
 import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory, } from 'react-router'
-import Header from "./Header"
+import Header from "./Header";
 import DetailView from "./DetailView";
 
 class App extends Component {
