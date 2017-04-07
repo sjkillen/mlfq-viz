@@ -13,6 +13,7 @@ import DetailStore from "../data/DetailStore";
 import { props } from "../data/dataAccessors";
 import "./DetailView.scss";
 import { externalJob } from "./SchedulerPanel";
+import { pauseScheduler } from "../data/SchedulerActions";
 
 export default Container.createFunctional(DetailView, () => [SchedulerStore, DetailStore], () => {
    const scheduler = SchedulerStore.getScheduler();
@@ -22,6 +23,7 @@ export default Container.createFunctional(DetailView, () => [SchedulerStore, Det
       scheduler
    };
 });
+
 /**
  * Called every state change
  */
@@ -92,6 +94,9 @@ function divideAttrColumns(arr) {
 function calcLesson(scheduler, details) {
    for (let i = details.lesson.length - 1; i >= 0; i--) {
       const { message, atCycle } = details.lesson[i];
+      if (scheduler.globalTick === atCycle && scheduler.globalTick > 1) {
+         pauseScheduler(scheduler);
+      }
       if (scheduler.globalTick >= atCycle) {
          let next = "Lesson Complete";
          const nextLesson = details.lesson[i + 1];
