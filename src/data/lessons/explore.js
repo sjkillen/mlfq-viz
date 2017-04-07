@@ -69,7 +69,11 @@ export default {
       attributes: [
          ".init.runTime",
          ".init.createTime",
-         ".init.ioFreq"
+         ".init.ioFreq",
+         ".perf.turnaroundTime",
+         ".running.serviceTime",
+         ".running.totalWaitingTime",
+         ".running.avgPriority"
       ]
    },
    navigation: [

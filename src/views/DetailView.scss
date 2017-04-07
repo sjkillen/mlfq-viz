@@ -2,7 +2,7 @@ $dim: 250px;
 
 & {
    width: 100%;
-   background: #1f77b4;
+   background: #CCC;
    top: 900px;
    height: $dim;
    position: absolute;
@@ -35,18 +35,16 @@ svg {
       height: 100%;
       width: 700px;
       overflow: hidden;
-      background: orange;
+      background: rgba(250, 250, 250, 0.3);
       position: relative;
       .message {
          padding: 30px;
-         background: blue;
       }
       .next {
          position: absolute;
          padding: 30px;
          bottom: 0px;
          width: 100%;
-         background: blue;
       }
    }
 }
@@ -54,11 +52,13 @@ svg {
 .attributes {
    display: inline-block;
    vertical-align: top;
-   background: green;
+   background: rgba(250, 250, 250, 0.2);
    font-size: 20px;
    .attr {
       .key {
-         padding: 20px;
+         padding-left: 20px;
+         padding-right: 20px;
+         height: $dim / 3;
          &::after {
             content: ":"
          }

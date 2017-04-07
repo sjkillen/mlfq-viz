@@ -12,7 +12,7 @@ import { actions as lessonActions } from "../data/lessons";
 import DetailStore from "../data/DetailStore";
 import { props } from "../data/dataAccessors";
 import "./DetailView.scss";
-import { externalJob } from"./SchedulerPanel";
+import { externalJob } from "./SchedulerPanel";
 
 export default Container.createFunctional(DetailView, () => [SchedulerStore, DetailStore], () => {
    const scheduler = SchedulerStore.getScheduler();
@@ -41,25 +41,51 @@ function DetailView({ select, scheduler, details }) {
                </div>
             </div>
          </div>
-         <table className="attributes">
-            {details.attributes
-               .map(attr => [attr, props[attr]])
-               .map(([id, attr]) => {
-                  return (
-                     <tr key={id} className="attr">
-                        <td className="key">
-                           {attr.label}
-                        </td>
-                        <td className="value">
-                           {select ? attr.access(select) : "-"}
-                        </td>
-                     </tr>
-                  )
-               })}
-         </table>
+         {divideAttrColumns(details.attributes).map(attrCol => {
+            return (<table className="attributes">
+               {attrCol
+                  .map(attr => [attr, props[attr]])
+                  .map(([id, attr]) => {
+                     return (
+                        <tr key={id} className="attr">
+                           <td className="key">
+                              {attr.label}
+                           </td>
+                           <td className="value">
+                              {select ? round(attr.access(select)) : "-"}
+                           </td>
+                        </tr>
+                     )
+                  })}
+            </table>);
+         })}
       </div>
    );
 }
+
+
+function round(num) {
+   return ((num * 1000) | 0 ) / 1000;
+}
+
+/**
+ * Divide array into groups of three or less
+ */
+function divideAttrColumns(arr) {
+   const cols = [];
+   let curr;
+   for (let i = 0, size = 3; i < arr.length; i++) {
+      if (size === 3) {
+         size = 0;
+         curr = [];
+         cols.push(curr)
+      }
+      curr.push(arr[i]);
+      size++;
+   }
+   return cols;
+}
+
 
 function calcLesson(scheduler, details) {
    for (let i = details.lesson.length - 1; i >= 0; i--) {
