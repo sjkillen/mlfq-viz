@@ -64,20 +64,11 @@ export default {
             atCycle: 1
          },
          {
-            message: "See how the jobs left the system? They ran"+ 
-                    " to completion because their runtime (the amount of"+
-                    " time a job needs to runs on the system) was low."+
-                    " Let's create a job that lasts a little longer!",
-
+            message: "See how the jobs left the system? They ran to completion because their runtime was low. Let's create a job that lasts a little longer!",
             atCycle: 10
          },
         {
-            message: "See how this next ball gets rescheduled? That's because"+
-                    " it hasn't completed yet! Click the right arrow"+
-                    " to see a scatterplot of the jobs! The y axis is"+ 
-                    " create time, while the x axis is runtime. Can you tell" +
-                    " which job was the longer job??",
-
+            message: "Watch how this next job gets rescheduled because it hasn't completed yet. Click the right arrow to see a scatterplot of the jobs. The y axis is create time, while the x axis is runtime. Can you tell which job was the longer job?",
             atCycle: 15
          },
         ],
