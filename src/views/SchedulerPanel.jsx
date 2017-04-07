@@ -152,7 +152,7 @@ function makeFillupGradient(group, scheduler, scales) {
 /**
  * Generate all the needed scales
  */
-function getScales(svg, scheduler) {
+function getScales(svg, scheduler, forceRadius) {
    const maxQueueHeight = 7;
    const marginBottom = 200;
    const marginTop = 150;
@@ -165,7 +165,7 @@ function getScales(svg, scheduler) {
       .domain(d3.range(maxQueueHeight))
       .range([height - marginBottom, marginTop]);
    const queueWidth = jobHeight.bandwidth();
-   const radius = queueWidth / 2;
+   const radius = forceRadius || queueWidth / 2;
 
    const timerFull = Math.PI * radius;
    const timerScales = scheduler.queues.map(q => {
@@ -704,7 +704,35 @@ function legend(svg, scheduler, scales) {
    enter.call(colourPriority, scheduler, legendScale)
    enter.call(jobClockFill, scheduler, legendScale);
    enter.call(jobFillup, scheduler, legendScale);
+}
 
+export function externalJob(svg, scheduler, selected) {
+   if (!selected) return;
+   svg = d3.select(svg);
+   const update = svg.selectAll("g.external").data([
+      selected
+   ], d => d.init.id);
+   const radius = 120;
+   const scales = getScales(svg, scheduler, radius);
+   const enter = update.enter().append("g").classed("external job", true);
+
+   update.selectAll("circle:not(.clockfill)").attr("r", radius)
+   update.selectAll("circle.clockfill").attr("r", radius)
+   update.call(jobClockFill, scheduler, scales);
+   update.call(jobFillup, scheduler, scales);
+   update.selectAll(".back").call(colourPriority, scheduler, scales)
+   enter.append("circle")
+      .classed("back", true)
+      .call(colourPriority, scheduler, scales)
+   enter.append("circle")
+      .classed("clockfill", true)
+      .call(jobClockFill, scheduler, scales);
+   enter.call(makeFillupGradient, scheduler, scales)
+   enter.append("circle").classed("fillup", true)
+   enter.selectAll("circle:not(.clockfill)").attr("r", radius)
+   enter.call(jobClockFill, scheduler, scales);
+   enter.call(jobFillup, scheduler, scales);
+   update.exit().remove();
 }
 
 /**

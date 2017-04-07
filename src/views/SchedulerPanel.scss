@@ -51,7 +51,7 @@ svg {
        }
    }
    g.job {
-       &:not(.legend) {
+       &:not(.legend):not(.external) {
            cursor: pointer;
        }
        text {

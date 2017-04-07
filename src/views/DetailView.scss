@@ -13,6 +13,19 @@ svg {
    height: $dim;
    width: $dim;
    display: inline-block;
+   .external {
+      transform: translate($dim / 2, $dim / 2);
+   }
+   g.job {
+       circle.back {
+           stroke-width: 1;
+           stroke: black;
+       }
+       circle.clockfill {
+           fill: transparent;
+           transform: rotate(-90deg);
+       }
+   }
 }
 
 .content {
@@ -34,6 +47,26 @@ svg {
          bottom: 0px;
          width: 100%;
          background: blue;
+      }
+   }
+}
+
+.attributes {
+   display: inline-block;
+   vertical-align: top;
+   background: green;
+   font-size: 20px;
+   .attr {
+      .key {
+         padding: 20px;
+         &::after {
+            content: ":"
+         }
+      }
+      .value {
+         width: 60px;
+         padding: 20px;
+         background: rgba(250, 250, 250, 0.4);
       }
    }
 }

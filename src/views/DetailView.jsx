@@ -12,6 +12,7 @@ import { actions as lessonActions } from "../data/lessons";
 import DetailStore from "../data/DetailStore";
 import { props } from "../data/dataAccessors";
 import "./DetailView.scss";
+import { externalJob } from"./SchedulerPanel";
 
 export default Container.createFunctional(DetailView, () => [SchedulerStore, DetailStore], () => {
    const scheduler = SchedulerStore.getScheduler();
@@ -39,23 +40,23 @@ function DetailView({ select, scheduler, details }) {
                   {lesson.next}
                </div>
             </div>
-            <div className="attributes">
-               {details.attributes
-                  .map(attr => [attr, props[attr]])
-                  .map(([id, attr]) => {
-                     return (
-                        <div key={id} className="attr">
-                           <span className="key">
-                              {attr.label}
-                           </span>
-                           <span className="value">
-                              {select ? attr.access(select) : "-"}
-                           </span>
-                        </div>
-                     )
-                  })}
-            </div>
          </div>
+         <table className="attributes">
+            {details.attributes
+               .map(attr => [attr, props[attr]])
+               .map(([id, attr]) => {
+                  return (
+                     <tr key={id} className="attr">
+                        <td className="key">
+                           {attr.label}
+                        </td>
+                        <td className="value">
+                           {select ? attr.access(select) : "-"}
+                        </td>
+                     </tr>
+                  )
+               })}
+         </table>
       </div>
    );
 }
@@ -90,5 +91,5 @@ function findSelected(jobs, id) {
 }
 
 function update(svg, scheduler, select) {
-
+   externalJob(svg, scheduler, select)
 }
