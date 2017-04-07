@@ -13,7 +13,6 @@ svg {
    circle.job {
        cursor: pointer;
        stroke-width: 1;
-       stroke: red;
        fill: black;
        &[data-selected="true"] {
            stroke-width: 8px;

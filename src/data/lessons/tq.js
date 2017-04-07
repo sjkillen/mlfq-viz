@@ -3,16 +3,24 @@ export default {
    simulation: {
       timeQuantums: [3, 6, 9, 12, 15, 18, 21, 24],
       boostTime: Infinity,
-      resetTQsOnIO: false,
+      resetTQsOnIO: true,
       speed: 1000,
       generation: [
          {
             ioFrequencyRange: [200, 200],
             jobRuntimeRange: [50, 50],
-            numJobsRange: [5, 5],
+            numJobsRange: [3, 3],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [100, 100]
          },
+        {
+            ioFrequencyRange: [5, 5],
+            jobRuntimeRange: [10, 10],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [20, 20],
+            ioLengthRange: [2, 2]
+         },
+         
       ]
    },
    scheduler: {

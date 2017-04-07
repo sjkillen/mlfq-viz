@@ -3,7 +3,7 @@ export default {
    simulation: {
       timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
-      resetTQsOnIO: false,
+      resetTQsOnIO: true,
       speed: 1000,
       generation: [
          {

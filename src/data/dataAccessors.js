@@ -16,7 +16,7 @@ const props = {
             return d.init.ioFreq;
         },
         label: "IO Frequency",
-        legend: ["Low IO Freq.", "High IO Freq."],
+        legend: ["High IO Freq.", "Low IO Freq."],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
         }

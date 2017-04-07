@@ -39,7 +39,7 @@ const config = {
   "Jobs Start Time": 10,
   "generation": [],
   "Scheduler Height": 25,
-  "Speed": 10,
+  "Speed": 1,
 }
 
 const SimulationsPannel = {
@@ -167,7 +167,7 @@ var JobGeneratorPannel = {
   }
 
 
-
+//2100 - 200 * config["Speed"];
 //this is what is connected to the store
 function datGui(props){
     propsParameter = props.parameter
@@ -175,7 +175,8 @@ function datGui(props){
     if (props.parameter["render"] === true) {
       currentLesson = props.lessonName
       renderGui(gui, propsParameter)
-      
+      SchedulerParametersPannel["Speed"] = props.simulation.speed / 1000
+      retainSpeed(gui);
     } 
     
     return null;
@@ -195,9 +196,8 @@ export default Container.createFunctional(datGui, () => [guiStore], () => {
       menu2.add(scheduler, 'Trigger Boost')
       menu2.add(scheduler, 'Number of Queues',[1,2,3,4,5,6,7,8,9,10,11,12]);
       var Timequantum = menu2.addFolder("Time Quantums");
-      for (var i = 1; i <= numberOfQues; i++){
+      for (var i = 1; i <= numberOfQues; i++)
         Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
-      }
       return gui;
   }
 //-------------------------------------- work load panel ------------------------------------------     
@@ -210,9 +210,7 @@ function displayJobGenerator(gui, workload){
     menu3.add(workload,'Duration',1,10);
     menu3.add(workload,'IO Length Min',1,10);
     menu3.add(workload,'IO Length Max',1,10);
-    menu3.add(workload, "Jobs Start Time", 1, 100)
     menu3.add(workload,'Generate Jobs');
- 
     return gui;
 }
 
@@ -251,7 +249,7 @@ function renderGui(gui, params) {
           
           for (let i = 1; i <= numberOfQues; i++) {
             TimeQuantum[tqDisplayVals[i-1]] = tqVals[i-1]
-            Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
+            Timequantum.add(TimeQuantum,'Queue ' + i , 1, 20);
           }
           
         } else if (SchedulerAttributes[k] === "Boost Time"){
@@ -322,7 +320,7 @@ function refreshScheduler(config){
             ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
             jobRuntimeRange: [1, config["Duration"]],
             numJobsRange: [config["Number of Jobs"], config["Number of Jobs"]],
-            jobCreateTimeRange: [1, config["Number of Jobs"]],
+            jobCreateTimeRange: [1, 15],
             ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
           }],
       });

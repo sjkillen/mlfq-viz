@@ -17,7 +17,6 @@ export default {
    },
    scheduler: {
       attributes: [
-         "none",
          "tq",
          "tq&priority=greyscale",
          "tq&priority=rainbow"

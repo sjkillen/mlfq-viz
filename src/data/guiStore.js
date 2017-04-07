@@ -15,7 +15,8 @@ class guiStore extends ReduceStore {
                 gui: new dat.GUI({width: 300 }),
                 lessonName: "",
                 parameter: {},
-                options: {}
+                options: {},
+                simulation: {}
          };
    }
 
@@ -30,6 +31,7 @@ class guiStore extends ReduceStore {
         case lessonActions.SET_LESSON:
             clone.parameter = action.data.parameter
             clone.lessonName = action.data.lessonName
+            clone.simulation = action.data.simulation
             return clone
         default:
             return state;

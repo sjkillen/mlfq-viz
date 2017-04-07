@@ -1,13 +1,20 @@
 export default {
    lessonName: "IO FREQUENCY AND PRIORITY",
    simulation: {
-      timeQuantums: [4, 5, 6, 7, 8, 10, 11, 12],
+      timeQuantums: [2, 3, 4, 5, 8, 10, 11, 12],
       boostTime: Infinity,
       resetTQsOnIO: true,
       speed: 1000,
       generation: [
          {
             ioFrequencyRange: [1, 1],
+            jobRuntimeRange: [50, 50],
+            numJobsRange: [0, 0],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+        {
+            ioFrequencyRange: [2, 2],
             jobRuntimeRange: [50, 50],
             numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
@@ -21,32 +28,25 @@ export default {
             ioLengthRange: [3, 3]
          },
         {
-            ioFrequencyRange: [5, 5],
+            ioFrequencyRange: [4, 4],
             jobRuntimeRange: [50, 50],
             numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
             ioLengthRange: [3, 3]
          },
+         //starvation job
         {
-            ioFrequencyRange: [7, 7],
-            jobRuntimeRange: [50, 50],
+            ioFrequencyRange: [1, 1],
+            jobRuntimeRange: [40, 40],
             numJobsRange: [0, 0],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [3, 3]
-         },
-        {
-            ioFrequencyRange: [9, 9],
-            jobRuntimeRange: [50, 50],
-            numJobsRange: [0, 0],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [3, 3]
+            jobCreateTimeRange: [40, 40],
+            ioLengthRange: [1, 1]
          },
       ]
    },
    scheduler: {
       attributes: [
         ".init.ioFreq",
-         "none"
       ],
       options: {
          showBoostTimer: true

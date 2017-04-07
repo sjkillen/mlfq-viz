@@ -1,16 +1,25 @@
 export default {
    lessonName: "THE BOOST TIMER",
    simulation: {
-      timeQuantums: [2, 1, 2, 1, 2, 1, 3, 20],
-      boostTime: 15,
+      timeQuantums: [2, 1, 2, 1, 2, 1, 3, 2],
+      boostTime: 40,
       resetTQsOnIO: false,
       speed: 1000,
       generation: [
-         {
-            ioFrequencyRange: [1, 10],
+          //long job to starve
+        {
+            ioFrequencyRange: [100, 100],
             jobRuntimeRange: [100, 100],
-            numJobsRange: [4, 4],
+            numJobsRange: [0, 0],
             jobCreateTimeRange: [1, 1],
+            ioLengthRange: [3, 3]
+         },
+
+         {
+            ioFrequencyRange: [1, 1],
+            jobRuntimeRange: [100, 100],
+            numJobsRange: [5, 5],
+            jobCreateTimeRange: [10, 10],
             ioLengthRange: [3, 3]
          },
       ]
