@@ -33,16 +33,6 @@ function DetailView({ select, scheduler, details }) {
       <div className="DetailView">
          <svg ref={el => update(el, scheduler, select)} className="preview">
          </svg>
-         <div className="content">
-            <div className="lesson">
-               <div className="message">
-                  {lesson.message}
-               </div>
-               <div className="next">
-                  {lesson.next}
-               </div>
-            </div>
-         </div>
          {divideAttrColumns(details.attributes).map((attrCol, i) => {
             return (<table key={i} className="attributes">
                <tbody>
@@ -64,6 +54,16 @@ function DetailView({ select, scheduler, details }) {
                </tbody>
             </table>);
          })}
+         <div className="content">
+            <div className="lesson">
+               <div className="message">
+                  {lesson.message}
+               </div>
+               <div className="next">
+                  {lesson.next}
+               </div>
+            </div>
+         </div>
       </div>
    );
 }
@@ -111,8 +111,8 @@ function ToolTip({ children, text }) {
 
 function calcLesson(scheduler, details) {
    for (let i = details.lesson.length - 1; i >= 0; i--) {
-      const { message, atCycle } = details.lesson[i];
-      if (scheduler.globalTick === atCycle && scheduler.globalTick > 1) {
+      const { message, atCycle, dontPause } = details.lesson[i];
+      if (scheduler.globalTick === atCycle && scheduler.globalTick > 1 && !dontPause) {
          pauseScheduler(scheduler);
       }
       if (scheduler.globalTick >= (atCycle - 1)) {
