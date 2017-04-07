@@ -194,6 +194,7 @@ export default Container.createFunctional(datGui, () => [guiStore], () => {
     var menu2 = gui.addFolder("Scheduler Parameters"); 
       menu2.add(scheduler, 'Boost Time', 10, 100);
       menu2.add(scheduler, 'Trigger Boost')
+      menu2.add(SchedulerParametersPannel, "Scheduler Height", 1, 50)
       menu2.add(scheduler, 'Number of Queues',[1,2,3,4,5,6,7,8,9,10,11,12]);
       var Timequantum = menu2.addFolder("Time Quantums");
       for (var i = 1; i <= numberOfQues; i++)
@@ -304,7 +305,7 @@ function clearPanels(gui){
 function createTQs() {
   const myArray = [];
   for (var i = 1; i <= config["Number of Queues"]; i++)
-    myArray.push(TimeQuantum["Queue " + i]);
+    myArray.push(Math.round(TimeQuantum["Queue " + i]));
   return myArray;
 }
 
@@ -312,7 +313,7 @@ function createTQs() {
 function refreshScheduler(config){
     restartScheduler({
           timeQuantums: createTQs(),
-          boostTime: config["Boost Time"],
+          boostTime: Math.round(config["Boost Time"]),
           resetTQsOnIO: false,
           random,
           speed: mainScheduler.speed,

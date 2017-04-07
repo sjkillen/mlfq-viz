@@ -49,7 +49,7 @@ export default {
         ".init.ioFreq",
       ],
       options: {
-         showBoostTimer: true
+         showBoostTimer: false
       }
    },
    splom: {

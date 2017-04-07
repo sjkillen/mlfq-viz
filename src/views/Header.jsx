@@ -57,7 +57,7 @@ class Header extends Component {
         if (view === "/Scheduler")
             disp =  "";
         else if (view === "/SPLOM")
-            disp = "";
+            disp = "none";
         else if(view === "/PAPanel")
 
             disp = "none";
