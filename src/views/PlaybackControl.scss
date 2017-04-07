@@ -1,11 +1,12 @@
 button {
-   &.active {
-      background: blue;
-   }
    &.inactive {
       background: white;
    }
    &.disabled {
       background: grey;
+   }
+   &.active {
+      background: #1f77b4;
+      color: white;
    }
 }
