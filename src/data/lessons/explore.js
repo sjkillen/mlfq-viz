@@ -61,8 +61,8 @@ export default {
         "Scheduler Parameters": {
             "Boost Time": 100,
             "Scheduler Height": 30,
-            "Number of Queues": 8,
-            "timeQuantums": [5, 5, 5, 5, 5, 5, 5, 5],
+            "Number of Queues": 12,
+            "timeQuantums": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             
         },
         "Job Generator": {

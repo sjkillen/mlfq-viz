@@ -247,7 +247,6 @@ function renderGui(gui, params) {
           const Timequantum = menu.addFolder("Time Quantums");
           const tqVals = params[panels[i]]["timeQuantums"];
           const tqDisplayVals = Object.getOwnPropertyNames(TimeQuantum);
-          
           for (let i = 1; i <= numberOfQues; i++) {
             TimeQuantum[tqDisplayVals[i-1]] = tqVals[i-1]
             Timequantum.add(TimeQuantum,'Queue ' + i , 1, 20);
