@@ -14,7 +14,7 @@ import "./Header.scss";
 
 import { Container } from "flux/utils";
 
-const pathLArrow = require("./Images/leftArrow.png");
+const pathLArrow = require("./Images/LeftArrow.png");
 const pathRArrow = require("./Images/RightArrow.png");
 
 const content = {
@@ -57,7 +57,7 @@ class Header extends Component {
         if (view === "/Scheduler")
             disp =  "";
         else if (view === "/SPLOM")
-            disp = "";
+            disp = "none";
         else if(view === "/PAPanel")
 
             disp = "none";

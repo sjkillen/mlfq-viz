@@ -22,7 +22,7 @@ export default {
          "tq&priority=rainbow"
       ],
       options: {
-         showBoostTimer: true
+         showBoostTimer: false
       }
    },
    splom: {
@@ -46,30 +46,15 @@ export default {
    details: {
         lesson: [
          {
-            message: "The best way to prevent a job from"+
-                    " stealing all of the CPU's time, and from"+ 
-                    " a malicious user potentially gaming the"+ 
-                    " scheduler, is to keep track of how long"+
-                    " each job has run on the cpu - keeping"+ 
-                    " track of the time quantum.",
-
-
-
+            message: "Thus far, we've been reseting time quantums when jobs leave the CPU. Unfortunately, a malicious job can game our system by making sure to call IO just before it's Time Quantum expires so that the job is never deprioritized. One way to prevent a job from stealing all of the CPU's time is to keep track of how much Time Quantum a job has depleted. Watch the evil red job that will game the system.",
             atCycle: 1
          },
-         {
-            message: "See how when jobs get scheduled "+
-                    " to perform IO they keep track of their time quantum."+
-                    " This will prevent IO heavy jobs from"+
-                    " stealing all the cpu's resources.",
-
-
-
-            atCycle: 12
-         },
-
         ],
-      attributes: []
+      attributes: [
+         "timeQuantum",
+         ".running.priority",
+         ".init.ioFreq"
+      ]
    },
    navigation: [
       "scheduler",

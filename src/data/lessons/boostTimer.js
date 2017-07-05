@@ -69,7 +69,7 @@ export default {
             atCycle: 1
          },
          {
-            message: "Lets increase a job's priority first, this"+
+            message: "Lets decrease a job's priority first, this"+
                      " will help us see the importance of the boost!",
 
             atCycle: 5
@@ -85,8 +85,21 @@ export default {
 
             atCycle: 25
          },
+
+         {
+            message: "See how the jobs all got reprioritized? thats how the MLFQ manages starvation!"+
+                     " CONGRATULATIONS!! you have completeted the MLFQ training program! check out the"+
+                     " lesson labeled EXPLORE to further explore the MLFQ!",
+
+            atCycle: 28
+         },
       ],
-      attributes: []
+      attributes: [
+         ".init.ioFreq",
+         "timeQuantum",
+         ".running.priority",
+         ".running.avgPriority",
+      ]
    },
    navigation: [
       "scheduler",

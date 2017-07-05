@@ -40,6 +40,7 @@ const config = {
   "generation": [],
   "Scheduler Height": 25,
   "Speed": 1,
+  "Start Time Spacing": 1
 }
 
 const SimulationsPannel = {
@@ -148,22 +149,30 @@ var JobGeneratorPannel = {
     },
     'Generate Jobs': function() {
       refreshScheduler(config);
-    }
+    },
+    get ["Start Time Spacing"](){
+      return config["Start Time Spacing"];
+    },
+    set ["Start Time Spacing"](v){
+      config["Start Time Spacing"] = v;
+    },
+    
+
   }
 
   var TimeQuantum ={
-    'Queue 1': 1,
-    'Queue 2': 2,
-    'Queue 3': 3,
-    'Queue 4': 4,
-    'Queue 5': 5,
-    'Queue 6': 6,
-    'Queue 7': 7,
-    'Queue 8': 8,
-    'Queue 9': 9,
-    'Queue 10': 10,
-    'Queue 11': 11,
-    'Queue 12': 12
+    'Queue 0': 1,
+    'Queue 1': 2,
+    'Queue 2': 3,
+    'Queue 3': 4,
+    'Queue 4': 5,
+    'Queue 5': 6,
+    'Queue 6': 7,
+    'Queue 7': 8,
+    'Queue 8': 9,
+    'Queue 9': 10,
+    'Queue 10': 11,
+    'Queue 11': 12,
   }
 
 
@@ -178,6 +187,8 @@ function datGui(props){
       SchedulerParametersPannel["Speed"] = props.simulation.speed / 1000
       retainSpeed(gui);
     } 
+    if (currentLesson === "EXPLORE")
+      render(gui);
     
     return null;
 }
@@ -192,11 +203,11 @@ export default Container.createFunctional(datGui, () => [guiStore], () => {
 //------------------------------------- scheduler panel -------------------------------------------
   function displaySchedulerParams(gui, scheduler, TimeQuantum, numberOfQues){
     var menu2 = gui.addFolder("Scheduler Parameters"); 
-      menu2.add(scheduler, 'Boost Time', 10, 100);
+      menu2.add(scheduler, 'Boost Time', 10, 1000);
       menu2.add(scheduler, 'Trigger Boost')
       menu2.add(scheduler, 'Number of Queues',[1,2,3,4,5,6,7,8,9,10,11,12]);
       var Timequantum = menu2.addFolder("Time Quantums");
-      for (var i = 1; i <= numberOfQues; i++)
+      for (var i = 0; i < numberOfQues; i++)
         Timequantum.add(TimeQuantum,'Queue ' + i ,1,20);
       return gui;
   }
@@ -204,10 +215,12 @@ export default Container.createFunctional(datGui, () => [guiStore], () => {
 function displayJobGenerator(gui, workload){
     var gui3 = gui;
     var menu3 = gui3.addFolder("Job Generator"); 
-    menu3.add(workload,'Number of Jobs', 1,10);
+    menu3.add(workload,'Number of Jobs', 1,50);
+    menu3.add(workload,'Duration',1,100);
+    menu3.add(workload, "Start Time Spacing", 1, 500)
     menu3.add(workload,'IO Frequency Min', 1,10);
     menu3.add(workload,'IO Frequency Max', 1,10);
-    menu3.add(workload,'Duration',1,10);
+
     menu3.add(workload,'IO Length Min',1,10);
     menu3.add(workload,'IO Length Max',1,10);
     menu3.add(workload,'Generate Jobs');
@@ -246,8 +259,7 @@ function renderGui(gui, params) {
           const Timequantum = menu.addFolder("Time Quantums");
           const tqVals = params[panels[i]]["timeQuantums"];
           const tqDisplayVals = Object.getOwnPropertyNames(TimeQuantum);
-          
-          for (let i = 1; i <= numberOfQues; i++) {
+          for (let i = 0; i < numberOfQues; i++) {
             TimeQuantum[tqDisplayVals[i-1]] = tqVals[i-1]
             Timequantum.add(TimeQuantum,'Queue ' + i , 1, 20);
           }
@@ -304,7 +316,7 @@ function clearPanels(gui){
 function createTQs() {
   const myArray = [];
   for (var i = 1; i <= config["Number of Queues"]; i++)
-    myArray.push(TimeQuantum["Queue " + i]);
+    myArray.push(Math.round(TimeQuantum["Queue " + i]));
   return myArray;
 }
 
@@ -312,7 +324,7 @@ function createTQs() {
 function refreshScheduler(config){
     restartScheduler({
           timeQuantums: createTQs(),
-          boostTime: config["Boost Time"],
+          boostTime: Math.round(config["Boost Time"]),
           resetTQsOnIO: false,
           random,
           speed: mainScheduler.speed,
@@ -320,8 +332,8 @@ function refreshScheduler(config){
             ioFrequencyRange: [config["IO Frequency Min"], config["IO Frequency Max"]],
             jobRuntimeRange: [1, config["Duration"]],
             numJobsRange: [config["Number of Jobs"], config["Number of Jobs"]],
-            jobCreateTimeRange: [1, 15],
-            ioLengthRange: [config["IO Length Min"], config["IO Length Max"]]
+            jobCreateTimeRange: [1, Math.round(config["Start Time Spacing"])],
+            ioLengthRange: [config["IO Length Min"], config["IO Length Max"]],
           }],
       });
 }

@@ -6,15 +6,19 @@ import dispatcher from "./dispatcher";
 
 const requireLesson = require.context("./lessons");
 
+export const actions = {
+   SET_LESSON: Symbol("SET_LESSON")
+};
+
 const lessons = {
-   ["EXPLORE"]: getLesson("./explore"),
    ["GETTING STARTED"]: getLesson("./getstarted"),
    ["JOB LIFE CYCLE"]: getLesson("./joblife"),
    ["BASIC IO"]: getLesson("./basicIO"),
    ["THE TIME QUANTUM"]: getLesson("./tq"),
    ["IO FREQUENCY AND PRIORITY"]: getLesson("./iofreq"),
    ["PERSISTENT TIME QUANTUMS"]: getLesson("./persistentTQs"),
-   ["THE BOOST TIMER"]: getLesson("./boostTimer")
+   ["THE BOOST TIMER"]: getLesson("./boostTimer"),
+   ["EXPLORE"]: getLesson("./explore")
 };
 
 function getLesson(path) {
@@ -36,10 +40,6 @@ function deepFreeze(obj) {
 }
 
 export default lessons;
-
-export const actions = {
-   SET_LESSON: Symbol("SET_LESSON")
-};
 
 export function setLesson(key) {
    dispatcher.dispatch({

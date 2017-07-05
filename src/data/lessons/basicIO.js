@@ -28,7 +28,7 @@ export default {
          "none"
       ],
       options: {
-         showBoostTimer: true
+         showBoostTimer: false
       }
    },
    splom: {
@@ -53,19 +53,14 @@ export default {
    details: {
         lesson: [
          {
-            message: "Sometimes a job needs to perform IO, this means that"+
-                    " it is receiving some input from another program."+
-                    " When IO happens, the job is placed in the IO box,"+
-                    " when it is finished it gets placed right back in the que where it"+
-                    " came from. This is to prevent interactive jobs being pushed back "+
-                    " to lower priority, and helps maintain a interactive system.",
-
-
-
+            message: "Sometimes a job needs to perform IO. When IO occurs while a job is running on the CPU, the job is placed in the box labeled IO. When the job finishes IO, it returns to the queues and waits to be scheduled. IO Frequency varies between jobs, jobs with a high IO frequency are considered interactive and need to be run on the CPU often, but not as long as CPU bound jobs",
             atCycle: 1
          }
         ],
-      attributes: []
+      attributes: [
+         ".init.ioFreq",
+         ".init.ioLength",
+      ]
    },
    navigation: [
       "scheduler",
