@@ -1,7 +1,7 @@
 export default {
    lessonName: "GETTING STARTED",
    simulation: {
-      timeQuantums: [3, 4, 5, 6, 9, 10, 12, 13],
+      timeQuantums: [2, 3, 4, 4, 4, 4, 5, 6],
       boostTime: Infinity,
       resetTQsOnIO: false,
       speed: 3000,
@@ -9,15 +9,29 @@ export default {
          {
             ioFrequencyRange: [10, 20],
             jobRuntimeRange: [100, 200],
-            numJobsRange: [3, 3],
-            jobCreateTimeRange: [1, 5],
+            numJobsRange: [2, 4],
+            jobCreateTimeRange: [1, 10],
             ioLengthRange: [10, 20]
          },
          {
             ioFrequencyRange: [10, 20],
             jobRuntimeRange: [100, 200],
-            numJobsRange: [2, 2],
+            numJobsRange: [2, 4],
             jobCreateTimeRange: [30, 40],
+            ioLengthRange: [10, 20]
+         },
+         {
+            ioFrequencyRange: [10, 20],
+            jobRuntimeRange: [100, 200],
+            numJobsRange: [2, 4],
+            jobCreateTimeRange: [60, 70],
+            ioLengthRange: [10, 20]
+         },
+         {
+            ioFrequencyRange: [10, 20],
+            jobRuntimeRange: [100, 200],
+            numJobsRange: [2, 4],
+            jobCreateTimeRange: [90, 120],
             ioLengthRange: [10, 20]
          },
       ]

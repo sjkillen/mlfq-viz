@@ -1,6 +1,7 @@
 body {
     margin: 0px;
     padding: 0px;
+    font-family: Arial;
 }
 
 #bg-nested-dropdown {
@@ -8,5 +9,4 @@ body {
 }
 
 select, button {
-    font-family: serif;
 }

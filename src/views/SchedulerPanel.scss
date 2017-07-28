@@ -1,50 +1,51 @@
-$border: 3px;
+$border: 1px;
 .container {
     display: block;
     position: relative;
-    left: 20%;
+    left: 30%;
 }
 .controls {
     position: relative;
     left: 10%;
-    width: 600px;
+    width: 800px;
     margin-bottom: 275px;
     select {
         width: 550;
         height: 50;
-        font-size: 30;
+        color: grey;
+        font-size: 40px;
     }
     .PlaybackControl button {
         cursor: pointer;
         border-radius: 300px;
-        width: 120px;
-        height: 120px;
+        width: 200px;
+        color: grey;
+        font-size: 50;
+        height: 200px;
     }
 }
 svg {
    margin-top: 110px;
-   border: solid 1px black;
+   border: solid 1px grey;
    position: relative;
-   border: 0px solid black;
+   border: 0px solid grey;
    g.queueGroup {
        rect.queue {
           stroke-width: $border;
-          stroke: black;
+          stroke: grey;
        }
        text.label {
-           font-size: 60px;
-           font-weight: bolder;
-           stroke: black;
-           stroke-width: 2px;
-           fill: white;
+           font-size: 40px;
+           fill: grey;
        }
    }
    rect.requeue {
-       fill: #444;
+       fill: #CCC;
    }
    .cpu {
        text {
-           font-size: 25px;
+           font-size: 55px;
+           fill: grey;
        }
        .slot {
           fill: #EFEFEF;
@@ -52,12 +53,12 @@ svg {
    }
    .io {
        .box {
-          fill: #555;;
-          stroke-width: $border;
-          stroke: black;
+          fill: #CCC;
+          stroke: grey;
        }
        text {
-           font-size: 50px;
+           font-size: 55px;
+           fill: grey;
        }
    }
    g.boostTime {
@@ -67,17 +68,24 @@ svg {
            stroke: rgb(255, 139, 15);
        }
        .frame {
-           stroke-width: 4px;
+           stroke-width: $border;
            fill: transparent;
-           stroke: black;
+           stroke: grey;
        }
+        text {
+            font-size: 25px;
+            font-weight: bold;
+            fill: grey;
+        }
    }
    g.job {
        &:not(.legend):not(.external) {
            cursor: pointer;
        }
        text {
-           fill: black;
+           fill: grey;
+           font-size: 20px;
+           font-weight: bold;
            transform: translateY(50px)
        }
        circle.back {

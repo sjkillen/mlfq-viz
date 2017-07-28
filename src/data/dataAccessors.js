@@ -17,7 +17,7 @@ export const props = {
         },
         label: "IO Frequency",
         tooltip: "A job's IO Frequency is how many cycles a job will run on the CPU before being interupted and moved to IO. Interactive jobs have high IO Frequency, while CPU bound jobs will have low IO frequency",
-        legend: ["High IO Freq.", "Low IO Freq."],
+        legend: ["Low IO Freq.", "High IO Freq."],
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
         }
@@ -138,14 +138,14 @@ export const props = {
         },
         label: "Priority",
         tooltip: "The MLFQ algorithm decides which job to run based on priority. The highest priority waiting job is always selected to be run on the CPU",
-        legend: ["Low Priority", "High Priority"],
+        legend: ["Low Priority!!!&", "High Priority"],
         calcDomain(scheduler) {
             return [0, scheduler.numQueues]
         }
     },
     ["none&priority=greyscale"]: {
         label: "Priority (Greyscale)",
-        legend: ["Low Priority", "High Priority"],
+        legend: ["High Priority!!!!", "Low Priority"],
     },
     ["tq&priority=greyscale"]: {
         label: "Time Quantum & Priority (Greyscale)",
@@ -153,7 +153,7 @@ export const props = {
     },
     ["none&priority=rainbow"]: {
         label: "Priority (Coloured)",
-        legend: ["Low Priority", "High Priority"],
+        legend: ["Low Priority*(&^*", "High Priority"],
     },
     ["tq&priority=rainbow"]: {
         label: "Time Quantum & Priority (Coloured)",
