@@ -1,7 +1,7 @@
 export default {
    lessonName: "EXPLORE-2",
    simulation: {
-      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [10, 400, 800, 1200, 1600, 2000, 2400, 2800, 3200, 3600],
       boostTime: Infinity,
       resetTQsOnIO: true,
       speed: 10,
@@ -9,9 +9,16 @@ export default {
          {
             ioFrequencyRange: [1, 1],
             jobRuntimeRange: [Infinity, Infinity],
-            numJobsRange: [2, 2],
-            jobCreateTimeRange: [1, 10],
-            ioLengthRange: [1, 50]
+            numJobsRange: [1, 1],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [1, 10]
+         },
+         {
+            ioFrequencyRange: [Infinity, Infinity],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [2, 5],
+            jobCreateTimeRange: [1, 1],
+            ioLengthRange: [1, 10]
          },
       ]
    },

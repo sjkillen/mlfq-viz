@@ -330,7 +330,10 @@ export default class Scheduler {
          throw new Error("Scheduler is already running!");
       const tick = () => {
          this.tickIntervalId = setTimeout(tick, this.speed);
-         this.processJobs();
+         if (!this.processJobs()) {
+               clearTimeout(this.tickIntervalId);
+               this.tickIntervalId = setTimeout(tick, 0);
+         }
          update(this);
       };
       this.tickIntervalId = setTimeout(tick, 0);
@@ -396,15 +399,19 @@ export default class Scheduler {
 
    /**
     * Put jobs that have finished IO back in their queues
+    * @returns whether any jobs finished IO
     */
-   finishIO() {
+   finishIO(): boolean {
+      let didFinish = false;
       for (let i = this.ioJobs.length - 1; i >= 0; i--) {
          const job = this.ioJobs[i];
          if (!job.doingIO()) {
             this.ioJobs.splice(i, 1);
             this.queues[job.running.priority].jobs.push(job);
+            didFinish = true;
          }
       }
+      return didFinish;
    }
 
    /**
@@ -458,8 +465,10 @@ export default class Scheduler {
 
    /**
     * Process the jobs in the scheduler
+    * @returns whether any state changed that should be animated
     */
-   processJobs() {
+   processJobs(): boolean {
+      let stateChanged = false;
       if (!this.simulationFinished) {
          this.boostLeft--;
          if (this.boostLeft <= 0) {
@@ -467,16 +476,17 @@ export default class Scheduler {
             this.boostLeft = this.boostTime;
          }
          this.doIO();
-         this.finishIO();
+         stateChanged = stateChanged || this.finishIO();
          this.startJobs(this.globalTick);
-         this.processCpuJob();
-         this.initCpuJob();
+         stateChanged = stateChanged || this.processCpuJob();
+         stateChanged = stateChanged || this.initCpuJob();
          this.waitJobs();
          this.globalTick++;
       }
       if (this.simulationFinished) {
          this.stop();
       }
+      return stateChanged;
    }
 
    /**
@@ -496,21 +506,28 @@ export default class Scheduler {
    /**
     * Loads the next job onto the CPU
     * unless there's one already there
+    * @return whether a new job was loaded
     */
-   initCpuJob() {
-      if (!this.cpuJob)
+   initCpuJob(): boolean {
+      if (!this.cpuJob) {
          this.cpuJob = this.popNextJob();
+         return true;
+      }
+      return false;
    }
 
    /**
     * Process a single job on the cpu
+    * @returns whether CPU state changed
     */
-   processCpuJob() {
+   processCpuJob(): boolean {
+      let stateChanged = false;
       if (this.cpuJob) {
          this.cpuJob.doWork(this.globalTick);
          if (this.cpuJob.isFinished()) {
             this.finishedJobs.push(this.cpuJob);
             this.cpuJob = undefined;
+            stateChanged = true;
          }
          else if (this.cpuJob.quantumExpired()) {
             const lastQueue = this.numQueues - 1;
@@ -518,6 +535,7 @@ export default class Scheduler {
             this.cpuJob.lowerPriority(lowerPriority, this.queues[lowerPriority].timeQuantum);
             this.queues[this.cpuJob.running.priority].jobs.push(this.cpuJob);
             this.cpuJob = undefined;
+            stateChanged = true;
          }
          else if (this.cpuJob.doingIO()) {
             if (this.config.resetTQsOnIO) {
@@ -525,12 +543,14 @@ export default class Scheduler {
             }
             this.ioJobs.push(this.cpuJob);
             this.cpuJob = undefined;
+            stateChanged = true;
          } else {
             this.cpuJob = this.cpuJob;
          }
       } else {
          // IDLE
       }
+      return stateChanged;
    }
 
    /**
@@ -550,7 +570,7 @@ export default class Scheduler {
          } = generate;
          const ran = this.random.range.bind(this.random);
          const numJobs = ran(numJobsRange);
-         const limit = numJobs + id;
+         const limit = numJobs;
          for (id; id <= limit; id++) {
             this.futureJobs.push(new Job({
                id,
