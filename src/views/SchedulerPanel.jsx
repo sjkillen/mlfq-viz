@@ -161,8 +161,8 @@ function getScales(svg, scheduler, forceRadius) {
       const marginBottom = 200;
       const marginTop = 150;
       const marginSides = 400;
-      const width = 1200;
-      const height = 700;
+      const width = 6000;
+      const height = 800;
       const queuePad = 5;
       const jobPad = 5;
       const jobHeight = d3.scaleBand()
@@ -191,11 +191,7 @@ function getScales(svg, scheduler, forceRadius) {
             x: marginSides + queueWidth * 2,
             y: height - marginBottom + queueWidth * 2,
             textX: marginSides + queueWidth * 3,
-            tickTextX: marginSides + queueWidth * 4.4
-      };
-      const boost = {
-            x: cpu.x + 250,
-            y: cpu.y - 20
+            tickTextX: marginSides + queueWidth * 5.3
       };
       const queueBottom = jobHeight(0) + radius + queuePad;
       const queueHeight = queueBottom - queueTop;
@@ -218,18 +214,22 @@ function getScales(svg, scheduler, forceRadius) {
             rightHeight: queueHeight + queueWidth * 4,
             leftHeight: (cpu.y + queueWidth) - queueBottom
       };
+      const boost = {
+            x: requeue.rightLeftStart - 80,
+            y: cpu.y - 30
+      };
       const io = {
             up: requeue.middleUp,
             left: requeue.lowerLeft - queueWidth * 5,
             height: requeue.leftHeight + queueWidth,
             width: queueWidth * 5,
             textX: requeue.lowerLeft - queueWidth * 3,
-            textY: requeue.middleUp + queueWidth,
+            textY: requeue.middleUp + queueWidth * 1.2,
             jobY: cpu.y,
             jobX: requeue.lowerLeft - queueWidth * 3,
       }
       const legend = {
-            x: io.left + 50,
+            x: io.left + 70,
             y: io.up - 75
       };
       const dead = {
@@ -466,7 +466,7 @@ function boostTimer(svg, scheduler, scales) {
 
       group.append("text")
             .attr("visibility", show)
-            .style("transform", "translateY(65px)")
+            .style("transform", "translateY(75px)")
             .attr("text-anchor", "middle")
             .text(text)
 
@@ -550,7 +550,7 @@ function drawJob(selection, scheduler, scales) {
 function queues(svg, scheduler, scales) {
       const update = svg.selectAll("g.queueGroup").data(scheduler.queues);
       const trans = d => `translate(${scales.queue(d.priority)}px, ${scales.queueTop}px)`;
-      const textTrans = `translate(${scales.queueWidth / 2}px, ${50}px)`;
+      const textTrans = `translate(${scales.queueWidth / 2}px, ${-17}px)`;
 
       update.style("transform", trans)
       update.selectAll("rect.queue")
@@ -664,13 +664,13 @@ function cpu(svg, scheduler, scales) {
       enter.append("text")
             .classed("title", true)
             .attr("x", scales.cpu.textX)
-            .attr("y", scales.cpu.y)
+            .attr("y", scales.cpu.y + 18)
             .text("CPU")
 
       enter.append("text")
             .classed("tick", true)
             .attr("x", scales.cpu.tickTextX)
-            .attr("y", scales.cpu.y)
+            .attr("y", scales.cpu.y + 18)
             .text(scheduler.globalTick)
 
       enter.append("circle")
@@ -734,13 +734,13 @@ function legend(svg, scheduler, scales) {
                   fill: scales.access.useFill ? 80 : 0
             }
       ], d => d.init.id);
-      const mov = 70
+      const mov = 85;
       const enter = update.enter().append("g").classed("legend job", true);
       const legendScale = Object.create(scales);
       legendScale.timer = d => `${Math.PI * legendScale.radius / d.clock}, ${Math.PI * legendScale.radius}`;
       legendScale.fillup = Object.create(scales.fillup)
       legendScale.fillup.attr = d => d.fill
-      legendScale.radius = 25;
+      legendScale.radius = scales.radius;
       update.style("transform",
             `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
       update.selectAll("circle:not(.clockfill)").attr("r", d => legendScale.radius + "px")
@@ -752,7 +752,7 @@ function legend(svg, scheduler, scales) {
       update.call(jobFillup, scheduler, legendScale);
       update.selectAll(".back")
             .call(colourPriority, scheduler, legendScale)
-      const pri = ["Low Priority", "High Priority"];
+      const pri = ["High Priority", "Low Priority"];
       enter.style("transform",
             `translate(${legendScale.legend.x}px, ${legendScale.legend.y}px)`)
       enter.append("text")
@@ -764,6 +764,7 @@ function legend(svg, scheduler, scales) {
             })
             .attr("text-anchor", "middle")
             .attr("x", d => d.displace * mov)
+            .attr("y", 7)
       enter.append("circle")
             .classed("back", true)
             .call(colourPriority, scheduler, legendScale)
@@ -818,7 +819,7 @@ function update(svgElement, scheduler) {
       if (!svgElement) return;
       const svg = d3.select(svgElement);
       const scales = getScales(svg, scheduler);
-      svg.attr("height", scales.height)
+      svg.attr("height", scales.height + 100)
             .attr("width", scales.width)
       svg.call(requeuePipe, scheduler, scales);
       svg.call(queues, scheduler, scales);

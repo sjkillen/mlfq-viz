@@ -3,10 +3,10 @@ button {
       background: white;
    }
    &.disabled {
-      background: grey;
+      background: lightgrey;
    }
    &.active {
-      background: #1f77b4;
+      background: #97bcd7;
       color: white;
    }
 }
