@@ -1,25 +1,18 @@
 export default {
-   lessonName: "EXPLORE",
+   lessonName: "EXPLORE-2",
    simulation: {
-      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5],
+      timeQuantums: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
       boostTime: Infinity,
-      resetTQsOnIO: false,
-      speed: 1000,
+      resetTQsOnIO: true,
+      speed: 10,
       generation: [
          {
             ioFrequencyRange: [1, 1],
-            jobRuntimeRange: [100, 200],
-            numJobsRange: [1, 1],
-            jobCreateTimeRange: [5, 5],
-            ioLengthRange: [50, 100]
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [1, 10],
+            ioLengthRange: [1, 50]
          },
-         {
-            ioFrequencyRange: [30, 40],
-            jobRuntimeRange: [60, 1000],
-            numJobsRange: [5, 5],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 49]
-         }
       ]
    },
    scheduler: {
@@ -42,10 +35,7 @@ export default {
          ".init.ioFreq",
          ".perf.responseTime",
          ".perf.turnaroundTime",
-         ".running.avgPriority",
-         ".init.runTime",
-         ".init.createTime",
-         ".init.ioLength",
+         ".running.avgPriority"
       ]
    },
    parallel: {
