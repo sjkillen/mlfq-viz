@@ -1,24 +1,45 @@
 export default {
-   lessonName: "EXPLORE-2",
+   lessonName: "EXPLORE",
    simulation: {
-      timeQuantums: [10, 400, 800, 1200, 1600, 2000, 2400, 2800, 3200, 3600],
+      timeQuantums: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
       boostTime: Infinity,
-      resetTQsOnIO: true,
+      resetTQsOnIO: false,
       speed: 10,
       generation: [
          {
-            ioFrequencyRange: [1, 1],
+            ioFrequencyRange: [1, 9],
             jobRuntimeRange: [Infinity, Infinity],
-            numJobsRange: [1, 1],
-            jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 10]
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [400, 400],
+            ioLengthRange: [400, 500]
          },
          {
-            ioFrequencyRange: [Infinity, Infinity],
+            ioFrequencyRange: [11, 19],
             jobRuntimeRange: [Infinity, Infinity],
-            numJobsRange: [2, 5],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [300, 300],
+            ioLengthRange: [300, 400]
+         },
+         {
+            ioFrequencyRange: [21, 29],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [200, 200],
+            ioLengthRange: [200, 300]
+         },
+         {
+            ioFrequencyRange: [31, 39],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [2, 2],
+            jobCreateTimeRange: [100, 100],
+            ioLengthRange: [100, 200]
+         },
+         {
+            ioFrequencyRange: [41, 49],
+            jobRuntimeRange: [Infinity, Infinity],
+            numJobsRange: [2, 2],
             jobCreateTimeRange: [1, 1],
-            ioLengthRange: [1, 10]
+            ioLengthRange: [10, 20]
          },
       ]
    },

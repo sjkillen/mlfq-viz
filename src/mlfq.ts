@@ -511,7 +511,7 @@ export default class Scheduler {
    initCpuJob(): boolean {
       if (!this.cpuJob) {
          this.cpuJob = this.popNextJob();
-         return true;
+         return this.cpuJob != undefined;
       }
       return false;
    }
@@ -570,10 +570,9 @@ export default class Scheduler {
          } = generate;
          const ran = this.random.range.bind(this.random);
          const numJobs = ran(numJobsRange);
-         const limit = numJobs;
-         for (id; id <= limit; id++) {
+         for (let i = 0; i <= numJobs; i++) {
             this.futureJobs.push(new Job({
-               id,
+               id: id++,
                flags: flags || [],
                createTime: ran(jobCreateTimeRange),
                runTime: ran(jobRuntimeRange),

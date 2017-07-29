@@ -19,7 +19,7 @@ export const props = {
         tooltip: "A job's IO Frequency is how many cycles a job will run on the CPU before being interupted and moved to IO. Interactive jobs have high IO Frequency, while CPU bound jobs will have low IO frequency",
         legend: ["Low IO Freq.", "High IO Freq."],
         calcDomain(scheduler) {
-            return [0, d3.max(scheduler.allJobs, d => d.init.ioFreq)]
+            return [d3.max(scheduler.allJobs, d => d.init.ioFreq), 0]
         }
     },
     [".perf.responseTime"]: {
