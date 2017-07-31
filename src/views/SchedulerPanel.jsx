@@ -232,7 +232,7 @@ function getScales(svg, scheduler, forceRadius) {
             jobX: requeue.lowerLeft - queueWidth * 3,
       }
       const ioBoxHeight = queueWidth + 90
-      const maxIOJobs = 5;
+      const maxIOJobs = 10;
       const ioBoxes = {
             maxJobs: maxIOJobs,
             height: ioBoxHeight,
