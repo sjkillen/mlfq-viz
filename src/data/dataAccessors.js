@@ -165,7 +165,7 @@ let i = 0;
 const colours = d3.scaleOrdinal(d3.schemeCategory10)
     .domain(d3.range(Object.keys(props).length));
 for (const prop in props) {
-    props[prop].colour = colours(i++);
+    props[prop].colour = d3.color(colours(i++)).brighter(.5).rgb();
 }
 /**
  * Create an accessor factory for an axis

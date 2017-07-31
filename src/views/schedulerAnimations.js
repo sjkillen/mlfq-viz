@@ -162,8 +162,27 @@ export function waitInFuture(job, scheduler, scales) {
 export function enterIO(job, scheduler, scales) {
    const time = scheduler.speed;
    return job
+      .transition(linear(time, 1 / 4))
+      .call(transXY, scales.requeue.leftJob, scales.cpu.y)
+      .transition(linear(time, 1 / 4))
+      .call(transXY,scales.requeue.leftJob, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 4))
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 4))
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.lowerPipeJob + scales.queueWidth)
+}
+
+/**
+ * Job that stays in IO for a cycle
+ * @param job d3 selection of the job element
+ * @param scheduler MLFQ
+ * @param scales object containing d3-scales and constants
+ */
+export function IOtoIO(job, scheduler, scales) {
+   const time = scheduler.speed;
+   return job
       .transition(linear(time, 1))
-      .call(transXY, scales.io.jobX, scales.io.jobY)
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.lowerPipeJob + scales.queueWidth)
 }
 
 /**
@@ -176,17 +195,15 @@ export function enterIO(job, scheduler, scales) {
 export function leaveIO(job, scheduler, scales, y) {
    const time = scheduler.speed;
    return job
-      .transition(linear(time, 1 / 6))
-      .call(transXY, scales.requeue.leftJob, scales.io.jobY)
-      .transition(linear(time, 1 / 6))
-      .call(transXY, scales.requeue.leftJob, scales.requeue.lowerPipeJob)
-      .transition(linear(time, 1 / 6))
+      .transition(linear(time, 1 / 5))
+      .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.lowerPipeJob)
+      .transition(linear(time, 1 / 5))
       .call(transXY, scales.requeue.sidePipeJob, scales.requeue.lowerPipeJob)
-      .transition(linear(time, 1 / 6))
+      .transition(linear(time, 1 / 5))
       .call(transXY, scales.requeue.sidePipeJob, scales.requeue.upperPipeJob)
-      .transition(linear(time, 1 / 6))
+      .transition(linear(time, 1 / 5))
       .call(transXY, d => scales.jobQueue(d.running.priority), scales.requeue.upperPipeJob)
-      .transition(linear(time, 1 / 6))
+      .transition(linear(time, 1 / 5))
       .call(transXY, d => scales.jobQueue(d.running.priority), y)
 }
 

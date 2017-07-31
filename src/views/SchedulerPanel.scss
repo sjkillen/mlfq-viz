@@ -53,12 +53,21 @@ svg {
    }
    .io {
        .box {
-          fill: #CCC;
+          stroke-width: $border;
+          stroke: grey;
+       }
+       .segment {
+          stroke-width: 1px;
           stroke: grey;
        }
        text {
            font-size: 55px;
            fill: grey;
+       }
+   }
+   g.ioText {
+       text {
+           font-size: 20px;
        }
    }
    g.boostTime {
