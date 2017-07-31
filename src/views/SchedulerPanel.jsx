@@ -752,6 +752,7 @@ function ioText(svg, scheduler, scales) {
             .selectAll("text")
             .text(d => levels[d.priority])
             .style("transform", textTrans)
+      update.exit().remove()
 
 }
 
