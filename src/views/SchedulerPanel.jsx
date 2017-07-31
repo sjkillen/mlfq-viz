@@ -286,13 +286,14 @@ function priorityScale(scheduler, access) {
             } else {
                   scale = d3.scaleOrdinal(d3.schemeCategory20);
             }
-            scale = scale.domain(d3.range(bins));
+            const foo = scale.domain(d3.range(bins));
+            scale = n => d3.color(foo(n)).brighter(0.5).rgb();
       } else {
             scale = d3.scaleLinear()
                   .domain([0, bins])
                   .range(["#FFF", "#111"])
       }
-      return n => d3.color(scale(n)).brighter(0.5).rgb();
+      return scale;
 }
 
 
@@ -668,6 +669,12 @@ function cpu(svg, scheduler, scales) {
             .text("CPU")
 
       enter.append("text")
+            .classed("title", true)
+            .attr("x", scales.requeue.lowerLeft - 80)
+            .attr("y", scales.requeue.lowerUp + scales.ioBoxes.height)
+            .text("IO")
+
+      enter.append("text")
             .classed("tick", true)
             .attr("x", scales.cpu.tickTextX)
             .attr("y", scales.cpu.y + 18)
@@ -700,6 +707,7 @@ function io(svg, scheduler, scales) {
             .append("g")
             .classed("io", true)
             .style("transform", trans)
+
       enter.append("rect")
             .classed("box", true)
             .call(singleIO, scheduler, scales)
