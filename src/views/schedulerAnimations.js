@@ -83,6 +83,7 @@ export function finishJob(job, scheduler, scales) {
       .call(transXY, scales.cpu.x, scales.requeue.lowerPipeJob)
       .transition(linear(time, 0.5))
       .call(transXY, scales.dead.exit, scales.requeue.lowerPipeJob)
+      .transition(linear(time, 0.5))
       .attr("opacity", 0)
 }
 

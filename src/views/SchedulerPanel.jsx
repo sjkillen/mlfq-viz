@@ -194,6 +194,7 @@ function getScales(svg, scheduler, forceRadius) {
             textX: marginSides + queueWidth * 3,
             tickTextX: marginSides + queueWidth * 5.3
       };
+
       const queueBottom = jobHeight(0) + radius + queuePad;
       const queueHeight = queueBottom - queueTop;
       const drawQueue = p => queue(p) - (queueWidth + queuePad) / 2;
@@ -213,7 +214,8 @@ function getScales(svg, scheduler, forceRadius) {
             leftJob: queue(0),
             rightWidth: queueWidth,
             rightHeight: queueHeight + queueWidth * 4,
-            leftHeight: (cpu.y + queueWidth) - queueBottom
+            leftHeight: (cpu.y + queueWidth) - queueBottom,
+            finished: queue(scheduler.numQueues - 1) + queueWidth * 2 - marginSides + 145,
       };
       const boost = {
             x: requeue.rightLeftStart - 80,
@@ -245,6 +247,8 @@ function getScales(svg, scheduler, forceRadius) {
             exit: requeue.sidePipeJob + radius * 3
       }
       const access = buildAccessor(scheduler);
+
+
       return {
             // x Position a queue needs to be draw
             queue: drawQueue,
@@ -603,14 +607,28 @@ function requeuePipe(svg, scheduler, scales) {
             .call(lower)
 
       update.selectAll(".lower").call(lower)
-            .call(lower)
       function lower(rect) {
             return rect
-                  .attr("width", scales.requeue.lowerWidth)
+                  .attr("width", scales.requeue.finished)
                   .attr("height", scales.requeue.lowerHeight)
                   .attr("x", scales.requeue.lowerLeft)
                   .attr("y", scales.requeue.lowerUp)
+
       }
+
+      join.append("text").text("Finished").classed("requeue finished", true).call(textResize)
+      update.selectAll(".finished").call(textResize)
+
+      function textResize(text) {
+            return text
+                  .attr("x", scales.requeue.lowerLeft + scales.requeue.lowerWidth)
+                  .attr("y", scales.requeue.lowerUp + 45)
+                  .style("font-size", "36px")
+                  .style("font-family", "arial")
+                  .style("fill", "grey")
+            
+      }
+
       join.append("rect").classed("requeue middle", true)
             .call(middle)
       update.selectAll(".middle").call(middle)
