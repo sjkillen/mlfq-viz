@@ -778,8 +778,11 @@ function ioSegment(seg, scheduler, scales) {
       return seg
             .attr("width", scales.queueWidth)
             .attr("height", scales.ioBoxes.segHeight - 0.5)
+            .attr("y", ({ y }) => y)
+            .transition()
+            .delay(({ filled }) => filled && scheduler.changed ? scheduler.speed : 0)
+            .duration(0)
             .attr("fill", d => ioBoxSegColour(d, scheduler, scales))
-            .attr("y", ({ y }) => y);
 }
 
 function calcIOLevels(scheduler) {
@@ -819,7 +822,6 @@ function priorityColour(scales, brighter = 0) {
 }
 
 function ioBoxSegColour({ filled, priority }, scheduler, scales) {
-      console.log(scales.access.usePriority)
       if (scales.access.usePriority) {
             const colour = scales.priority(priority);
             if (scales.access.shading === "rainbow") {
