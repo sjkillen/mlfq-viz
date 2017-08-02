@@ -1,19 +1,44 @@
 $dim: 250px;
 
 & {
-   width: 100%;
+   width: 700px;
    background: #CCC;
-   top: 1510px;
-   height: $dim;
-   position: absolute;
+   height: $dim + 900;
+   position: fixed;
+   top: 60px;
+
 }
+
 
 .tooltip {
     text-decoration: underline;
     color: blue;
     cursor: pointer;
 }
-
+.controls {
+    position: relative;
+    width: 700px;
+    margin-bottom: 0px;
+    
+    select {
+        width: 692px;
+        height: 50;
+        color: grey;
+        font-size: 28px;
+        border-radius: 5px;
+        margin: 4px;
+        padding: 5px;
+    }
+    .PlaybackControl button {
+        cursor: pointer;
+        border-radius: 300px;
+        width: 170px;
+        color: grey;
+        font-size: 45;
+        height: 175px;
+        margin: 1px
+    }
+}
 svg {
    background: rgba(250, 250, 250, 0.4);
    height: $dim;
@@ -38,8 +63,8 @@ svg {
    display: inline-block;
    vertical-align: top;
    .lesson {
-      height: 100%;
-      width: 700px;
+      height: 250px;
+      width: 450px;
       font-size: 17px;
       overflow: hidden;
       background: rgba(250, 250, 250, 0.3);
@@ -56,18 +81,25 @@ svg {
    }
 }
 
+.attrContainer {
+    width: 700px;
+    padding: 10px;
+}
+
 .attributes {
-   display: inline-block;
+
    vertical-align: top;
    background: rgba(250, 250, 250, 0.2);
    font-size: 20px;
+
    .attr {
+       display: "inline-block";
       &.selected {
           background: white;
       }
       .key {
-         padding-left: 20px;
-         padding-right: 20px;
+         padding-left: 30px;
+         padding-right: 30px;
          height: $dim / 3;
          &::after {
             content: ":"

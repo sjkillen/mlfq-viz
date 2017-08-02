@@ -11,136 +11,181 @@ import { fromJS as immut } from "immutable";
 import { actions as lessonActions } from "../data/lessons";
 import DetailStore from "../data/DetailStore";
 import { props } from "../data/dataAccessors";
+import "./PlaybackControl.scss";
+import { setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
 import "./DetailView.scss";
 import { externalJob } from "./SchedulerPanel";
 import { pauseScheduler } from "../data/SchedulerActions";
+import { getLabel } from "../data/dataAccessors";
 
 export default Container.createFunctional(DetailView, () => [SchedulerStore, DetailStore], () => {
-   const scheduler = SchedulerStore.getScheduler();
-   return {
-      select: findSelected(scheduler.allJobs, scheduler.selectedJobId),
-      details: DetailStore.getState().get("details").toJS(),
-      scheduler
-   };
+      const scheduler = SchedulerStore.getScheduler();
+      return {
+            select: findSelected(scheduler.allJobs, scheduler.selectedJobId),
+            details: DetailStore.getState().get("details").toJS(),
+            scheduler
+      };
 });
 
 /**
  * Called every state change
  */
 function DetailView({ select, scheduler, details }) {
-   const lesson = calcLesson(scheduler, details);
-   return (
-      <div className="DetailView">
-         <svg ref={el => update(el, scheduler, select)} className="preview">
-         </svg>
-         {divideAttrColumns(details.attributes).map((attrCol, i) => {
-            return (<table key={i} className="attributes">
-               <tbody>
-                  {attrCol
-                     .map(attr => [attr, props[attr]])
-                     .map(([id, attr]) => {
-                        const selected = isSelected(scheduler, id)
-                        return (
-                           <tr key={id} className={"attr" + selected}>
-                              <td className="key">
-                                 <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
-                              </td>
-                              <td className="value">
-                                 {select ? round(attr.access(select)) : "-"}
-                              </td>
-                           </tr>
-                        )
-                     })}
-               </tbody>
-            </table>);
-         })}
-         <div className="content">
-            <div className="lesson">
-               <div className="message">
-                  {lesson.message}
-               </div>
-               <div className="next">
-                  {lesson.next}
-               </div>
+      const lesson = calcLesson(scheduler, details);
+      return (
+            <div className="DetailView">
+
+
+                  <svg ref={el => update(el, scheduler, select)} className="preview">
+
+                  </svg>
+                  <div className="content">
+                        <div className="lesson">
+                              <div className="message">
+                                    {lesson.message}
+                              </div>
+                              <div className="next">
+                                    {lesson.next}
+                              </div>
+                        </div>
+                  </div>
+                  <div className="attrContainer">
+                        {divideAttrColumns(details.attributes).map((attrCol, i) => {
+                              return (<table key={i} className="attributes" >
+
+                                    {attrCol
+                                          .map(attr => [attr, props[attr]])
+                                          .map(([id, attr]) => {
+                                                const selected = isSelected(scheduler, id)
+                                                return (
+                                                      <tr key={id} className={"attr" + selected}>
+                                                            <td className="key">
+                                                                  <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
+                                                            </td>
+                                                            <td className="value">
+                                                                  {select ? round(attr.access(select)) : "-"}
+                                                            </td>
+                                                      </tr>
+                                                )
+                                          })}
+
+                              </table>);
+                        })}
+                  </div>
+
+
+                  <div className="controls">
+                        <select className="select" value={scheduler.fillAttr} onChange={e => setJobFillAttribute(e.target.value)}>
+                              {scheduler.displayAttr.map((attr, i) => {
+                                    return (<option key={i} value={attr}>{getLabel(attr)}</option>)
+                              })}
+                        </select>
+                        <div>
+                              <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
+                              <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
+                              <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
+                              <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
+                        </div>
+                  </div>
+
             </div>
-         </div>
-      </div>
-   );
+
+      );
 }
 
+function PlaybackControl({ mode, children, currMode, disableStates }) {
+      let addClass = currMode === mode ? " active" : " inactive";
+      let disabled = false;
+      if (disableStates.indexOf(currMode) !== -1) {
+            addClass += " disabled";
+            disabled = true;
+      }
+      return (
+            <span className="PlaybackControl">
+                  <button className={addClass} onClick={e => {
+                        if (disabled) return;
+                        setPlayback(mode)
+                  }}>
+                        {children}
+                  </button>
+            </span>
+      );
+}
+
+
 function isSelected(scheduler, id) {
-   const yes = " selected";
-   const tq = /t[^.]*q/i;
-   const pri = /priority/i;
-   if (scheduler.fillAttr === id) return yes;
-   if (scheduler.fillAttr.match(tq) && id.match(tq)) return yes;
-   if (scheduler.fillAttr.match(pri) && id.match(pri)) return yes;
-   return "";
+      const yes = " selected";
+      const tq = /t[^.]*q/i;
+      const pri = /priority/i;
+      if (scheduler.fillAttr === id) return yes;
+      if (scheduler.fillAttr.match(tq) && id.match(tq)) return yes;
+      if (scheduler.fillAttr.match(pri) && id.match(pri)) return yes;
+      return "";
 }
 
 function round(num) {
-   if (!Number(num)) return num;
-   return ((num * 1000) | 0) / 1000;
+      if (!Number(num)) return num;
+      return ((num * 1000) | 0) / 1000;
 }
 
 /**
  * Divide array into groups of three or less
  */
 function divideAttrColumns(arr) {
-   const cols = [];
-   let curr;
-   for (let i = 0, size = 3; i < arr.length; i++) {
-      if (size === 3) {
-         size = 0;
-         curr = [];
-         cols.push(curr)
+      const cols = [];
+      let curr;
+      for (let i = 0, size = 3; i < arr.length; i++) {
+            if (size === 3) {
+                  size = 0;
+                  curr = [];
+                  cols.push(curr)
+            }
+            curr.push(arr[i]);
+            size++;
       }
-      curr.push(arr[i]);
-      size++;
-   }
-   return cols;
+      return cols;
 }
 
 function ToolTip({ children, text }) {
-   return (
-      <span onClick={e => alert(text)} className="tooltip">
-         {children}
-      </span>
-   )
+      return (
+            <span onClick={e => alert(text)} className="tooltip">
+                  {children}
+            </span>
+      )
 }
 
 function calcLesson(scheduler, details) {
-   for (let i = details.lesson.length - 1; i >= 0; i--) {
-      const { message, atCycle, dontPause } = details.lesson[i];
-      if (scheduler.globalTick === atCycle && scheduler.globalTick > 1 && !dontPause) {
-         pauseScheduler(scheduler);
+      for (let i = details.lesson.length - 1; i >= 0; i--) {
+            const { message, atCycle, dontPause } = details.lesson[i];
+            if (scheduler.globalTick === atCycle && scheduler.globalTick > 1 && !dontPause) {
+                  pauseScheduler(scheduler);
+            }
+            if (scheduler.globalTick >= (atCycle - 1)) {
+                  let next = "Lesson Complete";
+                  const nextLesson = details.lesson[i + 1];
+                  if (nextLesson) {
+                        next = `Next message at cycle ${nextLesson.atCycle}`;
+                  }
+                  return {
+                        message,
+                        next
+                  };
+            }
       }
-      if (scheduler.globalTick >= (atCycle - 1)) {
-         let next = "Lesson Complete";
-         const nextLesson = details.lesson[i + 1];
-         if (nextLesson) {
-            next = `Next message at cycle ${nextLesson.atCycle}`;
-         }
-         return {
-            message,
-            next
-         };
+      return {
+            message: "Lesson text appears here",
+            next: ""
       }
-   }
-   return {
-      message: "Lesson text appears here",
-      next: ""
-   }
 }
 
 function findSelected(jobs, id) {
-   for (const job of jobs) {
-      if (job.init.id === id) {
-         return job;
+      for (const job of jobs) {
+            if (job.init.id === id) {
+                  return job;
+            }
       }
-   }
 }
 
 function update(svg, scheduler, select) {
-   externalJob(svg, scheduler, select)
+      externalJob(svg, scheduler, select)
 }
