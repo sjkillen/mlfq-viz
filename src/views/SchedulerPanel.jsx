@@ -191,7 +191,7 @@ function getScales(svg, scheduler, forceRadius) {
       const cpu = {
             x: marginSides + queueWidth * 2,
             y: height - marginBottom + queueWidth * 2,
-            textX: marginSides + queueWidth * 3,
+            textX: marginSides + queueWidth * 3 - 20,
             tickTextX: marginSides + queueWidth * 5.3
       };
 
@@ -218,7 +218,7 @@ function getScales(svg, scheduler, forceRadius) {
             finished: queue(scheduler.numQueues - 1) + queueWidth * 2 - marginSides + 145,
       };
       const boost = {
-            x: requeue.rightLeftStart - 80,
+            x: requeue.rightLeftStart - 90,
             y: cpu.y - 30
       };
       const io = {
@@ -236,7 +236,7 @@ function getScales(svg, scheduler, forceRadius) {
       const ioBoxes = {
             maxJobs: maxIOJobs,
             height: ioBoxHeight,
-            segFill: "rgb(37, 142, 215)",
+            segFill: "#1f77b4",
             segHeight: ioBoxHeight / maxIOJobs
       }
       const legend = {
