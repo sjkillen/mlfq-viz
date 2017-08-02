@@ -4,6 +4,11 @@
 
 import * as d3 from "d3";
 
+
+
+const colours = d3.scaleOrdinal(d3.schemeCategory10)
+    .domain(d3.range(3));
+
 /**
  * Collection of props that can be accessed from jobs
  * .access(job) -> return value of prop
@@ -20,7 +25,8 @@ export const props = {
         legend: ["Low IO Freq.", "High IO Freq."],
         calcDomain(scheduler) {
             return [d3.max(scheduler.allJobs, d => d.init.ioFreq), 0]
-        }
+        },
+        colour: colours(0)
     },
     [".perf.responseTime"]: {
         access(d) {
@@ -108,15 +114,17 @@ export const props = {
         tooltip: "IO length is a fixed number of CPU cycles that will pass after a job has entered IO before the job leaves IO",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.init.ioLength)]
-        }
+        },
+        colour: colours(1)
     },
     ["tq"]: {
         label: "Time Quantum",
         legend: ["Barely Depleted", "Almost Depleted"],
+        colour: colours(2)
     },
     ["timeQuantum"]: {
         access(d) {
-            return `${d.running.quantumLeft} / ${d.running.quantumFull}`;
+            return `${d.running.quantumFull-d.running.quantumLeft} / ${d.running.quantumFull}`;
         },
         label: "Time Quantum",
         tooltip: "Time Quantum the number of cycles a job may run on the CPU before being kicked off and deprioritized"
@@ -161,12 +169,6 @@ export const props = {
     }
 };
 
-let i = 0;
-const colours = d3.scaleOrdinal(d3.schemeCategory10)
-    .domain(d3.range(Object.keys(props).length));
-for (const prop in props) {
-    props[prop].colour = d3.color(colours(i++)).brighter(.5).rgb();
-}
 /**
  * Create an accessor factory for an axis
  * @param axis X, Y, Z, etc
