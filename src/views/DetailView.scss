@@ -2,22 +2,23 @@ $dim: 250px;
 
 & {
    width: 700px;
-   background: #CCC;
-   height: $dim + 630;
+   background: #Fcfcfc;
+   height: $dim + 590;
    position: fixed;
    top: 60px;
+color: grey;
 
 }
 
 
 .tooltip {
     text-decoration: underline;
-    color: blue;
+    color: grey;
     cursor: pointer;
 }
 .controls {
     position: absolute;
-    bottom: 40px;
+    bottom: 0px;
     width: 700px;
     margin-bottom: 0px;
     
@@ -31,8 +32,7 @@ $dim: 250px;
     }
     .PlaybackControl button {
         cursor: pointer;
-        border-radius: 300px;
-        width: 170px;
+        width: 24.5%;
         color: grey;
         font-size: 45;
         height: 175px;
@@ -40,10 +40,10 @@ $dim: 250px;
     }
 }
 svg {
-   background: rgba(250, 250, 250, 0.4);
+   background: #FDfDfD;
    height: $dim;
    width: $dim;
-   border-bottom: solid #BBB 1px;
+    border-bottom: solid #EEE 1px;
    display: inline-block;
    .external {
       transform: translate($dim / 2, $dim / 2);
@@ -68,8 +68,8 @@ svg {
       width: 450px;
       font-size: 17px;
       overflow: hidden;
-      background: #CCC;
-       border-bottom: solid #BBB 1px;
+      background: #Fcfcfc;
+           border-bottom: solid #EEE 1px;
       position: relative;
       .message {
          padding: 30px;
@@ -94,7 +94,7 @@ svg {
         display: inline-block;
         position: relative;
         height: 70px;
-        border-bottom: solid #BBB 1px;
+        border-bottom: solid #EEE 1px;        
         margin-top: -1px;
       &.selected {
           background: white;
