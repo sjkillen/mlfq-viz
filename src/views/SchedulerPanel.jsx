@@ -131,7 +131,7 @@ function getScales(svg, scheduler, forceRadius) {
       const marginBottom = 200;
       const marginTop = 150;
       const marginSides = 400;
-      const width = 6000;
+      const width = 1300;
       const height = 800;
       const queuePad = 5;
       const jobPad = 5;
