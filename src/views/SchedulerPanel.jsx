@@ -11,6 +11,7 @@ import "./PlaybackControl.scss";
 import * as anim from "./schedulerAnimations";
 import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
 import { accessorFactoryFactory, getLabel } from "../data/dataAccessors";
+import { nOf } from "../util";
 
 window.addEventListener("blur", e => {
       setPlayback(playback.paused);
@@ -190,9 +191,10 @@ function getScales(svg, scheduler, forceRadius) {
       const cpu = {
             x: marginSides + queueWidth * 2,
             y: height - marginBottom + queueWidth * 2,
-            textX: marginSides + queueWidth * 3,
+            textX: marginSides + queueWidth * 3 - 20,
             tickTextX: marginSides + queueWidth * 5.3
       };
+
       const queueBottom = jobHeight(0) + radius + queuePad;
       const queueHeight = queueBottom - queueTop;
       const drawQueue = p => queue(p) - (queueWidth + queuePad) / 2;
@@ -212,10 +214,11 @@ function getScales(svg, scheduler, forceRadius) {
             leftJob: queue(0),
             rightWidth: queueWidth,
             rightHeight: queueHeight + queueWidth * 4,
-            leftHeight: (cpu.y + queueWidth) - queueBottom
+            leftHeight: (cpu.y + queueWidth) - queueBottom,
+            finished: queue(scheduler.numQueues - 1) + queueWidth * 2 - marginSides + 145,
       };
       const boost = {
-            x: requeue.rightLeftStart - 80,
+            x: requeue.rightLeftStart - 90,
             y: cpu.y - 30
       };
       const io = {
@@ -228,14 +231,24 @@ function getScales(svg, scheduler, forceRadius) {
             jobY: cpu.y,
             jobX: requeue.lowerLeft - queueWidth * 3,
       }
+      const ioBoxHeight = queueWidth + 90
+      const maxIOJobs = 10;
+      const ioBoxes = {
+            maxJobs: maxIOJobs,
+            height: ioBoxHeight,
+            segFill: "#1f77b4",
+            segHeight: ioBoxHeight / maxIOJobs
+      }
       const legend = {
             x: io.left + 70,
-            y: io.up - 75
+            y: io.up + 200
       };
       const dead = {
             exit: requeue.sidePipeJob + radius * 3
       }
       const access = buildAccessor(scheduler);
+
+
       return {
             // x Position a queue needs to be draw
             queue: drawQueue,
@@ -249,6 +262,7 @@ function getScales(svg, scheduler, forceRadius) {
             width,
             height,
             legend,
+            ioBoxes,
             cpu,
             io,
             boost,
@@ -276,7 +290,8 @@ function priorityScale(scheduler, access) {
             } else {
                   scale = d3.scaleOrdinal(d3.schemeCategory20);
             }
-            scale = scale.domain(d3.range(bins));
+            const foo = scale.domain(d3.range(bins));
+            scale = n => d3.color(foo(n)).brighter(0.5).rgb();
       } else {
             scale = d3.scaleLinear()
                   .domain([0, bins])
@@ -284,6 +299,8 @@ function priorityScale(scheduler, access) {
       }
       return scale;
 }
+
+
 
 /**
  * Scales for the fill up attr
@@ -538,7 +555,7 @@ function drawJob(selection, scheduler, scales) {
                               job.call(anim.leaveIOToCPU, scheduler, scales);
                               return;
                         case "io|io":
-                              job.call(anim.enterIO, scheduler, scales);
+                              job.call(anim.IOtoIO, scheduler, scales);
                               return;
                   }
             });
@@ -575,19 +592,7 @@ function queues(svg, scheduler, scales) {
 }
 
 function singleQueue(queue, scheduler, scales) {
-      return queue.attr("fill", d => {
-            if (scales.access.usePriority) {
-                  let colour = scales.priority(d.priority);
-                  if (scales.access.shading === "rainbow") {
-                        colour = d3.color(colour);
-                        colour = colour.brighter(0.25);
-                        colour = colour.rgb();
-                  }
-                  return colour;
-            } else {
-                  return "white";
-            }
-      })
+      return queue.attr("fill", priorityColour(scales))
             .attr("width", scales.queueWidth)
             .attr("height", scales.queueHeight)
 }
@@ -602,14 +607,28 @@ function requeuePipe(svg, scheduler, scales) {
             .call(lower)
 
       update.selectAll(".lower").call(lower)
-            .call(lower)
       function lower(rect) {
             return rect
-                  .attr("width", scales.requeue.lowerWidth)
+                  .attr("width", scales.requeue.finished)
                   .attr("height", scales.requeue.lowerHeight)
                   .attr("x", scales.requeue.lowerLeft)
                   .attr("y", scales.requeue.lowerUp)
+
       }
+
+      join.append("text").text("Finished").classed("requeue finished", true).call(textResize)
+      update.selectAll(".finished").call(textResize)
+
+      function textResize(text) {
+            return text
+                  .attr("x", scales.requeue.lowerLeft + scales.requeue.lowerWidth)
+                  .attr("y", scales.requeue.lowerUp + 45)
+                  .style("font-size", "36px")
+                  .style("font-family", "arial")
+                  .style("fill", "grey")
+            
+      }
+
       join.append("rect").classed("requeue middle", true)
             .call(middle)
       update.selectAll(".middle").call(middle)
@@ -668,6 +687,12 @@ function cpu(svg, scheduler, scales) {
             .text("CPU")
 
       enter.append("text")
+            .classed("title", true)
+            .attr("x", scales.requeue.lowerLeft - 80)
+            .attr("y", scales.requeue.lowerUp + scales.ioBoxes.height)
+            .text("IO")
+
+      enter.append("text")
             .classed("tick", true)
             .attr("x", scales.cpu.tickTextX)
             .attr("y", scales.cpu.y + 18)
@@ -688,23 +713,124 @@ function cpu(svg, scheduler, scales) {
  * Draw the IO area for jobs in io
  */
 function io(svg, scheduler, scales) {
-      const update = svg.selectAll("g.io").data([1])
+      const update = svg.selectAll("g.io").data(scheduler.queues);
+      const trans = d => `translate(${scales.queue(d.priority)}px, ${scales.requeue.lowerUp + scales.requeue.lowerHeight}px)`;
+
+      update.style("transform", trans)
+      update.selectAll("rect.box")
+            .call(singleIO, scheduler, scales)
+      update.call(ioSegments, scheduler, scales)
+
       const enter = update.enter()
             .append("g")
             .classed("io", true)
+            .style("transform", trans)
 
       enter.append("rect")
             .classed("box", true)
-            .attr("x", scales.io.left)
-            .attr("y", scales.io.up)
-            .attr("width", scales.io.width)
-            .attr("height", scales.io.height)
+            .call(singleIO, scheduler, scales)
+      enter.call(ioSegments, scheduler, scales);
 
-      enter.append("text")
-            .classed("title", true)
-            .attr("x", scales.io.textX)
-            .attr("y", scales.io.textY)
-            .text("IO")
+      update.exit().remove();
+}
+
+function ioText(svg, scheduler, scales) {
+      const levels = calcIOLevels(scheduler);
+      const textTrans = `translate(${scales.queueWidth / 2}px, ${-17}px)`;
+      const trans = d => `translate(${scales.queue(d.priority)}px, ${scales.requeue.lowerUp + scales.queueWidth}px)`;
+      const update = svg.selectAll("g.iotext").data(scheduler.queues);
+      const enter = update.enter();
+
+      enter.append("g")
+            .classed("iotext", true)
+            .style("transform", trans)
+            .append("text")
+            .text(d => levels[d.priority])
+            .style("transform", textTrans)
+            .attr("text-anchor", "middle")
+      update.style("transform", trans)
+            .selectAll("text")
+            .text(d => levels[d.priority])
+            .style("transform", textTrans)
+      update.exit().remove()
+
+}
+
+function ioSegments(box, scheduler, scales) {
+      const IOLevels = calcIOLevels(scheduler);
+      const segments = box.selectAll("rect.segment")
+            .data(d => nOf(scales.ioBoxes.maxJobs, 0).map((_, i) => (
+                  {
+                        priority: d.priority,
+                        y: i * scales.ioBoxes.segHeight,
+                        filled: !((scales.ioBoxes.maxJobs - i) > IOLevels[d.priority])
+                  })
+            ));
+      segments.enter()
+            .append("rect")
+            .classed("segment", true)
+            .call(ioSegment, scheduler, scales);
+      segments.call(ioSegment, scheduler, scales);
+      return segments;
+}
+
+function ioSegment(seg, scheduler, scales) {
+      return seg
+            .attr("width", scales.queueWidth)
+            .attr("height", scales.ioBoxes.segHeight - 0.5)
+            .attr("y", ({ y }) => y)
+            .transition()
+            .delay(({ filled }) => filled && scheduler.changed ? scheduler.speed : 0)
+            .duration(0)
+            .attr("fill", d => ioBoxSegColour(d, scheduler, scales))
+}
+
+function calcIOLevels(scheduler) {
+      const levels = scheduler.queues.map(() => 0);
+      for (const job of scheduler.ioJobs) {
+            levels[job.running.priority]++;
+      }
+      return levels;
+}
+
+/**
+ * Draw a single box for IO jobs
+ * @param {*} box 
+ * @param {*} scheduler 
+ * @param {*} scales 
+ */
+function singleIO(box, scheduler, scales) {
+      return box.attr("fill", priorityColour(scales))
+            .attr("width", scales.queueWidth)
+            .attr("height", scales.ioBoxes.height)
+}
+
+function priorityColour(scales, brighter = 0) {
+      return d => {
+            if (scales.access.usePriority) {
+                  let colour = scales.priority(d.priority);
+                  if (scales.access.shading === "rainbow") {
+                        colour = d3.color(colour)
+                              .brighter(brighter)
+                              .rgb();
+                  }
+                  return colour;
+            } else {
+                  return "white";
+            }
+      }
+}
+
+function ioBoxSegColour({ filled, priority }, scheduler, scales) {
+      if (scales.access.usePriority) {
+            const colour = scales.priority(priority);
+            if (scales.access.shading === "rainbow") {
+                  return filled ? colour : "white";
+            }
+            return filled ? scales.ioBoxes.segFill : colour;
+      }
+
+      return filled ? scales.ioBoxes.segFill : "white";
 }
 
 function legend(svg, scheduler, scales) {
@@ -817,15 +943,35 @@ export function externalJob(svg, scheduler, selected) {
  */
 function update(svgElement, scheduler) {
       if (!svgElement) return;
-      const svg = d3.select(svgElement);
       const scales = getScales(svg, scheduler);
-      svg.attr("height", scales.height + 100)
+      const svg = d3.select(svgElement)
+      svg.attr("height", scales.height + 250)
             .attr("width", scales.width)
-      svg.call(requeuePipe, scheduler, scales);
-      svg.call(queues, scheduler, scales);
-      svg.call(cpu, scheduler, scales);
-      svg.call(io, scheduler, scales);
-      svg.call(jobLife, scheduler, scales);
-      svg.call(legend, scheduler, scales);
-      svg.call(boostTimer, scheduler, scales);
+      const join = svg.selectAll("g.placer").data([1]);
+
+      const g = join.enter()
+
+      svg.selectAll("g.placer.bg").call(background);
+      svg.selectAll("g.placer.fg").call(foreground);
+
+      g.append("g")
+            .classed("placer bg", true)
+            .call(background);
+      g.append("g")
+            .classed("placer fg", true)
+            .call(foreground);
+
+      function background(bg) {
+            bg.call(requeuePipe, scheduler, scales);
+            bg.call(queues, scheduler, scales);
+            bg.call(cpu, scheduler, scales);
+            bg.call(jobLife, scheduler, scales);
+            bg.call(legend, scheduler, scales);
+            bg.call(boostTimer, scheduler, scales);
+            bg.call(ioText, scheduler, scales);
+      }
+
+      function foreground(fg) {
+            fg.call(io, scheduler, scales);
+      }
 }
