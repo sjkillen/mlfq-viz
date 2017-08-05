@@ -7,10 +7,9 @@ import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
-import "./PlaybackControl.scss";
 import * as anim from "./schedulerAnimations";
-import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
-import { accessorFactoryFactory, getLabel } from "../data/dataAccessors";
+import { selectJob, setJobFillAttribute, setPlayback, playback} from "../data/SchedulerActions";
+import { accessorFactoryFactory } from "../data/dataAccessors";
 import { nOf } from "../util";
 
 window.addEventListener("blur", e => {
@@ -31,6 +30,7 @@ class SchedulerPanel extends Component {
             setPlayback(playback.paused);
       }
       render() {
+            
             const scheduler = this.state;
             return (
                   <span className="SchedulerPanel">
@@ -40,19 +40,6 @@ class SchedulerPanel extends Component {
                                     ref={el => update(el, scheduler)}
                                     className="image">
                               </svg>
-                              <div className="controls">
-                                    <select value={scheduler.fillAttr} onChange={e => setJobFillAttribute(e.target.value)}>
-                                          {scheduler.displayAttr.map((attr, i) => {
-                                                return (<option key={i} value={attr}>{getLabel(attr)}</option>)
-                                          })}
-                                    </select>
-                                    <div>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
-                                    </div>
-                              </div>
                         </div>
                   </span>
             );
@@ -61,24 +48,6 @@ class SchedulerPanel extends Component {
 
 export default Container.create(SchedulerPanel);
 
-function PlaybackControl({ mode, children, currMode, disableStates }) {
-      let addClass = currMode === mode ? " active" : " inactive";
-      let disabled = false;
-      if (disableStates.indexOf(currMode) !== -1) {
-            addClass += " disabled";
-            disabled = true;
-      }
-      return (
-            <span className="PlaybackControl">
-                  <button className={addClass} onClick={e => {
-                        if (disabled) return;
-                        setPlayback(mode)
-                  }}>
-                        {children}
-                  </button>
-            </span>
-      );
-}
 
 /**
  * Performs the d3 lifecycle for jobs
@@ -162,7 +131,7 @@ function getScales(svg, scheduler, forceRadius) {
       const marginBottom = 200;
       const marginTop = 150;
       const marginSides = 400;
-      const width = 6000;
+      const width = 1300;
       const height = 800;
       const queuePad = 5;
       const jobPad = 5;
@@ -626,7 +595,7 @@ function requeuePipe(svg, scheduler, scales) {
                   .style("font-size", "36px")
                   .style("font-family", "arial")
                   .style("fill", "grey")
-            
+
       }
 
       join.append("rect").classed("requeue middle", true)
