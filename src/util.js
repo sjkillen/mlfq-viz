@@ -18,3 +18,12 @@ export function immutInstance(target) {
    }
    return target;
 }
+
+/**
+ * Return an array of v items of size n
+ * @param {number} n size
+ * @param {any} v value in array
+ */
+export function nOf(n, v) {
+      return (new Array(n)).fill(v);
+}

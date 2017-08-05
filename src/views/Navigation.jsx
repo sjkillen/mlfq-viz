@@ -8,12 +8,11 @@ import TableView from "./TableView";
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, hashHistory, browserHistory, } from 'react-router'
 import Header from "./Header";
-import DetailView from "./DetailView";
-
 class App extends Component {
   render() {
     return (
-      <span>
+      <span >
+
         <Router history={hashHistory}>
           <Route path="/" component={Header}>
             <IndexRoute component={TableView} />
@@ -22,7 +21,8 @@ class App extends Component {
             <Route path='/PAPanel' component={PAPanel} />
           </Route>
         </Router>
-        <DetailView />
+
+
       </span>
     );
   }
