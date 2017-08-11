@@ -38,7 +38,10 @@ class Header extends Component {
     }
     lArrow() {
         const view = this.props.location.pathname;
+        
+    
         let disp = ""
+        
         if (view === "/Scheduler")
             disp = "none";
         else if (view === "/SPLOM")
@@ -52,6 +55,11 @@ class Header extends Component {
     rArrow() {
         const view = this.props.location.pathname;
         let disp;
+        const lesson = this.state.selectedLesson;
+
+        if (lesson != "EXPLORE") 
+            return { display: "none" }
+
         if (view === "/Scheduler")
             disp = "";
         else if (view === "/SPLOM")
