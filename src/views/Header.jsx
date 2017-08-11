@@ -38,7 +38,10 @@ class Header extends Component {
     }
     lArrow() {
         const view = this.props.location.pathname;
+        
+    
         let disp = ""
+        
         if (view === "/Scheduler")
             disp = "none";
         else if (view === "/SPLOM")
@@ -52,6 +55,11 @@ class Header extends Component {
     rArrow() {
         const view = this.props.location.pathname;
         let disp;
+        const lesson = this.state.selectedLesson;
+
+        if (lesson != "EXPLORE") 
+            return { display: "none" }
+
         if (view === "/Scheduler")
             disp = "";
         else if (view === "/SPLOM")
@@ -65,7 +73,7 @@ class Header extends Component {
 
     RarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/Scheduler")
+        if (currentView === "/Scheduler" || currentView === "/")
             return "SPLOM"
         else if (currentView === "/SPLOM")
             return "PAPanel"
@@ -74,7 +82,7 @@ class Header extends Component {
 
     LarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/SPLOM")
+        if (currentView === "/SPLOM" || currentView === "/")
             return "Scheduler"
         else if (currentView === "/PAPanel")
             return "SPLOM"
