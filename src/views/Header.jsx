@@ -65,7 +65,7 @@ class Header extends Component {
 
     RarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/Scheduler")
+        if (currentView === "/Scheduler" || currentView === "/")
             return "SPLOM"
         else if (currentView === "/SPLOM")
             return "PAPanel"
@@ -74,7 +74,7 @@ class Header extends Component {
 
     LarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/SPLOM")
+        if (currentView === "/SPLOM" || currentView === "/")
             return "Scheduler"
         else if (currentView === "/PAPanel")
             return "SPLOM"
