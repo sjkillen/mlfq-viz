@@ -7,10 +7,9 @@ import * as d3 from "d3";
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
 import "./SchedulerPanel.scss";
-import "./PlaybackControl.scss";
 import * as anim from "./schedulerAnimations";
-import { selectJob, setJobFillAttribute, playback, setPlayback } from "../data/SchedulerActions";
-import { accessorFactoryFactory, getLabel } from "../data/dataAccessors";
+import { selectJob, setJobFillAttribute, setPlayback, playback} from "../data/SchedulerActions";
+import { accessorFactoryFactory } from "../data/dataAccessors";
 import { nOf } from "../util";
 
 window.addEventListener("blur", e => {
@@ -31,6 +30,7 @@ class SchedulerPanel extends Component {
             setPlayback(playback.paused);
       }
       render() {
+            
             const scheduler = this.state;
             return (
                   <span className="SchedulerPanel">
@@ -40,19 +40,6 @@ class SchedulerPanel extends Component {
                                     ref={el => update(el, scheduler)}
                                     className="image">
                               </svg>
-                              <div className="controls">
-                                    <select value={scheduler.fillAttr} onChange={e => setJobFillAttribute(e.target.value)}>
-                                          {scheduler.displayAttr.map((attr, i) => {
-                                                return (<option key={i} value={attr}>{getLabel(attr)}</option>)
-                                          })}
-                                    </select>
-                                    <div>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.playing}>Play</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.paused}>Pause</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping, playback.restarting]} currMode={scheduler.playMode} mode={playback.stepping}>Step</PlaybackControl>
-                                          <PlaybackControl disableStates={[playback.stepping]} currMode={scheduler.playMode} mode={playback.restarting}>Restart</PlaybackControl>
-                                    </div>
-                              </div>
                         </div>
                   </span>
             );
@@ -61,24 +48,6 @@ class SchedulerPanel extends Component {
 
 export default Container.create(SchedulerPanel);
 
-function PlaybackControl({ mode, children, currMode, disableStates }) {
-      let addClass = currMode === mode ? " active" : " inactive";
-      let disabled = false;
-      if (disableStates.indexOf(currMode) !== -1) {
-            addClass += " disabled";
-            disabled = true;
-      }
-      return (
-            <span className="PlaybackControl">
-                  <button className={addClass} onClick={e => {
-                        if (disabled) return;
-                        setPlayback(mode)
-                  }}>
-                        {children}
-                  </button>
-            </span>
-      );
-}
 
 /**
  * Performs the d3 lifecycle for jobs
@@ -162,7 +131,7 @@ function getScales(svg, scheduler, forceRadius) {
       const marginBottom = 200;
       const marginTop = 150;
       const marginSides = 400;
-      const width = 6000;
+      const width = 1300;
       const height = 800;
       const queuePad = 5;
       const jobPad = 5;
@@ -191,7 +160,7 @@ function getScales(svg, scheduler, forceRadius) {
       const cpu = {
             x: marginSides + queueWidth * 2,
             y: height - marginBottom + queueWidth * 2,
-            textX: marginSides + queueWidth * 3,
+            textX: marginSides + queueWidth * 3 - 20,
             tickTextX: marginSides + queueWidth * 5.3
       };
 
@@ -218,7 +187,7 @@ function getScales(svg, scheduler, forceRadius) {
             finished: queue(scheduler.numQueues - 1) + queueWidth * 2 - marginSides + 145,
       };
       const boost = {
-            x: requeue.rightLeftStart - 80,
+            x: requeue.rightLeftStart - 90,
             y: cpu.y - 30
       };
       const io = {
@@ -232,11 +201,11 @@ function getScales(svg, scheduler, forceRadius) {
             jobX: requeue.lowerLeft - queueWidth * 3,
       }
       const ioBoxHeight = queueWidth + 90
-      const maxIOJobs = 5;
+      const maxIOJobs = 10;
       const ioBoxes = {
             maxJobs: maxIOJobs,
             height: ioBoxHeight,
-            segFill: "rgb(37, 142, 215)",
+            segFill: "#1f77b4",
             segHeight: ioBoxHeight / maxIOJobs
       }
       const legend = {
@@ -626,7 +595,7 @@ function requeuePipe(svg, scheduler, scales) {
                   .style("font-size", "36px")
                   .style("font-family", "arial")
                   .style("fill", "grey")
-            
+
       }
 
       join.append("rect").classed("requeue middle", true)
@@ -778,8 +747,11 @@ function ioSegment(seg, scheduler, scales) {
       return seg
             .attr("width", scales.queueWidth)
             .attr("height", scales.ioBoxes.segHeight - 0.5)
+            .attr("y", ({ y }) => y)
+            .transition()
+            .delay(({ filled }) => filled && scheduler.changed ? scheduler.speed : 0)
+            .duration(0)
             .attr("fill", d => ioBoxSegColour(d, scheduler, scales))
-            .attr("y", ({ y }) => y);
 }
 
 function calcIOLevels(scheduler) {
@@ -819,7 +791,6 @@ function priorityColour(scales, brighter = 0) {
 }
 
 function ioBoxSegColour({ filled, priority }, scheduler, scales) {
-      console.log(scales.access.usePriority)
       if (scales.access.usePriority) {
             const colour = scales.priority(priority);
             if (scales.access.shading === "rainbow") {

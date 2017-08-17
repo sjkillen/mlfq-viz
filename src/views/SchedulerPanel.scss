@@ -1,31 +1,9 @@
 $border: 1px;
 .container {
-    display: block;
-    position: relative;
-    left: 30%;
-}
-.controls {
-    position: relative;
-    left: 10%;
-    width: 800px;
-    margin-bottom: 275px;
-    select {
-        width: 550;
-        height: 50;
-        color: grey;
-        font-size: 40px;
-    }
-    .PlaybackControl button {
-        cursor: pointer;
-        border-radius: 300px;
-        width: 200px;
-        color: grey;
-        font-size: 50;
-        height: 200px;
-    }
+    display: inline-block;
+    margin-left: 700px;
 }
 svg {
-   margin-top: 110px;
    border: solid 1px grey;
    position: relative;
    border: 0px solid grey;
@@ -68,6 +46,7 @@ svg {
    g.ioText {
        text {
            font-size: 20px;
+           fill: grey;
        }
    }
    g.boostTime {

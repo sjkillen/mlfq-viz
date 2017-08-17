@@ -81,8 +81,6 @@ class Job {
       ioFreqLeft: number;
       // Average priority over job's lifetime
       avgPriority: number;
-      // All the priorities a job has had over it's lifetime
-      priorities: number[];
    };
 
    /**
@@ -116,15 +114,10 @@ class Job {
     * Increment the job's waiting time and recalculate it's average priority
     */
    wait() {
+      const oldSum = this.running.avgPriority * this.running.totalWaitingTime;
       this.running.totalWaitingTime++;
       this.running.waitingTime++;
-      // Initialize priority count if needed
-      if (!this.running.priorities[this.running.priority]) {
-         this.running.priorities[this.running.priority] = 0;
-      }
-      this.running.priorities[this.running.priority]++;
-      const sum = this.running.priorities.reduce((sum, val, i) => sum + val * i, 0);
-      this.running.avgPriority = this.running.totalWaitingTime > 0 ? sum / this.running.totalWaitingTime : 0;
+      this.running.avgPriority = (oldSum + this.running.priority) / this.running.totalWaitingTime;
    }
 
    /**
@@ -230,8 +223,7 @@ class Job {
          ioFreqLeft: ioFreq,
          totalWaitingTime: 0,
          waitingTime: 0,
-         avgPriority: 0,
-         priorities: [],
+         avgPriority: 0
       };
    }
 }

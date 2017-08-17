@@ -1,23 +1,49 @@
 $dim: 250px;
 
 & {
-   width: 100%;
-   background: #CCC;
-   top: 1510px;
-   height: $dim;
-   position: absolute;
+   width: 700px;
+   background: #Fcfcfc;
+   height: $dim + 590;
+   position: fixed;
+   top: 60px;
+color: grey;
+
 }
+
 
 .tooltip {
     text-decoration: underline;
-    color: blue;
+    color: grey;
     cursor: pointer;
 }
-
+.controls {
+    position: absolute;
+    bottom: 0px;
+    width: 700px;
+    margin-bottom: 0px;
+    
+    select {
+        width: 692px;
+        height: 50;
+        color: grey;
+        font-size: 28px;
+        margin: 4px;
+        padding: 5px;
+    }
+    .PlaybackControl button {
+        cursor: pointer;
+        width: 24.5%;
+        color: grey;
+        font-size: 45;
+        height: 175px;
+        margin: 1px
+    }
+}
 svg {
-   background: rgba(250, 250, 250, 0.4);
+   background: #FDfDfD;
    height: $dim;
    width: $dim;
+    border-bottom: solid #EEE 1px;
    display: inline-block;
    .external {
       transform: translate($dim / 2, $dim / 2);
@@ -38,11 +64,12 @@ svg {
    display: inline-block;
    vertical-align: top;
    .lesson {
-      height: 100%;
-      width: 700px;
+      height: 250px;
+      width: 450px;
       font-size: 17px;
       overflow: hidden;
-      background: rgba(250, 250, 250, 0.3);
+      background: #Fcfcfc;
+           border-bottom: solid #EEE 1px;
       position: relative;
       .message {
          padding: 30px;
@@ -56,27 +83,44 @@ svg {
    }
 }
 
-.attributes {
-   display: inline-block;
-   vertical-align: top;
-   background: rgba(250, 250, 250, 0.2);
+
+.attrContainer {
+
    font-size: 20px;
+   width: 100%;
+
    .attr {
+        width: 50%;
+        display: inline-block;
+        position: relative;
+        height: 70px;
+        border-bottom: solid #EEE 1px;        
+        margin-top: -1px;
       &.selected {
           background: white;
       }
       .key {
-         padding-left: 20px;
-         padding-right: 20px;
+         padding-left: 30px;
+         padding-right: 30px;
          height: $dim / 3;
+         margin: 5px;
+        vertical-align: middle;
+        
+        line-height: 65px;
          &::after {
             content: ":"
          }
       }
       .value {
-         width: 60px;
-         padding: 20px;
-         background: rgba(250, 250, 250, 0.4);
+        height: 100%;
+        width: 20%;
+         background: rgba(0, 0, 0, 0.045);
+        position: absolute;
+        right: 0px;
+        margin-left: 10px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 65px;
       }
    }
 }

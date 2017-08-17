@@ -10,6 +10,7 @@ import { navigate } from "../data/guiActions";
 import lessons, { setLesson } from "../data/lessons"
 import HeaderStore from "../data/HeaderStore";
 import "./Header.scss";
+import DetailView from "./DetailView"
 
 
 import { Container } from "flux/utils";
@@ -17,35 +18,35 @@ import { Container } from "flux/utils";
 const pathLArrow = require("./Images/LeftArrow.png");
 const pathRArrow = require("./Images/RightArrow.png");
 
-const content = {
-    width: "80.00%",
-    height: "95%",
-}
 const myStyle = {
     backgroundColor: "black",
     color: "white",
+    zIndex: "1"
 }
 const dropdownStyle = {
     backgroundColor: "black",
-    zIndex: "0",
+    zIndex: "1",
     color: "white",
 };
 
 class Header extends Component {
-   static getStores() {
-      return [HeaderStore];
-   }
-   static calculateState(prevState) {
-      return HeaderStore.getState().toJS();
-   }
+    static getStores() {
+        return [HeaderStore];
+    }
+    static calculateState(prevState) {
+        return HeaderStore.getState().toJS();
+    }
     lArrow() {
         const view = this.props.location.pathname;
+        
+    
         let disp = ""
+        
         if (view === "/Scheduler")
             disp = "none";
         else if (view === "/SPLOM")
             disp = "";
-        else if (view === "/PAPanel"){
+        else if (view === "/PAPanel") {
             disp = "";
         }
         return { display: disp }
@@ -54,11 +55,16 @@ class Header extends Component {
     rArrow() {
         const view = this.props.location.pathname;
         let disp;
+        const lesson = this.state.selectedLesson;
+
+        if (lesson != "EXPLORE") 
+            return { display: "none" }
+
         if (view === "/Scheduler")
-            disp =  "";
+            disp = "";
         else if (view === "/SPLOM")
             disp = "none";
-        else if(view === "/PAPanel")
+        else if (view === "/PAPanel")
 
             disp = "none";
 
@@ -67,16 +73,16 @@ class Header extends Component {
 
     RarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/Scheduler")
+        if (currentView === "/Scheduler" || currentView === "/")
             return "SPLOM"
-        else if (currentView === "/SPLOM") 
+        else if (currentView === "/SPLOM")
             return "PAPanel"
 
     }
 
     LarrowController() {
         const currentView = this.props.location.pathname;
-        if (currentView === "/SPLOM")
+        if (currentView === "/SPLOM" || currentView === "/")
             return "Scheduler"
         else if (currentView === "/PAPanel")
             return "SPLOM"
@@ -86,36 +92,40 @@ class Header extends Component {
         const indexLookup = [];
         return (
             <div className="Header">
-                <DatGUI />
-                <div>
-                    <ButtonGroup className="bootstrap" style={myStyle}>
-                        <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>{
-                            Object.getOwnPropertyNames(lessons).map((lesson, i) => {
-                                indexLookup[i] = lesson;
-                                const selected = this.state.selectedLesson === lessons[lesson].lessonName;
-                                const className = selected ? "menu selected" : "menu";
-                                if (selected) lessonIndex = i;
-                                return (
-                                    <MenuItem className={className} key={lesson} eventKey={lesson} onSelect={setLesson} style={dropdownStyle}>
-                                        { i } - {lessons[lesson].lessonName || lesson}
-                                    </MenuItem>
-                                )
-                            })}
-                        </DropdownButton>
-                        <Button onClick={() => moveLesson(indexLookup, lessonIndex, -1)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
-                        <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
-                            {lessonIndex}
-                        </div>
-                        <Button onClick={() => moveLesson(indexLookup, lessonIndex, +1)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
-                    </ButtonGroup>
+                <div className="header">
+                    <DatGUI />
+
+                    <div>
+                        <ButtonGroup className="bootstrap" style={myStyle}>
+                            <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>{
+                                Object.getOwnPropertyNames(lessons).map((lesson, i) => {
+                                    indexLookup[i] = lesson;
+                                    const selected = this.state.selectedLesson === lessons[lesson].lessonName;
+                                    const className = selected ? "menu selected" : "menu";
+                                    if (selected) lessonIndex = i;
+                                    return (
+                                        <MenuItem className={className} key={lesson} eventKey={lesson} onSelect={setLesson} style={dropdownStyle}>
+                                            {i} - {lessons[lesson].lessonName || lesson}
+                                        </MenuItem>
+                                    )
+                                })}
+                            </DropdownButton>
+                            <Button onClick={() => moveLesson(indexLookup, lessonIndex, -1)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
+                            <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
+                                {lessonIndex}
+                            </div>
+                            <Button onClick={() => moveLesson(indexLookup, lessonIndex, +1)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
+                        </ButtonGroup>
+                    </div>
+                    <Link to={this.LarrowController()} className="Nav" style={this.lArrow()}>
+                        <img src={pathLArrow} className="myLArrow" />
+                    </Link>
+                    <DetailView />
+                    {this.props.children}
+                    <Link to={this.RarrowController()} className="Nav" style={this.rArrow()}>
+                        <img src={pathRArrow} className="myRArrow" />
+                    </Link>
                 </div>
-                <Link to={this.LarrowController()} className="Nav" style={this.lArrow()}>
-                    <img src={pathLArrow} className="myLArrow" />
-                </Link>
-                <div style={content}>{this.props.children}</div>
-                <Link to={this.RarrowController()} className="Nav" style={this.rArrow()}>
-                    <img src={pathRArrow} className="myRArrow" />
-                </Link>
             </div>
         );
     }

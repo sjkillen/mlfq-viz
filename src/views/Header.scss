@@ -9,4 +9,13 @@
 
 .bootstrap.btn-group {
    position: fixed !important;
+
 }
+
+.dropdown-menu {
+    z-index: 1;
+}
+.header {
+    z-index: 0;
+}
+

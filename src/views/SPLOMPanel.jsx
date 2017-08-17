@@ -162,7 +162,7 @@ function drawLabelPanel(jobEnter, accessor, scale) {
       .on("click", e => alert(accessor.tooltipX))
       .attr("x", scale.size / 2 + scale.padding / 2)
       .attr("y", scale.size / 2 + scale.padding / 2)
-      .style("font-size", `${scale.size / 8}px`)
+      .style("font-size", `${scale.size / 9}px`)
       .text(accessor.labelX);
 }
 
