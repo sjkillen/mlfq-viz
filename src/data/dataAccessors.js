@@ -210,10 +210,10 @@ export function accessorFactoryFactory() {
  * @example ["a", "b", "c"] -> [["a", "b"], ["a", "c"], ["b", "c"]]
  * @param props to combine 
  */
-function* getCombinations2(props) {
-    for (let i = 0; i < props.length; i++) {
-        for (let j = 0; j <= i; j++) {
-            yield [props[j], props[i]];
+function *getCombinations2(props) {
+    for (let i = 0; i < props.length - 1; i++) {        
+        for (let j = i + 1; j < props.length; j++) {
+            yield [props[i], props[j]];
         }
     }
 }
