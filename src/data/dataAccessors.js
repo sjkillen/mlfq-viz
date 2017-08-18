@@ -156,7 +156,7 @@ export const props = {
         legend: ["High Priority!!!!", "Low Priority"],
     },
     ["tq&priority=greyscale"]: {
-        label: "Time Quantum & Priority)",
+        label: "Time Quantum & Priority",
         legend: ["Barely Depleted", "Almost Depleted"],
     },
     ["none&priority=rainbow"]: {
