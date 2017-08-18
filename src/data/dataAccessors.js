@@ -124,7 +124,7 @@ export const props = {
     },
     ["timeQuantum"]: {
         access(d) {
-            return `${d.running.quantumFull-d.running.quantumLeft} / ${d.running.quantumFull}`;
+            return `${d.running.quantumFull - d.running.quantumLeft} / ${d.running.quantumFull}`;
         },
         label: "Time Quantum",
         tooltip: "Time Quantum the number of cycles a job may run on the CPU before being kicked off and deprioritized"
@@ -152,11 +152,11 @@ export const props = {
         }
     },
     ["none&priority=greyscale"]: {
-        label: "Priority (Greyscale)",
+        label: "Priority",
         legend: ["High Priority!!!!", "Low Priority"],
     },
     ["tq&priority=greyscale"]: {
-        label: "Time Quantum & Priority (Greyscale)",
+        label: "Time Quantum & Priority",
         legend: ["Barely Depleted", "Almost Depleted"],
     },
     ["none&priority=rainbow"]: {
@@ -210,8 +210,8 @@ export function accessorFactoryFactory() {
  * @example ["a", "b", "c"] -> [["a", "b"], ["a", "c"], ["b", "c"]]
  * @param props to combine 
  */
-function *getCombinations2(props) {
-    for (let i = 0; i < props.length - 1; i++) {        
+function* getCombinations2(props) {
+    for (let i = 0; i < props.length - 1; i++) {
         for (let j = i + 1; j < props.length; j++) {
             yield [props[i], props[j]];
         }
@@ -234,7 +234,7 @@ function* accessorMatrix2d(props) {
 /**
  * Get accessors
  */
-function *getAccessors(props) {
+function* getAccessors(props) {
     for (const prop of props) {
         yield accessorFactoryFactory()
             .y(prop)
@@ -246,7 +246,7 @@ export function accessorMatrix(props) {
     return [...accessorMatrix2d(props)];
 }
 
-export function accessorParallelAxis(props){
+export function accessorParallelAxis(props) {
     return [...getAccessors(props)];
 
 }
