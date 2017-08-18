@@ -39,7 +39,55 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
       //const sizeOfMatrix = Math.floor(Math.sqrt(2 * (SPLOMAttr.length)) + 1 / 2)
       //const newScale = initSPLOMScale(1000, 1000, sizeOfMatrix);
 
+      var width = 800;
+      var height = 700;
+      var barPadding = 1;
+      var radius = 3;
 
+      var svg = d3.select(svgElement)
+            .attr("height", height)
+            .attr("width", width)
+
+      var padding = 30;
+      /*
+      var dataset = [
+            [1, 50], [1.5, 100], [2, 150], [2.5, 200], [2, 170],
+            [2.5, 230.5], [6, 555], [3, 330], [0.5, 50], [1, 100]
+      ];
+      */
+
+      var dataset = scheduler.finishedJobs
+
+      var scaleX = d3.scaleLinear().domain([0, d3.max(dataset, function (d) { return d.init.ioFreq; })]).range([padding, width - padding * 2]);
+      var scaleY = d3.scaleLinear().domain([0, d3.max(dataset, function (d) { return d.running.avgPriority; })]).range([height - padding, padding]);
+
+      svg.selectAll("circle")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d) { return scaleX(d.init.ioFreq) + radius; })
+            .attr("cy", function (d) { return scaleY(d.running.avgPriority); })
+            .attr("r", radius);
+
+      svg.selectAll("circle")
+            .exit()
+            .remove()
+      var xAxis = d3.axisBottom(scaleX).ticks(5);
+      svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (height - padding) + ")")
+            .call(xAxis);
+
+      var yAxis = d3.axisLeft(scaleY).ticks(5);
+      svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + padding + ", 0)")
+            .call(yAxis);
+
+
+
+
+/*
       const svg = d3.select(svgElement)
             .attr("height", 100)
             .attr("width", 100)
@@ -63,6 +111,7 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
                   const addScatterplot = d3.select(this)
                         .call(scatterPlot, scheduler, d, 100)
             })
+            */
       //MAIN svg
       /*
       const svg = d3.select(svgElement)
@@ -97,6 +146,7 @@ function update(svgElement, { scheduler, SPLOMAttr }) {
                .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
          })
          */
+     
 }
 
 /**
@@ -217,3 +267,49 @@ function initSPLOMScale(width, height, numberOfGraph) {
             yScale: yScale
       }
 }
+
+/*
+//var dataset = [5,10,15,20,25];
+//d3.selectAll("div").data(dataset).enter().append("div").attr("class","bar").style("height", function(d) {var barHeight = d*5; return barHeight+"px"});
+var w = 500;
+var h = 300;
+var barPadding = 1;
+var radius = 3;
+var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+var padding = 30;
+var dataset = [
+                [1, 50], [1.5, 100], [2, 150], [2.5, 200], [2, 170],
+                [2.5, 230.5], [6, 555], [3, 330], [0.5, 50], [1, 100]
+              ];
+var scaleX = d3.scale.linear().domain([0, d3.max(dataset, function (d) { return d[0];} )]).range([padding, w - padding * 2]);
+var scaleY = d3.scale.linear().domain([0, d3.max(dataset, function (d) { return d[1];} )]).range([h - padding, padding]);
+
+svg.selectAll("circle")
+    .data(dataset)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) { return scaleX(d[0]) + radius; })
+    .attr("cy", function (d) { return scaleY(d[1]); })
+    .attr("r", radius);
+
+svg.selectAll("text")
+    .data(dataset)
+    .enter()
+
+var xAxis = d3.svg.axis().scale(scaleX).orient("bottom").ticks(5);
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (h - padding) + ")")
+    .call(xAxis);
+
+var yAxis = d3.svg.axis().scale(scaleY).orient("left").ticks(5);
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + padding + ", 0)")
+    .call(yAxis);
+    
+*/
