@@ -59,7 +59,7 @@ function DetailView({ select, scheduler, details }) {
                                                       <ToolTip text={attr.tooltip}>{attr.label}</ToolTip>
                                                 </span>
                                                 <span className="value">
-                                                      {select ? round(attr.access(select)) : "-"}
+                                                      {select ? cleanDetail(attr.access(select)) : "-"}
                                                 </span>
                                           </div>
                                     )
@@ -116,9 +116,22 @@ function isSelected(scheduler, id) {
       return "";
 }
 
-function round(num) {
+/**
+ * Rounds and cleans attribute to display in details panel
+ * Infinity gets displayed as Inf
+ * < 0 gets displayed as -
+ * @param {*} num 
+ */
+function cleanDetail(num) {
       if (!Number(num)) return num;
-      return ((num * 1000) | 0) / 1000;
+      if (!Number.isFinite(num)) {
+            return "Inf";
+      } else if (num < 0) {
+            return "-";
+      }
+      else {
+            return ((num * 1000) | 0) / 1000;
+      }
 }
 
 
