@@ -39,10 +39,7 @@ export default {
       }
    },
    splom: {
-      attributes: [
-        ".init.runTime",
-        ".init.createTime",
-      ]
+      attributes: []
    },
    parallel: {
       attributes: [

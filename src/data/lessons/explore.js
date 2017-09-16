@@ -44,10 +44,8 @@ export default {
     },
     splom: {
         attributes: [
-            ".init.ioFreq",
-            ".perf.responseTime",
-            ".perf.turnaroundTime",
-            ".running.avgPriority"
+            [".init.ioFreq", ".perf.responseTime"],
+            [".perf.responseTime", ".init.ioFreq"]
         ]
     },
     parallel: {

@@ -27,3 +27,10 @@ export function immutInstance(target) {
 export function nOf(n, v) {
       return (new Array(n)).fill(v);
 }
+
+/**
+ * convert a generator function to a comprehsion function
+ */
+export function comprehend(generator) {
+      return (...props) => [...generator(...props)];
+}

@@ -54,10 +54,7 @@ export default {
       }
    },
    splom: {
-      attributes: [
-        ".init.ioFreq",
-        ".running.avgPriority",
-      ]
+      attributes: []
    },
    parallel: {
       attributes: [
