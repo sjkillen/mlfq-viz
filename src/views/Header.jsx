@@ -7,10 +7,12 @@ import { Link } from "react-router";
 import * as d3 from "d3";
 import { Button, ButtonGroup, DropdownButton, MenuItem } from "react-bootstrap"
 import DatGUI from './dat-gui';
-import { navigate } from "../data/guiActions";
 import { lessons, setLesson, prevLesson, nextLesson } from "../data/lessons"
 import HeaderStore from "../data/HeaderStore";
-import DetailView from "./DetailView"
+import DetailView from "./DetailView";
+import { nav } from "../data/FluxRouter";
+import dispatcher from "../data/dispatcher";
+import { navigate, routerStore } from "../data/FluxRouter";
 
 
 import { Container } from "flux/utils";
@@ -35,58 +37,20 @@ function getStores() {
 function calculateState(prevState) {
     return HeaderStore.getState().toJS();
 }
-function lArrow() {
-    const view = this.props.location.pathname;
 
-    let disp = ""
-
-    if (view === "/Scheduler")
-        disp = "none";
-    else if (view === "/SPLOM")
-        disp = "";
-    else if (view === "/PAPanel") {
-        disp = "";
+function NavigationArrow({ right = true, navState }) {
+    const d = right ? 1 : -1;
+    if ((navState.current + d) in nav.order) {
+        const key = nav.order[navState.current + d]
+        return (<div className="Nav" onClick={e => navigate(navState.current + d)}>
+            <img src={right ? pathRArrow : pathLArrow} className={right ? "myRArrow" : "myLArrow"} />
+        </div >);
+    } else {
+        return (<span />);
     }
-    return { display: disp }
 }
 
-function rArrow() {
-    const view = this.props.location.pathname;
-    let disp;
-    const lesson = this.state.selectedLesson;
-
-    if (lesson != "EXPLORE")
-        return { display: "none" }
-
-    if (view === "/Scheduler")
-        disp = "";
-    else if (view === "/SPLOM")
-        disp = "none";
-    else if (view === "/PAPanel")
-
-        disp = "none";
-
-    return { display: disp }
-}
-
-function RarrowController() {
-    const currentView = this.props.location.pathname;
-    if (currentView === "/Scheduler" || currentView === "/")
-        return "SPLOM"
-    else if (currentView === "/SPLOM")
-        return "PAPanel"
-
-}
-
-function LarrowController() {
-    const currentView = this.props.location.pathname;
-    if (currentView === "/SPLOM" || currentView === "/")
-        return "Scheduler"
-    else if (currentView === "/PAPanel")
-        return "SPLOM"
-}
-
-function Header({ selectedLesson }) {
+function Header({ selectedLesson, navState, children }) {
     return (
         <div className="Header">
             <div className="header">
@@ -104,24 +68,34 @@ function Header({ selectedLesson }) {
                                 )
                             })}
                         </DropdownButton>
-                        <Button onClick={() => prevLesson(_)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
+                        <Button onClick={() => prevLesson(selectedLesson)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
                         <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
                             {selectedLesson}
                         </div>
-                        <Button onClick={() => nextLesson(_)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
+                        <Button onClick={() => nextLesson(selectedLesson)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
                     </ButtonGroup>
                 </div>
-                <Link to={LarrowController()} className="Nav" style={lArrow()}>
-                    <img src={pathLArrow} className="myLArrow" />
-                </Link>
+                <NavigationArrow right={false} navState={navState} />
+                <NavigationArrow right={true} navState={navState} />
                 <DetailView />
-                {/*this.props.children*/}
-                <Link to={RarrowController()} className="Nav" style={rArrow()}>
-                    <img src={pathRArrow} className="myRArrow" />
-                </Link>
+                {children || alert("ERROR")}
             </div>
         </div>
     );
 }
 
-export default Container.createFunctional(Header, () => [HeaderStore], () => HeaderStore.getState().toJS());
+export default Container.create(class HeaderContainer extends Component {
+    static getStores() {
+        return [HeaderStore, routerStore];
+    }
+
+    static calculateState(prevState) {
+        return Object.assign({
+            navState: routerStore.getState().toJS()
+        }, HeaderStore.getState().toJS());
+    }
+
+    render() {
+        return <Header {...HeaderContainer.calculateState() } children={this.props.children} />;
+    }
+}, { withProps: true });

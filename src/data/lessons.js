@@ -3,6 +3,8 @@
  */
 
 import dispatcher from "./dispatcher";
+import { deepFreeze } from "../util";
+
 
 const requireLesson = require.context("./lessons");
 
@@ -10,6 +12,7 @@ export const actions = {
     SET_LESSON: Symbol("SET_LESSON")
 };
 
+let lessonIndex = 0;
 export const lessons = [
     freezeLesson("./getstarted"),
     freezeLesson("./joblife"),
@@ -28,20 +31,9 @@ setLesson(0);
 
 function freezeLesson(path) {
     const obj = requireLesson(path).default;
+    obj.index = lessonIndex++;
     deepFreeze(obj);
     return obj;
-}
-
-/**
- * Deeply freeze an obj
- */
-function deepFreeze(obj) {
-    for (const key of Object.getOwnPropertyNames(obj)) {
-        if (typeof obj[key] === "object") {
-            deepFreeze(obj[key]);
-        }
-    }
-    Object.freeze(obj);
 }
 
 export function setLesson(i) {
@@ -54,7 +46,7 @@ export function setLesson(i) {
 function validIndex(i) {
     if (!Number.isInteger(i)) return false;
     if (i < 0) return false;
-    if (i > lessons.length) return false;
+    if (i >= lessons.length) return false;
     return true;
 }
 
