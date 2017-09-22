@@ -43,9 +43,9 @@ export default {
         }
     },
     splom: {
-        attributes: [
+        attributes: [/*
             [".init.ioFreq", ".perf.responseTime"],
-            [".perf.responseTime", ".init.ioFreq"]
+            [".perf.responseTime", ".init.ioFreq"]*/
         ]
     },
     parallel: {

@@ -47,7 +47,6 @@ function RouterSC({ url }) {
     if (url in nav.map) {
         return React.createElement(nav.map[url]);
     } else {
-        debugger;
         return (<span />);
     }
 }

@@ -78,15 +78,20 @@ function update(svgElement, scheduler, attr) {
         .attr("height", width + padding * 3)
 
     const viz = svg.selectAll(".container").data([1], d => d);
-    viz.enter()
-        .append("g")
+
+    const enter = viz.enter();
+    enter.append("g")
         .classed("container", true)
         .attr("transform", `translate(${xOffset}, ${padding})`)
         .append("g")
         .classed("jobs", true)
-        .attr("transform", `translate(0, ${width}) scale(1, -1)`)
-    viz.call(axises, jobs, scale, attr);
-    viz.selectAll(".jobs").call(jobDots, jobs, scale, attr);
+        .attr("transform", `translate(0, ${width}) scale(1, -1)`);
+
+    const axg = enter.append("g").classed("scales", true)
+
+    axg.call(axises, jobs, scale, attr);
+    viz.selectAll(".scales").call(axises, jobs, scale, attr);
+    //viz.selectAll(".jobs").call(viz, jobs, scale, attr);
 }
 
 function jobDots(svg, jobs, scale, attr) {
@@ -116,7 +121,7 @@ function axises(svg, jobs, scale, attr) {
         xAxisScale, xOffset, xDomain, yDomain } = scale;
     const yAxis = d3.axisLeft(yAxisScale);
     const xAxis = d3.axisBottom(xAxisScale);
-    const stat = svg.selectAll(".axises").data([1]);
+    const stat = svg.selectAll(".axises").data([2], d => d);
     const statUp = stat.enter();
 
     stat.exit().remove();
@@ -127,7 +132,7 @@ function axises(svg, jobs, scale, attr) {
         .classed("y", true);
 
     axises.append("g")
-        .attr("transform", `translate(${xOffset}, ${width + padding})`)
+        .attr("transform", `translate(0, ${width})`)
         .classed("x", true);
 
     svg.selectAll(".axises .y").call(yAxis);
