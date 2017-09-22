@@ -9,181 +9,134 @@ import SchedulerStore from "../data/SchedulerStore";
 import SPLOMStore from "../data/SPLOMStore";
 import "./SPLOMPanel.scss";
 import { selectJob } from "../data/SchedulerActions";
+import dispatcher from "../data/dispatcher";
+
+
+export function selectScatterplot(e) {
+    const index = +e.target.value;
+    dispatcher.dispatch({
+        type: "SELECT_SCATTERPLOT",
+        index
+    });
+}
 
 export default Container.createFunctional(SPLOMPanel, () => [SchedulerStore, SPLOMStore], () => {
-   return {
-      scheduler: SchedulerStore.getScheduler(),
-      SPLOMAttr: SPLOMStore.getState().accessors
-   }
+    const state = SPLOMStore.getState();
+    return {
+        scheduler: SchedulerStore.getScheduler(),
+        SPLOMAttr: state.accessors,
+        selected: state.selected
+    }
 });
 
 /**
  * Called every state change
  */
-function SPLOMPanel(scheduler) {
-   return (
-      <span className="SPLOMPanel">
-         <svg ref={(el) => update(el, scheduler)} className="image2">
-         </svg>
-      </span>
-   );
+function SPLOMPanel({ scheduler, SPLOMAttr, selected }) {
+    if (SPLOMAttr.length == 0) {
+        return (<span className="SPLOMPanel">Scatterplot not available for this lesson.</span>);
+    }
+    return (
+        <span className="SPLOMPanel">
+            <svg ref={(el) => update(el, scheduler, SPLOMAttr[selected])}>
+            </svg>
+            <select onChange={selectScatterplot}>
+                {SPLOMAttr.map((attr, i) =>
+                    <option key={attr.fullLabel} value={i}>
+                        {attr.labelX} vs. {attr.labelY}
+                    </option>
+                )}
+            </select>
+        </span>
+    );
 }
 
-function update(svgElement, { scheduler, SPLOMAttr }) {
-   if (!svgElement) return;
-   //CREATE NEW SCALE - CHANGE sizeOfMatrix in SPLOMPanel to adjust SPLOM size
-   const sizeOfMatrix = Math.floor(Math.sqrt(2 * (SPLOMAttr.length)) + 1 / 2)
-   const newScale = initSPLOMScale(1000, 1000, sizeOfMatrix);
-
-   //MAIN svg
-   const svg = d3.select(svgElement)
-      .attr("height", newScale.height + 10)
-      .attr("width", newScale.width)
-
-   const chartJoin = svg.selectAll("g.chart")
-      .data(SPLOMAttr, D => Math.random())
-
-   const enter = chartJoin.enter()
-
-   const exit = chartJoin.exit()
-      .remove()
-
-   const chart = enter.append("g")
-      .classed("chart", true)
-      .each(function (d, i) {
-         //calculate X position
-         const y = Math.floor(Math.sqrt(2 * (i + 1)) + 1 / 2) - 1
-
-         //calculate Y position
-         const m = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2)
-         const x = i - m * (m + 1) / 2
-
-         //calculate shifted coordinates
-         const shiftX = (x * (newScale.size + newScale.padding));
-         const shiftY = y * (newScale.size + newScale.padding);
-
-         //Generate scatter plot
-         const addScatterplot = d3.select(this)
-            .attr("style", `transform: translate(+${shiftX}px, +${shiftY}px)`)
-            .call(scatterPlot, scheduler, d, newScale, shiftX, shiftY)
-      })
+function sortDomain([a, b]) {
+    return a < b ? [b, a] : [a, b];
 }
 
-/**
- * Generate a scatterPlot
- * @param svg element
- * @param scheduler
- * @param accessor - to access the data
- * @param scale - scale for the axis
- */
-function scatterPlot(svg, scheduler, accessor, scale, shiftX, shiftY) {
-   const ratio = 1.1;
-   //MAKING Y AXIS        
-   const [minY, maxY] = accessor.getDomainY(scheduler);
-   var yAxis = d3.axisLeft(scale.yScale.domain([minY - maxY * .1, maxY * ratio])).ticks(5);
-
-   //MAKING X AXIS  
-   const [minX, maxX] = accessor.getDomainX(scheduler);
-   var xAxis = d3.axisBottom(scale.xScale.domain([minX - maxX * .1, maxX * ratio])).ticks(5);
-
-   const jobJoin = svg.selectAll("g.axis")
-      .data([0])
-
-   const jobEnter = jobJoin.enter()
-
-   //Add frame
-   jobEnter.append("rect")
-      .attr("class", "frame")
-      .attr("width", scale.size - scale.padding)
-      .attr("height", scale.size - scale.padding)
-      .attr("transform", `translate(${scale.padding},${scale.padding})`);
-
-   //PlotDots if labels are different
-   if (accessor.labelX !== accessor.labelY) {
-      //Append x Axis
-      jobEnter.append("g")
-         .classed("axis x", true)
-         .attr("transform", `translate(${scale.padding / 2},${(scale.size)})`)
-         .call(xAxis)
-
-      // Append y Axis      
-      jobEnter.append("g")
-         .classed("axis y", true)
-         .attr("transform", `translate(${scale.padding},${scale.padding / 2})`)
-         .call(yAxis);
-      scatterPlotDots(svg, scheduler, accessor, scale)
-   }
-   //Draw Label Panel if labels are the same
-   else {
-      drawLabelPanel(jobEnter, accessor, scale)
-   }
+function scales(scheduler, attr) {
+    const width = 600;
+    const padding = 10;
+    const xOffset = 50;
+    const xDomain = sortDomain(attr.getDomainX(scheduler));
+    const yDomain = sortDomain(attr.getDomainY(scheduler));
+    return {
+        width, padding, xOffset, xDomain, yDomain,
+        xAxisScale: d3.scaleLinear().domain(xDomain).range([width, 0]),
+        yAxisScale: d3.scaleLinear().domain(yDomain).range([0, width])
+    };
 }
 
-/**
- * Plotting dots on graph
- * @param svg
- * @param scheduler 
- * @param accessor
- * @param scale  
- */
-function scatterPlotDots(svg, scheduler, accessor, scale) {
-   const update = svg.selectAll("circle.job")
-      .classed("job", true)
-      // TODO change back to only finished jobs
-      .data(scheduler.allJobs, d => d.init.id)
-   const enter = update.enter()
+function update(svgElement, scheduler, attr) {
+    const svg = d3.select(svgElement);
+    const jobs = attr.plotable(scheduler.allJobs);
+    const scale = scales(scheduler, attr);
+    const { width, padding, xOffset } = scale;
 
-   //Creating dots
-   enter.append("circle")
-      .classed("job", true)
-      .on("click", selectJob)
-      .call(dot);
+    svg.attr("width", width + padding * 3)
+        .attr("height", width + padding * 3)
 
-   update.call(dot);
+    const viz = svg.selectAll(".container").data([1], d => d);
 
-   function dot(select) {
-      return select.attr("r", scale.size / 100)
-      .attr("cx", d => scale.xScale(accessor.getX(d)))
-      .attr("cy", d => scale.yScale(accessor.getY(d)))
-      .attr("transform", `translate(${(scale.size / 100) },${scale.size / 100})`);
-   }
+    const enter = viz.enter();
+    enter.append("g")
+        .classed("container", true)
+        .attr("transform", `translate(${xOffset}, ${padding})`)
+        .append("g")
+        .classed("jobs", true)
+        .attr("transform", `translate(0, ${width}) scale(1, -1)`);
+
+    const axg = enter.append("g").classed("scales", true)
+
+    axg.call(axises, jobs, scale, attr);
+    viz.selectAll(".scales").call(axises, jobs, scale, attr);
+    //viz.selectAll(".jobs").call(viz, jobs, scale, attr);
 }
 
-/**
- * Draw Label panel
- * @param jobEnter
- * @param accessor 
- * @param scale
- */
-function drawLabelPanel(jobEnter, accessor, scale) {
-   jobEnter.append("text")
-      .style("text-anchor", "middle")
-      .style("cursor", "pointer")
-      .on("click", e => alert(accessor.tooltipX))
-      .attr("x", scale.size / 2 + scale.padding / 2)
-      .attr("y", scale.size / 2 + scale.padding / 2)
-      .style("font-size", `${scale.size / 9}px`)
-      .text(accessor.labelX);
+function jobDots(svg, jobs, scale, attr) {
+    const update = svg.selectAll(".jobDot")
+        .data([0, scale.xDomain[1], scale.yDomain[1]])
+    //.data(obs, d => d.init.id);
+    const { padding, xOffset, width } = scale;
+
+
+    update.exit().remove();
+
+    update.enter()
+        .append("circle")
+        .classed("jobDot", true)
+        .attr("r", 10)
+        .attr("fill", "blue")
+
+    update
+        .attr("cx", d => d  /*attr.getX(d)*/)
+        .attr("cy", d => d + 10    /*attr.getY(d)*/)
+
+    return svg;
 }
 
-/**
- * Generate all the needed scales
- */
-function initSPLOMScale(width, height, numberOfGraph) {
-   const padding = ((height / numberOfGraph) * 0.1);
-   const size = ((height / numberOfGraph) * 0.9);
-   const xScale = d3.scaleLinear()
-      .range([padding / 2, size - padding / 2]);
-   const yScale = d3.scaleLinear()
-      .range([size - padding / 2, padding / 2]);
-   return {
-      width,
-      height,
-      padding,
-      size,
-      numberOfGraph,
-      //SCALE FOR DATA INPUT
-      xScale: xScale,
-      yScale: yScale
-   }
+function axises(svg, jobs, scale, attr) {
+    const { width, padding, yAxisScale,
+        xAxisScale, xOffset, xDomain, yDomain } = scale;
+    const yAxis = d3.axisLeft(yAxisScale);
+    const xAxis = d3.axisBottom(xAxisScale);
+    const stat = svg.selectAll(".axises").data([2], d => d);
+    const statUp = stat.enter();
+
+    stat.exit().remove();
+
+    const axises = statUp.append("g").classed("axises", true);
+
+    axises.append("g")
+        .classed("y", true);
+
+    axises.append("g")
+        .attr("transform", `translate(0, ${width})`)
+        .classed("x", true);
+
+    svg.selectAll(".axises .y").call(yAxis);
+    svg.selectAll(".axises .x").call(xAxis);
+
+    return svg;
 }

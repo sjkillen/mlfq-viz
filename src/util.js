@@ -20,10 +20,30 @@ export function immutInstance(target) {
 }
 
 /**
+ * Deeply freeze an obj
+ */
+export function deepFreeze(obj) {
+   for (const key of Object.getOwnPropertyNames(obj)) {
+      if (typeof obj[key] === "object") {
+         deepFreeze(obj[key]);
+      }
+   }
+   Object.freeze(obj);
+}
+
+
+/**
  * Return an array of v items of size n
  * @param {number} n size
  * @param {any} v value in array
  */
 export function nOf(n, v) {
-      return (new Array(n)).fill(v);
+   return (new Array(n)).fill(v);
+}
+
+/**
+ * convert a generator function to a comprehsion function
+ */
+export function comprehend(generator) {
+   return (...props) => [...generator(...props)];
 }

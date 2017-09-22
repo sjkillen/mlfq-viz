@@ -1,20 +1,22 @@
 $border: 3px;
-
-svg {
+& {
    position: relative;
    left: 50%;
-   rect.frame {
-       fill: transparent;
-       stroke-width: $border;
-       stroke: black;
-   }  
-   circle.job {
-       cursor: pointer;
-       stroke-width: 1;
-       stroke: black;
-       fill: white;
-       &[data-selected="true"] {
-           stroke-width: 8px;
-       }
+   svg {
+      display: block;
+      rect.frame {
+         fill: transparent;
+         stroke-width: $border;
+         stroke: black;
+      }  
+      circle.job {
+         cursor: pointer;
+         stroke-width: 1;
+         stroke: black;
+         fill: white;
+         &[data-selected="true"] {
+            stroke-width: 8px;
+         }
+      }
    }
 }
