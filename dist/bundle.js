@@ -56279,7 +56279,9 @@
 	/**
 	 * Set the initial lesson
 	 */
-	setLesson(0);
+	setTimeout(function () {
+	    return setLesson(0);
+	}, 0);
 
 	function freezeLesson(path) {
 	    var obj = requireLesson(path).default;
@@ -86240,7 +86242,7 @@
 	    }
 	  }
 	  return {
-	    message: "Lesson text appears here",
+	    message: "Select a lesson from the menu above",
 	    next: ""
 	  };
 	}

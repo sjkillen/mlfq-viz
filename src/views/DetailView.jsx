@@ -162,7 +162,7 @@ function calcLesson(scheduler, details) {
     }
   }
   return {
-    message: "Lesson text appears here",
+    message: "Select a lesson from the menu above",
     next: ""
   }
 }
