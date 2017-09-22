@@ -15,7 +15,3 @@ assert(process.env.PORT, "Specify a PORT in a .env");
 app.use(express.static(path.join(__dirname, "./dist")));
 
 app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
-
-webpack(require("./webpack.config"), () => {
-    console.log("Finished build");
-});
