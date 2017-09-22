@@ -28,7 +28,7 @@ class RouterStore extends ReduceStore {
     reduce(state, action) {
         switch (action.type) {
             case actions.navigate:
-                return state.set("current", actions.toIndex).set("url", nav.map[actions.toIndex]);
+                return state.set("current", action.toIndex).set("url", nav.order[action.toIndex]);
         }
         return state;
     }
@@ -38,7 +38,7 @@ export const routerStore = new RouterStore(dispatcher);
 
 export function navigate(toIndex) {
     dispatcher.dispatch({
-        type: actions.navigatef,
+        type: actions.navigate,
         toIndex
     });
 }
@@ -47,6 +47,7 @@ function RouterSC({ url }) {
     if (url in nav.map) {
         return React.createElement(nav.map[url]);
     } else {
+        debugger;
         return (<span />);
     }
 }
