@@ -27,7 +27,7 @@ export const lessons = [
 /**
  * Set the initial lesson
  */
-setTimeout(() => setLesson(0), 0);
+setTimeout(() => setLesson(lessons.length - 1), 0);
 
 
 function freezeLesson(path) {

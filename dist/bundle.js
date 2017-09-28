@@ -56280,7 +56280,7 @@
 	 * Set the initial lesson
 	 */
 	setTimeout(function () {
-	    return setLesson(0);
+	    return setLesson(lessons.length - 1);
 	}, 0);
 
 	function freezeLesson(path) {
@@ -56513,23 +56513,11 @@
 	        resetTQsOnIO: false,
 	        speed: 10,
 	        generation: [{
-	            ioFrequencyRange: [1, 1],
+	            ioFrequencyRange: [100, 200],
 	            jobRuntimeRange: [Infinity, Infinity],
-	            numJobsRange: [7, 7],
-	            jobCreateTimeRange: [1, 5],
-	            ioLengthRange: [400, 500]
-	        }, {
-	            ioFrequencyRange: [20, 200],
-	            jobRuntimeRange: [Infinity, Infinity],
-	            numJobsRange: [6, 6],
-	            jobCreateTimeRange: [15, 20],
-	            ioLengthRange: [400, 500]
-	        }, {
-	            ioFrequencyRange: [1, 2000],
-	            jobRuntimeRange: [Infinity, Infinity],
-	            numJobsRange: [100, 100],
-	            jobCreateTimeRange: [1000, 10000],
-	            ioLengthRange: [400, 500]
+	            numJobsRange: [10, 10],
+	            jobCreateTimeRange: [1, 1000],
+	            ioLengthRange: [100, 500]
 	        }]
 	    },
 	    scheduler: {
@@ -56566,7 +56554,7 @@
 	    },
 	    details: {
 	        lesson: [{
-	            message: "Welcome to Explore mode!.",
+	            message: "Welcome to Explore mode!",
 	            atCycle: 1,
 	            dontPause: true
 	        }, {
