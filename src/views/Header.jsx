@@ -1,16 +1,18 @@
-import React, { Component } from "react";
-import { Link } from "react-router";
-import ScatterplotMatrix from "./ScatterplotMatrix";
-import * as d3 from "d3";
-import { Button, ButtonGroup, DropdownButton, MenuItem } from "react-bootstrap"
 import '../style/bootstrap/bootstrap.scss';
 import '../style/Nav.scss';
-import DatGUI from './dat-gui';
-import { navigate } from "../data/guiActions";
-import lessons, { setLesson } from "../data/lessons"
-import HeaderStore from "../data/HeaderStore";
 import "./Header.scss";
-import DetailView from "./DetailView"
+
+import React, { Component } from "react";
+import { Link } from "react-router";
+import * as d3 from "d3";
+import { Button, ButtonGroup, DropdownButton, MenuItem } from "react-bootstrap"
+import DatGUI from './dat-gui';
+import { lessons, setLesson, prevLesson, nextLesson } from "../data/lessons"
+import HeaderStore from "../data/HeaderStore";
+import DetailView from "./DetailView";
+import { nav } from "../data/FluxRouter";
+import dispatcher from "../data/dispatcher";
+import { navigate, routerStore } from "../data/FluxRouter";
 
 
 import { Container } from "flux/utils";
@@ -29,112 +31,71 @@ const dropdownStyle = {
     color: "white",
 };
 
-class Header extends Component {
-    static getStores() {
-        return [HeaderStore];
+function getStores() {
+    return [HeaderStore];
+}
+function calculateState(prevState) {
+    return HeaderStore.getState().toJS();
+}
+
+function NavigationArrow({ right = true, navState }) {
+    const d = right ? 1 : -1;
+    if ((navState.current + d) in nav.order) {
+        const key = nav.order[navState.current + d]
+        return (<div className="Nav" onClick={e => navigate(navState.current + d)}>
+            <img src={right ? pathRArrow : pathLArrow} className={right ? "myRArrow" : "myLArrow"} />
+        </div >);
+    } else {
+        return (<span />);
     }
-    static calculateState(prevState) {
-        return HeaderStore.getState().toJS();
-    }
-    lArrow() {
-        const view = this.props.location.pathname;
-        
-    
-        let disp = ""
-        
-        if (view === "/Scheduler")
-            disp = "none";
-        else if (view === "/SPLOM")
-            disp = "";
-        else if (view === "/PAPanel") {
-            disp = "";
-        }
-        return { display: disp }
-    }
+}
 
-    rArrow() {
-        const view = this.props.location.pathname;
-        let disp;
-        const lesson = this.state.selectedLesson;
+function Header({ selectedLesson, navState, children }) {
+    return (
+        <div className="Header">
+            <div className="header">
+                <DatGUI />
 
-        if (lesson != "EXPLORE") 
-            return { display: "none" }
-
-        if (view === "/Scheduler")
-            disp = "";
-        else if (view === "/SPLOM")
-            disp = "none";
-        else if (view === "/PAPanel")
-
-            disp = "none";
-
-        return { display: disp }
-    }
-
-    RarrowController() {
-        const currentView = this.props.location.pathname;
-        if (currentView === "/Scheduler" || currentView === "/")
-            return "SPLOM"
-        else if (currentView === "/SPLOM")
-            return "PAPanel"
-
-    }
-
-    LarrowController() {
-        const currentView = this.props.location.pathname;
-        if (currentView === "/SPLOM" || currentView === "/")
-            return "Scheduler"
-        else if (currentView === "/PAPanel")
-            return "SPLOM"
-    }
-    render() {
-        let lessonIndex = "-";
-        const indexLookup = [];
-        return (
-            <div className="Header">
-                <div className="header">
-                    <DatGUI />
-
-                    <div>
-                        <ButtonGroup className="bootstrap" style={myStyle}>
-                            <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>{
-                                Object.getOwnPropertyNames(lessons).map((lesson, i) => {
-                                    indexLookup[i] = lesson;
-                                    const selected = this.state.selectedLesson === lessons[lesson].lessonName;
-                                    const className = selected ? "menu selected" : "menu";
-                                    if (selected) lessonIndex = i;
-                                    return (
-                                        <MenuItem className={className} key={lesson} eventKey={lesson} onSelect={setLesson} style={dropdownStyle}>
-                                            {i} - {lessons[lesson].lessonName || lesson}
-                                        </MenuItem>
-                                    )
-                                })}
-                            </DropdownButton>
-                            <Button onClick={() => moveLesson(indexLookup, lessonIndex, -1)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
-                            <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
-                                {lessonIndex}
-                            </div>
-                            <Button onClick={() => moveLesson(indexLookup, lessonIndex, +1)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
-                        </ButtonGroup>
-                    </div>
-                    <Link to={this.LarrowController()} className="Nav" style={this.lArrow()}>
-                        <img src={pathLArrow} className="myLArrow" />
-                    </Link>
-                    <DetailView />
-                    {this.props.children}
-                    <Link to={this.RarrowController()} className="Nav" style={this.rArrow()}>
-                        <img src={pathRArrow} className="myRArrow" />
-                    </Link>
+                <div>
+                    <ButtonGroup className="bootstrap" style={myStyle}>
+                        <DropdownButton title="LESSONS" id="bg-nested-dropdown" className="Nav" style={myStyle}>{
+                            lessons.map((lesson, i) => {
+                                const className = selectedLesson === i ? "menu selected" : "menu";
+                                return (
+                                    <MenuItem className={className} key={i} eventKey={i} onSelect={setLesson} style={dropdownStyle}>
+                                        {i} - {lesson.lessonName}
+                                    </MenuItem>
+                                )
+                            })}
+                        </DropdownButton>
+                        <Button onClick={() => prevLesson(selectedLesson)} className="bootstrap glyphicon glyphicon-chevron-left btn myBtn" style={myStyle} ></Button>
+                        <div style={{ color: "white", display: "inline-block", width: "35px", textAlign: "center" }}>
+                            {selectedLesson}
+                        </div>
+                        <Button onClick={() => nextLesson(selectedLesson)} className="bootstrap glyphicon glyphicon-chevron-right btn myBtn" style={myStyle}></Button>
+                    </ButtonGroup>
                 </div>
+                <NavigationArrow right={false} navState={navState} />
+                <NavigationArrow right={true} navState={navState} />
+                <DetailView />
+                {children || alert("ERROR")}
             </div>
-        );
+        </div>
+    );
+}
+
+export default Container.create(class HeaderContainer extends Component {
+    static getStores() {
+        return [HeaderStore, routerStore];
     }
-}
 
-function moveLesson(lookup, index, mov) {
-    const newIndex = index + mov;
-    if (!Number.isInteger(index) || newIndex < 0 || newIndex >= lookup.length) return;
-    setLesson(lookup[newIndex]);
-}
+    static calculateState(prevState) {
+        return Object.assign({
+            navState: routerStore.getState().toJS()
+        }, HeaderStore.getState().toJS());
+    }
 
-export default Container.create(Header);
+    render() {
+        return <Header {...HeaderContainer.calculateState() } children={this.props.children} />;
+    }
+}, { withProps: true });

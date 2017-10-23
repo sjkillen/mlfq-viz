@@ -3,6 +3,7 @@
  */
 
 import * as d3 from "d3";
+import { comprehend } from "../util";
 
 
 
@@ -37,6 +38,9 @@ export const props = {
         tooltip: "A job's Response Time is the measured number of CPU cycles from when a job first entered the system to when it was first run on the CPU",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.responseTime)]
+        },
+        plotable(jobs) {
+            return jobs.filter(job => this.access(job) != -1);
         }
     },
     [".perf.turnaroundTime"]: {
@@ -48,6 +52,9 @@ export const props = {
         tooltip: "A job's Turnaround Time time is the measured number of CPU cycles from when the job entered the system to when it finished and left the system",
         calcDomain(scheduler) {
             return [0, d3.max(scheduler.allJobs, d => d.perf.turnaroundTime)]
+        },
+        plotable(jobs) {
+            return jobs.filter(job => this.access(job) != -1);
         }
     },
     [".running.serviceTime"]: {
@@ -184,6 +191,7 @@ function propSetter(axis) {
         this.accessors["colour" + axis] = colour;
         this.accessors["legend" + axis] = legend;
         this.accessors["tooltip" + axis] = tooltip;
+        this.accessors.__dim.push(axis);
         return this;
     };
 }
@@ -197,11 +205,23 @@ export function getLabel(key) {
  */
 export function accessorFactoryFactory() {
     return {
-        accessors: {},
+        accessors: {__dim: [],  __proto__: accessorProto},
         x: propSetter("X"),
         y: propSetter("Y"),
         z: propSetter("Z"),
         w: propSetter("W")
+    }
+}
+const accessorProto = {
+    get fullLabel() {
+        const id = [];
+        for (const dim of this.__dim) {
+            id.push(this["label" + dim]);
+        }
+        return id.join(" ");
+    },
+    plotable(jobs) {
+        return jobs;
     }
 }
 
@@ -222,31 +242,31 @@ function* getCombinations2(props) {
  * Yield all accessors needed for a matrix
  * Used for the SPLOM
  */
-function* accessorMatrix2d(props) {
+export const accessorMatrix = comprehend(function *accessorMatrix2d(props) {
     for (const [propX, propY] of getCombinations2(props)) {
         yield accessorFactoryFactory()
             .x(propX)
             .y(propY)
             .accessors;
     }
-}
+});
 
 /**
- * Get accessors
+ * Not used
  */
-function* getAccessors(props) {
+export const accessorParallelAxis = comprehend(function *getAccessors(props) {
     for (const prop of props) {
         yield accessorFactoryFactory()
             .y(prop)
             .accessors;
     }
-}
+});
 
-export function accessorMatrix(props) {
-    return [...accessorMatrix2d(props)];
-}
-
-export function accessorParallelAxis(props) {
-    return [...getAccessors(props)];
-
-}
+export const accessorPairs = comprehend(function *pairs(propPairs) {
+    for (const [propA, propB] of propPairs) {
+        yield accessorFactoryFactory()
+            .x(propA)
+            .y(propB)
+            .accessors;
+    }
+});

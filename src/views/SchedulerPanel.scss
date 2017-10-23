@@ -5,6 +5,7 @@ $border: 1px;
 }
 svg {
    border: solid 1px grey;
+   transform: scale(0.75) translate(-12.5%,-12.5%);
    position: relative;
    border: 0px solid grey;
    g.queueGroup {

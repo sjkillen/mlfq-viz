@@ -14,13 +14,14 @@
     width:30px;
 }
 
-
 .myRArrow {
+    cursor: pointer;
     width: 10.00%;
     position: fixed;
     right:0;
     bottom:50%;
     top:30%;
+    z-index: 99;
 
     &:hover {
         -webkit-animation-name: pulse;
@@ -32,11 +33,13 @@
 }
 
 .myLArrow{
+    cursor: pointer;
     width: 10.00%;
     position: fixed;
     left:700px;
     bottom:50%;
     top:30%;
+    z-index: 99;
 
     &:hover {
         -webkit-animation-name: pulse;
