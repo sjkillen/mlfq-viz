@@ -5,39 +5,42 @@ An interactive visualization tool for teaches operating systems students the Mul
 
 # Build instructions
 
-to build cd into the mlfq-viz directory and type:
+## Prerequisites
+- Nodejs 7.x.x or higher (https://nodejs.org/en/download/current/)
+- npm (should come with node)
+- webpack: `npm install -g webpack` (version doesn't matter)
+- Windows or Linux (should work on OSX, but we haven't tested)
 
+Install dependencies by running  
+
+```
 $ npm install
+```
 
-create a file called .env 
-and in the file specify a port like this PORT=SOMENUMBER:
+in the mlfq-viz directory
 
-eg, PORT=4000
+## Bundling script, css, and html
 
+To create a build, run the following command in the mlfq-viz folder:
 
-then to run a development server type:
+```
+webpack
+```
 
-$ npm run start
+This will bundle and transpile resources outputing them in the dist folder. To allow webpack to watch source files and continuously rebuild each time a change is made, add a `-w` flag after the webpack command: `webpack -w`  
 
+## Running a simple webserver and testing
 
-then type localhost:PORT to see it!
+mlfq-viz does not rely on any backend logic, however it is handy to have an HTTP server running to serve files in the dist folder.  
 
+Running `node mlfq-viz` (or `node .` if inside the repo folder) or `npm start` will create a webserver  
 
-you can also run it by install webpack globaly:
+The webserver binds to the port specified by the PORT environment variable.  
 
-$ npm install webpack -g
+Environment variables can also by specified by creating a .env file in the mlfq-viz directory:
 
-
-
-then while in the mlfq-vix running:
-
-$ webpack -w
-
-and in another window run:
-
-$ node server
+- create a file called .env 
+- in the file specify a port like this PORT=3000
 
 
-
-Some of our images are set to load only when servering it in the build folder.
-the arrows primarily.
+In your browser, navigate to `http://localhost:3000` to run the application (or http://127.0.0.1:3000)
