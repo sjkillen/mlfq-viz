@@ -1,0 +1,2 @@
+- General improvements accepted (UI, UX, etc)
+- Include changes made and how to test inside pull request
