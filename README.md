@@ -8,7 +8,7 @@ An interactive visualization tool for teaches operating systems students the Mul
 ## Prerequisites
 - Nodejs 7.x.x or higher (https://nodejs.org/en/download/current/)
 - npm (should come with node)
-- webpack: `npm install -g webpack` (version doesn't matter)
+- webpack: `npm install -g webpack` (version doesn't matter) (sudo or admin privledges required)
 - Windows or Linux (should work on OSX, but we haven't tested)
 
 Install dependencies by running  
