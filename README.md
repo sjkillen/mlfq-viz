@@ -22,9 +22,11 @@ then type localhost:PORT to see it!
 
 
 you can also run it by install webpack globaly
+
 $ npm install webpack -g
 
 then while in the mlfq-vix running
+
 $ node server
 
 
