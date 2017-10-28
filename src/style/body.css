@@ -12,3 +12,7 @@ body {
 
 select, button {
 }
+
+.dg.main.a {
+    margin-right: 200px !important;
+}
