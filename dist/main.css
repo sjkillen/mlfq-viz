@@ -5157,6 +5157,25 @@
   color: grey;
   cursor: pointer; }
 
+.DetailView .tooltip:hover .tooltip_popup {
+  display: block; }
+
+.DetailView .tooltip_popup {
+  display: none;
+  position: absolute;
+  left: 0%;
+  width: 100%;
+  bottom: 80%;
+  border: solid #777 1px;
+  border-radius: 3px;
+  color: #151515;
+  padding: 0.5em;
+  background: #eee;
+  z-index: 10000000000000;
+  font-size: 0.6em;
+  line-height: 1.3em;
+  margin: 0.2em; }
+
 .DetailView .controls {
   position: absolute;
   bottom: 0px;

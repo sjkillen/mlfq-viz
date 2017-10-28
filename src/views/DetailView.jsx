@@ -137,8 +137,11 @@ function cleanDetail(num) {
 
 function ToolTip({ children, text }) {
   return (
-    <span onClick={e => alert(text)} className="tooltip">
+    <span className="tooltip" >
       {children}
+      <div className="tooltip_popup">
+        {text}
+      </div>
     </span>
   )
 }
