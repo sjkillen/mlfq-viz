@@ -86200,10 +86200,13 @@
 
 	  return _react2.default.createElement(
 	    "span",
-	    { onClick: function onClick(e) {
-	        return alert(text);
-	      }, className: "tooltip" },
-	    children
+	    { className: "tooltip" },
+	    children,
+	    _react2.default.createElement(
+	      "div",
+	      { className: "tooltip_popup" },
+	      text
+	    )
 	  );
 	}
 
