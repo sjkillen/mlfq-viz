@@ -9603,7 +9603,23 @@
 	 * See Random interface in mlfq.ts
 	 */
 	exports.default = {
+	    __seed: "seed",
+	    /**
+	     * get the seed
+	     */
+	    getSeed: function getSeed() {
+	        return this.__seed;
+	    },
+
+	    /**
+	     * Refresh the seed
+	     */
+	    reseed: function reseed() {
+	        this.seed(this.__seed);
+	    },
 	    seed: function seed(_seed) {
+	        console.log(_seed);
+	        this.__seed = _seed;
 	        gen.seed(_seed);
 	    },
 	    range: function range(highLow) {
@@ -84227,7 +84243,7 @@
 	  value: true
 	});
 
-	var _NumberOfQueues, _NumberOfQueues2, _BoostTime, _BoostTime2, _Speed, _Speed2, _SchedulerHeight, _SchedulerHeight2, _SchedulerParametersP, _mutatorMap, _NumberOfJobs, _NumberOfJobs2, _IOFrequencyMin, _IOFrequencyMin2, _IOFrequencyMax, _IOFrequencyMax2, _IOLengthMin, _IOLengthMin2, _IOLengthMax, _IOLengthMax2, _Duration, _Duration2, _JobsStartTime, _JobsStartTime2, _StartTimeSpacing, _StartTimeSpacing2, _JobGeneratorPannel, _mutatorMap2;
+	var _RandomSeed, _RandomSeed2, _NumberOfQueues, _NumberOfQueues2, _BoostTime, _BoostTime2, _Speed, _Speed2, _SchedulerHeight, _SchedulerHeight2, _SchedulerParametersP, _mutatorMap, _NumberOfJobs, _NumberOfJobs2, _IOFrequencyMin, _IOFrequencyMin2, _IOFrequencyMax, _IOFrequencyMax2, _IOLengthMin, _IOLengthMin2, _IOLengthMax, _IOLengthMax2, _Duration, _Duration2, _JobsStartTime, _JobsStartTime2, _StartTimeSpacing, _StartTimeSpacing2, _JobGeneratorPanel, _mutatorMap2;
 
 	var _datGui = __webpack_require__(897);
 
@@ -84305,7 +84321,7 @@
 	  "Start Time Spacing": 1
 	};
 
-	var SimulationsPannel = {
+	var SimulationsPanel = {
 	  'Load': function Load() {},
 	  'Save': function Save() {},
 	  'Current Simulation': "Slot 1",
@@ -84313,7 +84329,11 @@
 	};
 
 	var propsParameter;
-	var SchedulerParametersPannel = (_SchedulerParametersP = {}, _NumberOfQueues = "Number of Queues", _mutatorMap = {}, _mutatorMap[_NumberOfQueues] = _mutatorMap[_NumberOfQueues] || {}, _mutatorMap[_NumberOfQueues].get = function () {
+	var SchedulerParametersPanel = (_SchedulerParametersP = {}, _RandomSeed = "Random Seed", _mutatorMap = {}, _mutatorMap[_RandomSeed] = _mutatorMap[_RandomSeed] || {}, _mutatorMap[_RandomSeed].get = function () {
+	  return _randomAdapter2.default.getSeed();
+	}, _RandomSeed2 = "Random Seed", _mutatorMap[_RandomSeed2] = _mutatorMap[_RandomSeed2] || {}, _mutatorMap[_RandomSeed2].set = function (seed) {
+	  _randomAdapter2.default.seed(seed);
+	}, _NumberOfQueues = "Number of Queues", _mutatorMap[_NumberOfQueues] = _mutatorMap[_NumberOfQueues] || {}, _mutatorMap[_NumberOfQueues].get = function () {
 	  return config["Number of Queues"];
 	}, _NumberOfQueues2 = "Number of Queues", _mutatorMap[_NumberOfQueues2] = _mutatorMap[_NumberOfQueues2] || {}, _mutatorMap[_NumberOfQueues2].set = function (v) {
 	  config["Number of Queues"] = v;
@@ -84338,7 +84358,7 @@
 	  config["Scheduler Height"] = v;
 	}, _defineEnumerableProperties(_SchedulerParametersP, _mutatorMap), _SchedulerParametersP);
 
-	var JobGeneratorPannel = (_JobGeneratorPannel = {}, _NumberOfJobs = 'Number of Jobs', _mutatorMap2 = {}, _mutatorMap2[_NumberOfJobs] = _mutatorMap2[_NumberOfJobs] || {}, _mutatorMap2[_NumberOfJobs].get = function () {
+	var JobGeneratorPanel = (_JobGeneratorPanel = {}, _NumberOfJobs = 'Number of Jobs', _mutatorMap2 = {}, _mutatorMap2[_NumberOfJobs] = _mutatorMap2[_NumberOfJobs] || {}, _mutatorMap2[_NumberOfJobs].get = function () {
 	  return config['Number of Jobs'];
 	}, _NumberOfJobs2 = "Number of Jobs", _mutatorMap2[_NumberOfJobs2] = _mutatorMap2[_NumberOfJobs2] || {}, _mutatorMap2[_NumberOfJobs2].set = function (v) {
 	  config["Number of Jobs"] = v;
@@ -84366,13 +84386,13 @@
 	  return config["Jobs Start Time"];
 	}, _JobsStartTime2 = "Jobs Start Time", _mutatorMap2[_JobsStartTime2] = _mutatorMap2[_JobsStartTime2] || {}, _mutatorMap2[_JobsStartTime2].set = function (v) {
 	  config["Jobs Start Time"] = v;
-	}, _defineProperty(_JobGeneratorPannel, 'Generate Jobs', function GenerateJobs() {
+	}, _defineProperty(_JobGeneratorPanel, 'Generate Jobs', function GenerateJobs() {
 	  refreshScheduler(config);
 	}), _StartTimeSpacing = "Start Time Spacing", _mutatorMap2[_StartTimeSpacing] = _mutatorMap2[_StartTimeSpacing] || {}, _mutatorMap2[_StartTimeSpacing].get = function () {
 	  return config["Start Time Spacing"];
 	}, _StartTimeSpacing2 = "Start Time Spacing", _mutatorMap2[_StartTimeSpacing2] = _mutatorMap2[_StartTimeSpacing2] || {}, _mutatorMap2[_StartTimeSpacing2].set = function (v) {
 	  config["Start Time Spacing"] = v;
-	}, _defineEnumerableProperties(_JobGeneratorPannel, _mutatorMap2), _JobGeneratorPannel);
+	}, _defineEnumerableProperties(_JobGeneratorPanel, _mutatorMap2), _JobGeneratorPanel);
 
 	var TimeQuantum = {
 	  'Queue 0': 1,
@@ -84396,7 +84416,7 @@
 	  if (props.parameter["render"] === true) {
 	    currentLesson = props.lessonName;
 	    renderGui(gui, propsParameter);
-	    SchedulerParametersPannel["Speed"] = props.simulation.speed / 1000;
+	    SchedulerParametersPanel["Speed"] = props.simulation.speed / 1000;
 	    retainSpeed(gui);
 	  }
 	  if (currentLesson === "EXPLORE") render(gui);
@@ -84438,12 +84458,13 @@
 	  return gui;
 	}
 
-	//--------------------------------------for clearing the pannels
+	//--------------------------------------for clearing the Panels
 	function render(gui) {
 	  clearPanels(gui);
-	  gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config["Number of Queues"]);
-	  gui = displayJobGenerator(gui, JobGeneratorPannel);
+	  gui = displaySchedulerParams(gui, SchedulerParametersPanel, TimeQuantum, config["Number of Queues"]);
+	  gui = displayJobGenerator(gui, JobGeneratorPanel);
 	  retainSpeed(gui);
+	  gui.add(SchedulerParametersPanel, "Random Seed");
 	}
 
 	function renderGui(gui, params) {
@@ -84465,7 +84486,7 @@
 
 	          for (var _i = 1; _i <= numberOfQues; _i++) {
 	            arr.push(_i);
-	          }menu.add(SchedulerParametersPannel, SchedulerAttributes[k], arr);
+	          }menu.add(SchedulerParametersPanel, SchedulerAttributes[k], arr);
 
 	          var Timequantum = menu.addFolder("Time Quantums");
 	          var tqVals = params[panels[i]]["timeQuantums"];
@@ -84477,10 +84498,10 @@
 	        } else if (SchedulerAttributes[k] === "Boost Time") {
 	          var boostTime = params[panels[i]][SchedulerAttributes[k]];
 	          config["Boost Time"] = boostTime;
-	          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, boostTime);
-	          menu.add(SchedulerParametersPannel, "Trigger Boost");
+	          menu.add(SchedulerParametersPanel, SchedulerAttributes[k], 1, boostTime);
+	          menu.add(SchedulerParametersPanel, "Trigger Boost");
 	        } else if (SchedulerAttributes[k] === "Scheduler Height") {
-	          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, 50);
+	          menu.add(SchedulerParametersPanel, SchedulerAttributes[k], 1, 50);
 	        }
 	      }
 	    } else if (panels[i] === "Job Generator") {
@@ -84493,9 +84514,9 @@
 	        var max = 20;
 	        if (_SchedulerAttributes[_k] === "Duration") max = 100;
 
-	        _menu.add(JobGeneratorPannel, _SchedulerAttributes[_k], 1, max);
+	        _menu.add(JobGeneratorPanel, _SchedulerAttributes[_k], 1, max);
 	      }
-	      if (currentLesson === "EXPLORE") _menu.add(JobGeneratorPannel, "Generate Jobs");
+	      if (currentLesson === "EXPLORE") _menu.add(JobGeneratorPanel, "Generate Jobs");
 	    }
 	  }
 	  retainSpeed(gui);
@@ -84503,9 +84524,9 @@
 
 	var reloadReference = 0;
 	function retainSpeed(gui) {
-	  if (reloadReference === 0) reloadReference = gui.add(SchedulerParametersPannel, 'Speed', 1, 10);else {
+	  if (reloadReference === 0) reloadReference = gui.add(SchedulerParametersPanel, 'Speed', 1, 10);else {
 	    gui.remove(reloadReference);
-	    reloadReference = gui.add(SchedulerParametersPannel, 'Speed', 1, 10);
+	    reloadReference = gui.add(SchedulerParametersPanel, 'Speed', 1, 10);
 	  }
 	}
 
@@ -85842,6 +85863,12 @@
 
 	var _lessons = __webpack_require__(542);
 
+	var _SchedulerActions = __webpack_require__(536);
+
+	var _randomAdapter = __webpack_require__(332);
+
+	var _randomAdapter2 = _interopRequireDefault(_randomAdapter);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -85890,6 +85917,9 @@
 	                    clone.parameter = action.data.parameter;
 	                    clone.lessonName = action.data.lessonName;
 	                    clone.simulation = action.data.simulation;
+	                    return clone;
+	                case _SchedulerActions.actions.SET_PLAYBACK:
+	                    if (action.data === _SchedulerActions.playback.restarting) _randomAdapter2.default.reseed();
 	                    return clone;
 	                default:
 	                    return state;

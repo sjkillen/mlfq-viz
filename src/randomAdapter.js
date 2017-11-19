@@ -6,7 +6,22 @@ const gen = random.create();
  * See Random interface in mlfq.ts
  */
 export default {
+    __seed: "seed",
+    /**
+     * get the seed
+     */
+    getSeed() {
+        return this.__seed;
+    },
+    /**
+     * Refresh the seed
+     */
+    reseed() {
+        this.seed(this.__seed);
+    },
     seed(seed) {
+        console.log(seed);
+        this.__seed = seed;
         gen.seed(seed);
     },
     range(highLow) {
