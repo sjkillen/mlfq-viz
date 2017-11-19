@@ -9618,7 +9618,6 @@
 	        this.seed(this.__seed);
 	    },
 	    seed: function seed(_seed) {
-	        console.log(_seed);
 	        this.__seed = _seed;
 	        gen.seed(_seed);
 	    },

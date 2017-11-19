@@ -20,7 +20,6 @@ export default {
         this.seed(this.__seed);
     },
     seed(seed) {
-        console.log(seed);
         this.__seed = seed;
         gen.seed(seed);
     },
