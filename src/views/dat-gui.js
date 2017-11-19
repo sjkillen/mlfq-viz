@@ -41,7 +41,6 @@ const config = {
   "Scheduler Height": 25,
   "Speed": 1,
   "Start Time Spacing": 1,
-  "Random Seed": "seed",
 }
 
 const SimulationsPanel = {
@@ -54,11 +53,10 @@ const SimulationsPanel = {
 var propsParameter;
 const SchedulerParametersPanel = {
   get ["Random Seed"]() {
-    return config["Random Seed"];
+    return random.getSeed();
   },
   set ["Random Seed"](seed) {
-    config["Random Seed"] = seed;
-
+    random.seed(seed);
   },
   get ["Number of Queues"]() {
     return config["Number of Queues"];
@@ -191,7 +189,6 @@ function datGui(props) {
     renderGui(gui, propsParameter)
     SchedulerParametersPanel["Speed"] = props.simulation.speed / 1000
     retainSpeed(gui);
-    guid.add(SchedulerParametersPanel, "Random Seed");
   }
   if (currentLesson === "EXPLORE")
     render(gui);
@@ -239,6 +236,7 @@ function render(gui) {
   gui = displaySchedulerParams(gui, SchedulerParametersPanel, TimeQuantum, config["Number of Queues"]);
   gui = displayJobGenerator(gui, JobGeneratorPanel);
   retainSpeed(gui);
+  gui.add(SchedulerParametersPanel, "Random Seed");
 }
 
 function renderGui(gui, params) {

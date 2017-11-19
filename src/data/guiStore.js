@@ -8,6 +8,8 @@ import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
 import dat from "dat.gui/build/dat.gui.min"
 import { actions as lessonActions } from "./lessons"
+import { actions, playback } from "./SchedulerActions";
+import random from "../randomAdapter";
 
 class guiStore extends ReduceStore {
     getInitialState() {
@@ -36,6 +38,9 @@ class guiStore extends ReduceStore {
                 clone.lessonName = action.data.lessonName
                 clone.simulation = action.data.simulation
                 return clone
+            case actions.SET_PLAYBACK:
+                if (action.data === playback.restarting) random.reseed();
+                return clone;
             default:
                 return state;
         }

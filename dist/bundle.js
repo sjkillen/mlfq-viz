@@ -9603,7 +9603,23 @@
 	 * See Random interface in mlfq.ts
 	 */
 	exports.default = {
+	    __seed: "seed",
+	    /**
+	     * get the seed
+	     */
+	    getSeed: function getSeed() {
+	        return this.__seed;
+	    },
+
+	    /**
+	     * Refresh the seed
+	     */
+	    reseed: function reseed() {
+	        this.seed(this.__seed);
+	    },
 	    seed: function seed(_seed) {
+	        console.log(_seed);
+	        this.__seed = _seed;
 	        gen.seed(_seed);
 	    },
 	    range: function range(highLow) {
@@ -84302,8 +84318,7 @@
 	  "generation": [],
 	  "Scheduler Height": 25,
 	  "Speed": 1,
-	  "Start Time Spacing": 1,
-	  "Random Seed": "seed"
+	  "Start Time Spacing": 1
 	};
 
 	var SimulationsPanel = {
@@ -84315,9 +84330,9 @@
 
 	var propsParameter;
 	var SchedulerParametersPanel = (_SchedulerParametersP = {}, _RandomSeed = "Random Seed", _mutatorMap = {}, _mutatorMap[_RandomSeed] = _mutatorMap[_RandomSeed] || {}, _mutatorMap[_RandomSeed].get = function () {
-	  return config["Random Seed"];
+	  return _randomAdapter2.default.getSeed();
 	}, _RandomSeed2 = "Random Seed", _mutatorMap[_RandomSeed2] = _mutatorMap[_RandomSeed2] || {}, _mutatorMap[_RandomSeed2].set = function (seed) {
-	  config["Random Seed"] = seed;
+	  _randomAdapter2.default.seed(seed);
 	}, _NumberOfQueues = "Number of Queues", _mutatorMap[_NumberOfQueues] = _mutatorMap[_NumberOfQueues] || {}, _mutatorMap[_NumberOfQueues].get = function () {
 	  return config["Number of Queues"];
 	}, _NumberOfQueues2 = "Number of Queues", _mutatorMap[_NumberOfQueues2] = _mutatorMap[_NumberOfQueues2] || {}, _mutatorMap[_NumberOfQueues2].set = function (v) {
@@ -84403,7 +84418,6 @@
 	    renderGui(gui, propsParameter);
 	    SchedulerParametersPanel["Speed"] = props.simulation.speed / 1000;
 	    retainSpeed(gui);
-	    guid.add(SchedulerParametersPanel, "Random Seed");
 	  }
 	  if (currentLesson === "EXPLORE") render(gui);
 
@@ -84450,6 +84464,7 @@
 	  gui = displaySchedulerParams(gui, SchedulerParametersPanel, TimeQuantum, config["Number of Queues"]);
 	  gui = displayJobGenerator(gui, JobGeneratorPanel);
 	  retainSpeed(gui);
+	  gui.add(SchedulerParametersPanel, "Random Seed");
 	}
 
 	function renderGui(gui, params) {
@@ -85848,6 +85863,12 @@
 
 	var _lessons = __webpack_require__(542);
 
+	var _SchedulerActions = __webpack_require__(536);
+
+	var _randomAdapter = __webpack_require__(332);
+
+	var _randomAdapter2 = _interopRequireDefault(_randomAdapter);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -85896,6 +85917,9 @@
 	                    clone.parameter = action.data.parameter;
 	                    clone.lessonName = action.data.lessonName;
 	                    clone.simulation = action.data.simulation;
+	                    return clone;
+	                case _SchedulerActions.actions.SET_PLAYBACK:
+	                    if (action.data === _SchedulerActions.playback.restarting) _randomAdapter2.default.reseed();
 	                    return clone;
 	                default:
 	                    return state;
