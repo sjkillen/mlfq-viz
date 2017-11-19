@@ -1,14 +1,14 @@
-import dat from "dat.gui/build/dat.gui.min"
-import mainScheduler from "../scheduler"
+import dat from "dat.gui/build/dat.gui.min";
+import mainScheduler from "../scheduler";
 import random from "../randomAdapter";
 import path from "path";
 
 import { Container } from "flux/utils";
 import SchedulerStore from "../data/SchedulerStore";
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import * as d3 from "d3";
-import guiStore from "../data/guiStore"
-import { restartScheduler } from "../data/SchedulerActions"
+import guiStore from "../data/guiStore";
+import { restartScheduler } from "../data/SchedulerActions";
 
 
 //for removing folders thanks stack overflow! http://stackoverflow.com/questions/18085540/remove-folder-in-dat-gui
@@ -40,10 +40,11 @@ const config = {
   "generation": [],
   "Scheduler Height": 25,
   "Speed": 1,
-  "Start Time Spacing": 1
+  "Start Time Spacing": 1,
+  "Random Seed": "seed",
 }
 
-const SimulationsPannel = {
+const SimulationsPanel = {
   'Load': function () { },
   'Save': function () { },
   'Current Simulation': "Slot 1",
@@ -51,7 +52,14 @@ const SimulationsPannel = {
 };
 
 var propsParameter;
-const SchedulerParametersPannel = {
+const SchedulerParametersPanel = {
+  get ["Random Seed"]() {
+    return config["Random Seed"];
+  },
+  set ["Random Seed"](seed) {
+    config["Random Seed"] = seed;
+
+  },
   get ["Number of Queues"]() {
     return config["Number of Queues"];
   },
@@ -89,7 +97,7 @@ const SchedulerParametersPannel = {
   }
 };
 
-var JobGeneratorPannel = {
+var JobGeneratorPanel = {
   get ['Number of Jobs']() {
     return config['Number of Jobs'];
   },
@@ -181,8 +189,9 @@ function datGui(props) {
   if (props.parameter["render"] === true) {
     currentLesson = props.lessonName
     renderGui(gui, propsParameter)
-    SchedulerParametersPannel["Speed"] = props.simulation.speed / 1000
+    SchedulerParametersPanel["Speed"] = props.simulation.speed / 1000
     retainSpeed(gui);
+    guid.add(SchedulerParametersPanel, "Random Seed");
   }
   if (currentLesson === "EXPLORE")
     render(gui);
@@ -224,11 +233,11 @@ function displayJobGenerator(gui, workload) {
   return gui;
 }
 
-//--------------------------------------for clearing the pannels
+//--------------------------------------for clearing the Panels
 function render(gui) {
   clearPanels(gui);
-  gui = displaySchedulerParams(gui, SchedulerParametersPannel, TimeQuantum, config["Number of Queues"]);
-  gui = displayJobGenerator(gui, JobGeneratorPannel);
+  gui = displaySchedulerParams(gui, SchedulerParametersPanel, TimeQuantum, config["Number of Queues"]);
+  gui = displayJobGenerator(gui, JobGeneratorPanel);
   retainSpeed(gui);
 }
 
@@ -251,7 +260,7 @@ function renderGui(gui, params) {
 
           for (let i = 1; i <= numberOfQues; i++)
             arr.push(i);
-          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], arr)
+          menu.add(SchedulerParametersPanel, SchedulerAttributes[k], arr)
 
           const Timequantum = menu.addFolder("Time Quantums");
           const tqVals = params[panels[i]]["timeQuantums"];
@@ -264,10 +273,10 @@ function renderGui(gui, params) {
         } else if (SchedulerAttributes[k] === "Boost Time") {
           let boostTime = params[panels[i]][SchedulerAttributes[k]];
           config["Boost Time"] = boostTime;
-          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, boostTime)
-          menu.add(SchedulerParametersPannel, "Trigger Boost")
+          menu.add(SchedulerParametersPanel, SchedulerAttributes[k], 1, boostTime)
+          menu.add(SchedulerParametersPanel, "Trigger Boost")
         } else if (SchedulerAttributes[k] === "Scheduler Height") {
-          menu.add(SchedulerParametersPannel, SchedulerAttributes[k], 1, 50)
+          menu.add(SchedulerParametersPanel, SchedulerAttributes[k], 1, 50)
         }
       }
     }
@@ -283,10 +292,10 @@ function renderGui(gui, params) {
         if (SchedulerAttributes[k] === "Duration")
           max = 100;
 
-        menu.add(JobGeneratorPannel, SchedulerAttributes[k], 1, max)
+        menu.add(JobGeneratorPanel, SchedulerAttributes[k], 1, max)
       }
       if (currentLesson === "EXPLORE")
-        menu.add(JobGeneratorPannel, "Generate Jobs")
+        menu.add(JobGeneratorPanel, "Generate Jobs")
 
     }
   }
@@ -296,10 +305,10 @@ function renderGui(gui, params) {
 var reloadReference = 0;
 function retainSpeed(gui) {
   if (reloadReference === 0)
-    reloadReference = gui.add(SchedulerParametersPannel, 'Speed', 1, 10);
+    reloadReference = gui.add(SchedulerParametersPanel, 'Speed', 1, 10);
   else {
     gui.remove(reloadReference);
-    reloadReference = gui.add(SchedulerParametersPannel, 'Speed', 1, 10);
+    reloadReference = gui.add(SchedulerParametersPanel, 'Speed', 1, 10);
   }
 }
 
