@@ -63,12 +63,8 @@ function TableView(scheduler) {
    }
 
    return (
-      <span className="TableView">
-         <table style={{
-            position: "fixed",
-            left: "900px",
-            top: "100px"
-         }}>
+      <div className="TableView">
+         <table>
             <tbody>
                <tr>
                   <th>Priority Level</th>
@@ -84,11 +80,7 @@ function TableView(scheduler) {
                })}
             </tbody>
          </table>
-         <table style={{
-            position: "fixed",
-            left: "900px",
-            bottom: "100px"
-         }}>
+         <table>
             <tbody>
                <tr>
                   <th>Job Id</th>
@@ -110,7 +102,7 @@ function TableView(scheduler) {
          </table>
          <div ref={(el) => update(el, scheduler)} />
          {summaryTable}
-      </span>
+      </div>
    );
 }
 

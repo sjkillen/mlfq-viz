@@ -1,7 +1,20 @@
+& {
+    border: solid 1px grey;
+    position: absolute;
+    top: 180px;
+    right: 0px;
+    height: 600px;
+    width: 875px;
+    border: 0px solid grey;
+    overflow: scroll;
+}
+
+
 td, th {
    border: 1px solid black;
    text-align: right;
 }
+
 
 th {
    text-align: center;

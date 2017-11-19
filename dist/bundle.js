@@ -59179,15 +59179,11 @@
 	   }
 
 	   return _react2.default.createElement(
-	      "span",
+	      "div",
 	      { className: "TableView" },
 	      _react2.default.createElement(
 	         "table",
-	         { style: {
-	               position: "fixed",
-	               left: "900px",
-	               top: "100px"
-	            } },
+	         null,
 	         _react2.default.createElement(
 	            "tbody",
 	            null,
@@ -59226,11 +59222,7 @@
 	      ),
 	      _react2.default.createElement(
 	         "table",
-	         { style: {
-	               position: "fixed",
-	               left: "900px",
-	               bottom: "100px"
-	            } },
+	         null,
 	         _react2.default.createElement(
 	            "tbody",
 	            null,
@@ -86407,6 +86399,10 @@
 
 	var _SchedulerPanel2 = _interopRequireDefault(_SchedulerPanel);
 
+	var _TableView = __webpack_require__(572);
+
+	var _TableView2 = _interopRequireDefault(_TableView);
+
 	var _util = __webpack_require__(540);
 
 	var _dispatcher = __webpack_require__(537);
@@ -86428,9 +86424,10 @@
 	var nav = exports.nav = {
 	    map: {
 	        '/Scheduler': _SchedulerPanel2.default,
-	        'SPLOM': _SPLOMPanel2.default
+	        'SPLOM': _SPLOMPanel2.default,
+	        'TABLE': _TableView2.default
 	    },
-	    order: ['/Scheduler', 'SPLOM']
+	    order: ['/Scheduler', 'SPLOM', 'TABLE']
 	};
 	(0, _util.deepFreeze)(nav);
 

@@ -1,5 +1,6 @@
 import SPLOMPanel from "../views/SPLOMPanel";
 import SchedulerPanel from "../views/SchedulerPanel";
+import TableView from "../views/TableView";
 import { deepFreeze } from "../util";
 import dispatcher from "./dispatcher";
 import { ReduceStore, Container } from "flux/utils";
@@ -9,8 +10,9 @@ export const nav = {
     map: {
         '/Scheduler': SchedulerPanel,
         'SPLOM': SPLOMPanel,
+        'TABLE': TableView,
     },
-    order: ['/Scheduler', 'SPLOM']
+    order: ['/Scheduler', 'SPLOM', 'TABLE'],
 };
 deepFreeze(nav);
 
