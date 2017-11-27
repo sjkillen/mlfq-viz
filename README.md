@@ -1,6 +1,8 @@
 # MLFQ Visualization
 
-An interactive visualization tool for teaches operating systems students the Multilevel feeback queue scheduling algorithm
+[[Paper]](https://ieeexplore.ieee.org/document/8117201/)
+
+An interactive visualization tool for teaching operating systems students the Multilevel feeback queue scheduling algorithm
 
 
 # Build instructions
