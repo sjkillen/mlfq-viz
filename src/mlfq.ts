@@ -41,15 +41,15 @@ class Job {
    // Values the job is created with
    init: {
       // unique job id
-      id: number;
+      readonly id: number;
       // Time when job was created
-      createTime: number;
+      readonly createTime: number;
       // Total time job needs to spend on CPU to finish
-      runTime: number;
+      readonly runTime: number;
       // Period of cycles that a job will perform IO
-      ioFreq: number;
+      readonly ioFreq: number;
       // How long this job performs IO for
-      ioLength: number;
+      readonly ioLength: number;
    };
    // values collected once turing the jobs lifetime
    perf: {
