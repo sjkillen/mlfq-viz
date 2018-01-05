@@ -10,14 +10,15 @@ import scheduler from "./scheduler";
  * @global getStatus
  */
 export function getStatus() {
+   // tslint:disable-next-line
    console.log(
       `CPU: ${scheduler.cpuJob ? "YES" : "NO"}
 Futures: ${scheduler.futureJobs.size}
 Finished: ${scheduler.finishedJobs.size}
 IO: ${scheduler.ioJobs.size}
-`
-   )
+`);
    for (let i = 0; i < scheduler.numQueues; i++) {
+      // tslint:disable-next-line
       console.log(`Queue ${i}: ${scheduler.queues[i].jobs.length}`);
    }
 }
@@ -58,6 +59,6 @@ window.getJobStates = getJobStates;
  * Get the id of a job
  */
 export function jid(job) {
-      return job.init.id;
+   return job.init.id;
 }
 window.jid = jid;

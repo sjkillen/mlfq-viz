@@ -2,20 +2,20 @@
 
 const path = require("path");
 
-const webpack = require("webpack"),
-  HtmlWebpackPlugin = require("html-webpack-plugin"),
-  ExtractTextPlugin = require("extract-text-webpack-plugin");
+const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-const BANNER = require("./banner"),
-  PACKAGE = require("./package.json");
+const BANNER = require("./banner");
+const PACKAGE = require("./package.json");
 
 const srcPath = path.join(__dirname, "src");
 
 module.exports = {
   entry: ["babel-polyfill", path.join(srcPath, "debug.js"), path.join(srcPath, "main.jsx")],
   output: {
+    filename: "bundle.js",
     path: path.join(__dirname, "dist"),
-    filename: "bundle.js"
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx", ".css", ".scss", ".html"],
@@ -26,8 +26,8 @@ module.exports = {
         test: /\.css$/,
         use: [
           "style-loader",
-          "css-loader"
-        ]
+          "css-loader",
+        ],
       },
       {
         test: /\.scss$/,
@@ -35,12 +35,12 @@ module.exports = {
           "style-loader",
           "css-loader",
           "sass-loader",
-          path.join(__dirname, "./isolate_loader.js")
-        ]
+          path.join(__dirname, "./isolate_loader.js"),
+        ],
       },
       {
         test: /\.(png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-        use: "file-loader"
+        use: "file-loader",
       },
       {
         test: /\.ts[x]?$/,
@@ -48,15 +48,16 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              presets: ['env', 'react']
-            }
+              presets: ["env", "react"],
+            },
           },
           "ts-loader",
-          "tslint-loader"]
+          "tslint-loader",
+        ],
       },
       {
         test: /\.html$/,
-        use: "html-loader"
+        use: "html-loader",
       },
       {
         test: /\.js[x]?$/,
@@ -65,22 +66,23 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              presets: ['env', 'react']
-            }
-          }
-        ]
+              presets: ["env", "react"],
+            },
+          },
+          "tslint-loader",
+        ],
       },
-    ]
+    ],
   },
   plugins: [
     new webpack.BannerPlugin({ banner: BANNER, entryOnly: true }),
     new HtmlWebpackPlugin({
       template: "src/index.html",
-      title: PACKAGE.name
+      title: PACKAGE.name,
     }),
     new webpack.ProvidePlugin({
-      React: "react"
+      React: "react",
     }),
-    new ExtractTextPlugin("[name].css")
-  ]
+    new ExtractTextPlugin("[name].css"),
+  ],
 };
