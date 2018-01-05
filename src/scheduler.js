@@ -1,8 +1,11 @@
+/**
+ * Initialize the mlfq scheduler and export it as a global for use in visualization
+ */
 
 import Scheduler from "./mlfq";
 
 const scheduler = new Scheduler({
-    timeQuantums: [1,1,1,1,1,1,1,1],
+    timeQuantums: [1, 1, 1, 1, 1, 1, 1, 1],
     boostTime: Infinity,
     resetTQsOnIO: false,
     speed: 1000,
@@ -12,9 +15,9 @@ const scheduler = new Scheduler({
             jobRuntimeRange: [1, 1],
             numJobsRange: [-1, -1],
             jobCreateTimeRange: [1, 1],
-            ioLengthRange: [0, 0]
-        }
-    ]
+            ioLengthRange: [0, 0],
+        },
+    ],
 });
 export default scheduler;
 

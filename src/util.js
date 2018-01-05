@@ -31,7 +31,6 @@ export function deepFreeze(obj) {
    Object.freeze(obj);
 }
 
-
 /**
  * Return an array of v items of size n
  * @param {number} n size
