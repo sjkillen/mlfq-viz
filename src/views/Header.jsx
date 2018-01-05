@@ -3,7 +3,6 @@ import '../style/Nav.scss';
 import "./Header.scss";
 
 import React, { Component } from "react";
-import { Link } from "react-router";
 import * as d3 from "d3";
 import { Button, ButtonGroup, DropdownButton, MenuItem } from "react-bootstrap"
 import DatGUI from './dat-gui';
