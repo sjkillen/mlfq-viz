@@ -1,3 +1,7 @@
+/**
+ * Actions related to the scheduler
+ */
+
 import dispatcher from "./dispatcher";
 
 export const actions = {
@@ -5,7 +9,7 @@ export const actions = {
    SELECT_JOB: Symbol("SELECT_JOB"),
    SET_JOB_FILL: Symbol("SET_JOB_FILL"),
    SET_PLAYBACK: Symbol("SET_PLAYBACK"),
-   UNSTEP: Symbol("UNSTEP")
+   UNSTEP: Symbol("UNSTEP"),
 };
 
 /**
@@ -15,7 +19,7 @@ export const actions = {
 export function updateScheduler(scheduler) {
    dispatcher.dispatch({
       type: actions.UPDATE_SCHEDULER,
-      data: scheduler
+      data: scheduler,
    });
 }
 
@@ -23,16 +27,16 @@ export const playback = {
    paused: Symbol("paused"),
    playing: Symbol("playing"),
    restarting: Symbol("restarting"),
-   stepping: Symbol("stepping")
+   stepping: Symbol("stepping"),
 };
 
 /**
- * Wait until a step has played and then go back to paused mode 
+ * Wait until a step has played and then go back to paused mode
  */
 export function unstepping(delay) {
    setTimeout(() => {
       dispatcher.dispatch({
-         type: actions.UNSTEP
+         type: actions.UNSTEP,
       });
    }, delay);
 }
@@ -44,7 +48,7 @@ export function unstepping(delay) {
 export function setPlayback(mode) {
    dispatcher.dispatch({
       type: actions.SET_PLAYBACK,
-      data: mode
+      data: mode,
    });
 }
 
@@ -64,10 +68,9 @@ export function restartScheduler(config) {
    dispatcher.dispatch({
       type: actions.SET_PLAYBACK,
       data: playback.restarting,
-      config
+      config,
    });
 }
-
 
 /**
  * Selects a job in the simulation
@@ -76,7 +79,7 @@ export function restartScheduler(config) {
 export function selectJob(job) {
    dispatcher.dispatch({
       type: actions.SELECT_JOB,
-      data: job
+      data: job,
    });
 }
 
@@ -86,6 +89,6 @@ export function selectJob(job) {
 export function setJobFillAttribute(attr) {
    dispatcher.dispatch({
       type: actions.SET_JOB_FILL,
-      data: attr
+      data: attr,
    });
 }

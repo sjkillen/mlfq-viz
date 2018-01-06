@@ -8,13 +8,13 @@ import { updateScheduler, actions, playback, unstepping } from "./SchedulerActio
 import dispatcher from "./dispatcher";
 import { immutInstance } from "../util";
 import { fromJS as immut } from "immutable";
-import Scheduler from "../mlfq"
-import { actions as lessonActions } from "./lessons"
+import Scheduler from "../mlfq";
+import { actions as lessonActions } from "./lessons";
 
 class SchedulerStore extends ReduceStore {
    getInitialState() {
       scheduler.generateJobs();
-      const prev = setStates(scheduler, {})
+      const prev = setStates(scheduler, {});
       return immut({
          scheduler: freezeSched(scheduler),
          prevJobStates: prev,
@@ -23,28 +23,28 @@ class SchedulerStore extends ReduceStore {
          fillAttr: "none",
          displayAttr: [],
          playBackMode: playback.paused,
-         lastUpdate: performance.now()
+         lastUpdate: performance.now(),
       }).setIn(["scheduler", "changed"], true);
    }
    getScheduler() {
       const state = this.getState();
-      const scheduler = state.get("scheduler").toJS();
-      scheduler.selectedJobId = state.get("selectedJobId");
-      scheduler.fillAttr = state.get("fillAttr");
-      scheduler.playMode = state.get("playBackMode");
-      scheduler.displayAttr = state.get("displayAttr").toJS();
-      scheduler.lessonOptions = state.get("lessonOptions").toJS();
-      return scheduler;
+      const sched = state.get("scheduler").toJS();
+      sched.selectedJobId = state.get("selectedJobId");
+      sched.fillAttr = state.get("fillAttr");
+      sched.playMode = state.get("playBackMode");
+      sched.displayAttr = state.get("displayAttr").toJS();
+      sched.lessonOptions = state.get("lessonOptions").toJS();
+      return sched;
    }
    reduce(state, action) {
       switch (action.type) {
          case actions.UPDATE_SCHEDULER: {
-            const scheduler = action.data;
-            const prev = setStates(scheduler, state.get("prevJobStates").toJS());
+            const sched = action.data;
+            const prev = setStates(sched, state.get("prevJobStates").toJS());
             return state
-               .set("scheduler", freezeSched(scheduler))
+               .set("scheduler", freezeSched(sched))
                .set("prevJobStates", prev)
-               .setIn(["scheduler", "changed"], true)
+               .setIn(["scheduler", "changed"], true);
          }
          case actions.SELECT_JOB: {
             return state.set("selectedJobId", action.data.init.id)
@@ -55,7 +55,7 @@ class SchedulerStore extends ReduceStore {
                .setIn(["scheduler", "changed"], false);
          }
          case lessonActions.SET_LESSON: {
-            return configLesson(state, action.data)
+            return configLesson(state, action.data);
          }
          case actions.SET_PLAYBACK: {
             let changed = false;
@@ -68,7 +68,7 @@ class SchedulerStore extends ReduceStore {
                setTimeout(() => {
                   unstepping(scheduler.speed);
                   if (notPlaying(state)) {
-                     scheduler.playNext(schedulerLoop)
+                     scheduler.playNext(schedulerLoop);
                   }
                }, 0);
             } else if (action.data === playback.restarting) {
@@ -95,7 +95,7 @@ function notPlaying(state) {
 }
 
 function restart(state, config) {
-   if (!notPlaying(state)) scheduler.stop();
+   if (!notPlaying(state)) { scheduler.stop(); }
    Scheduler.call(scheduler, config || scheduler.config);
    setTimeout(() => {
       updateScheduler(scheduler);
@@ -110,11 +110,11 @@ function configLesson(state, lesson) {
       state = state.set("fillAttr", lesson.scheduler.attributes[0]);
    }
    return state.set("displayAttr", immut(lesson.scheduler.attributes))
-            .set("lessonOptions", immut(lesson.scheduler.options))
+      .set("lessonOptions", immut(lesson.scheduler.options));
 }
 
-function schedulerLoop(scheduler) {
-   updateScheduler(scheduler);
+function schedulerLoop(sched) {
+   updateScheduler(sched);
 }
 
 function freezeSched(s) {
@@ -122,7 +122,7 @@ function freezeSched(s) {
    return immutInstance(s).toMap().merge({ allJobs, simulationFinished });
 }
 
-function setStates(scheduler, prevStates) {
+function setStates(sched, prevStates) {
    const prevJobStates = {};
    function set(jobs, state) {
       jobs.forEach(job => {
@@ -131,14 +131,14 @@ function setStates(scheduler, prevStates) {
          prevJobStates[job.init.id] = state;
       });
    }
-   set(scheduler.ioJobs, "io");
-   set(scheduler.futureJobs, "future");
-   set(scheduler.finishedJobs, "finished");
-   scheduler.queues.forEach(queue => {
+   set(sched.ioJobs, "io");
+   set(sched.futureJobs, "future");
+   set(sched.finishedJobs, "finished");
+   sched.queues.forEach(queue => {
       set(queue.jobs, "waiting");
    });
-   if (scheduler.cpuJob) {
-      set([scheduler.cpuJob], "cpu");
+   if (sched.cpuJob) {
+      set([sched.cpuJob], "cpu");
    }
    return immut(prevJobStates);
 }

@@ -8,23 +8,23 @@ import { fromJS as immut } from "immutable";
 
 export const nav = {
     map: {
-        '/Scheduler': SchedulerPanel,
-        'SPLOM': SPLOMPanel,
-        'TABLE': TableView,
+        "/Scheduler": SchedulerPanel,
+        "SPLOM": SPLOMPanel,
+        "TABLE": TableView,
     },
-    order: ['/Scheduler', 'SPLOM', 'TABLE'],
+    order: ["/Scheduler", "SPLOM", "TABLE"],
 };
 deepFreeze(nav);
 
 const actions = {
-    navigate: Symbol()
-}
+    navigate: Symbol(),
+};
 
 class RouterStore extends ReduceStore {
     getInitialState() {
         return immut({
-            url: '/Scheduler',
-            current: 0
+            url: "/Scheduler",
+            current: 0,
         });
     }
     reduce(state, action) {
@@ -41,7 +41,7 @@ export const routerStore = new RouterStore(dispatcher);
 export function navigate(toIndex) {
     dispatcher.dispatch({
         type: actions.navigate,
-        toIndex
+        toIndex,
     });
 }
 
@@ -52,6 +52,5 @@ function RouterSC({ url }) {
         return (<span />);
     }
 }
-
 
 export const Router = Container.createFunctional(RouterSC, () => [routerStore], () => routerStore.getState().toJS());

@@ -5,16 +5,16 @@
 import { ReduceStore } from "flux/utils";
 import dispatcher from "./dispatcher";
 import { fromJS as immut } from "immutable";
-import { actions as lessonActions } from "./lessons"
+import { actions as lessonActions } from "./lessons";
 
 class DetailStore extends ReduceStore {
    getInitialState() {
       return immut({
          details: {
             attributes: [],
-            lesson: []
-         }
-      })
+            lesson: [],
+         },
+      });
    }
    reduce(state, action) {
       switch (action.type) {
