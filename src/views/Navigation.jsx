@@ -3,7 +3,6 @@
  */
 
 import SPLOMPanel from "../views/SPLOMPanel";
-import PAPanel from "../views/PAPanel";
 import SchedulerPanel from "../views/SchedulerPanel";
 import TableView from "./TableView";
 import React, { Component } from "react";

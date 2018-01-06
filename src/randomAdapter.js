@@ -25,5 +25,5 @@ export default {
     },
     range(highLow) {
         return gen.intBetween(...highLow);
-    }
+    },
 };
