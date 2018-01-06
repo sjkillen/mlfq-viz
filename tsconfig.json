@@ -16,10 +16,7 @@
     ],
     "include": [
         "src/**/*.ts",
-        "./*.ts",
-        "node_modules/hangertypes/**/*.ts",
-        "typings/**/*.ts",
-        "typings/**/*.d.ts"
+        "./*.ts"
     ],
     "exclude": [
         "**/*.spec.ts"
