@@ -18695,10 +18695,10 @@ function getScales(svg, scheduler, forceRadius) {
       radius: radius,
       width: width,
       height: height,
-      legendScale: legendScale,
+      legend: legendScale,
       ioBoxes: ioBoxes,
-      cpuScale: cpuScale,
-      ioScale: ioScale,
+      cpu: cpuScale,
+      io: ioScale,
       boost: boost,
       getJobPriority: function getJobPriority(d) {
          return d.running.priority;
