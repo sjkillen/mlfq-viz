@@ -6,7 +6,6 @@
     }   
 }
 
-
 .myBtn {
     border: 5px;
     border-right-color: white;
@@ -22,7 +21,6 @@
     bottom:50%;
     top:30%;
     z-index: 99;
-
     &:hover {
         -webkit-animation-name: pulse;
         -webkit-animation-duration: 4s infinite;

@@ -13,7 +13,7 @@ class SPLOMStore extends ReduceStore {
    getInitialState() {
       return {
          accessors: [],
-         selected: 0
+         selected: 0,
       };
    }
    reduce(state, action) {
@@ -21,14 +21,14 @@ class SPLOMStore extends ReduceStore {
          case lessonActions.SET_LESSON: {
             return {
                accessors: accessorPairs(action.data.splom.attributes),
-               selected: 0
+               selected: 0,
             };
          }
          case "SELECT_SCATTERPLOT": {
             return {
                accessors: state.accessors,
-               selected: action.index
-            }
+               selected: action.index,
+            };
          }
          default:
             return state;

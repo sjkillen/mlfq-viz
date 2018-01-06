@@ -2,7 +2,6 @@
  * Render a table for analyzing data
  */
 
-
 import React, { Component } from "react";
 import * as d3 from "d3";
 import { Container } from "flux/utils";
@@ -14,7 +13,6 @@ import "./TableView.scss";
 export default Container.createFunctional(TableView, () => [SchedulerStore], () => {
    return SchedulerStore.getScheduler();
 });
-
 
 /**
  * Called every state change
@@ -107,8 +105,9 @@ function TableView(scheduler) {
 }
 
 function update(tableContainer, scheduler) {
-   if (!tableContainer) return;
-   const width = 1800, height = 500;
+   if (!tableContainer) { return; }
+   const width = 1800;
+   const height = 500;
 
    const container = d3.select(tableContainer);
 
@@ -116,19 +115,20 @@ function update(tableContainer, scheduler) {
     * Runtime job Table
     */
    {
-      container.append("h3").text(`${scheduler.globalTick} CPU cycle${scheduler.globalTick === 1 ? " has" : "s have"} past`);
+      container.append("h3").text(
+         `${scheduler.globalTick} CPU cycle${scheduler.globalTick === 1 ? " has" : "s have"} past`,
+      );
       container.append("h4")
          .attr("style", scheduler.boostLeft === scheduler.boostTime ? "color: orange" : "")
          .text(`Boost timer is ${scheduler.boostLeft} / ${scheduler.boostTime}`);
-      const table = container.append("table"),
-         headers = table.append("tr");
+      const table = container.append("table");
+      const headers = table.append("tr");
 
       const join = table.selectAll("tr")
          .data([{}, ...scheduler.allJobs]);
 
       const rows = join.enter()
          .append("tr");
-
 
       rows.attr("style", d => {
          if (d.running.serviceTime === d.init.runTime) {
@@ -145,26 +145,24 @@ function update(tableContainer, scheduler) {
 
       headers.append("th").text("Current Priority");
       rows.append("td")
-      .attr("style", "font-weight: bold")
-      .text(d => `Queue ${d.running.priority}`);
+         .attr("style", "font-weight: bold")
+         .text(d => `Queue ${d.running.priority}`);
 
       headers.append("th").text("Time Quantum Remaining");
       rows.append("td")
-      .attr("style", "font-weight: bold")
-      .text(d => `${d.running.quantumLeft}`);
+         .attr("style", "font-weight: bold")
+         .text(d => `${d.running.quantumLeft}`);
 
       headers.append("th").text("Time Quantum");
       rows.append("td")
-      .attr("style", "font-weight: bold")
-      .text(d => `${d.running.quantumFull}`);
-
+         .attr("style", "font-weight: bold")
+         .text(d => `${d.running.quantumFull}`);
 
       headers.append("th").text("Service Time");
       rows.append("td").text(d => d.running.serviceTime);
 
       headers.append("th").text("Waiting Time");
       rows.append("td").text(d => d.running.waitingTime);
-
 
       headers.append("th").text("Doing IO");
       rows.append("td").text(d => d.running.ioLeft ? "YES" : "NO");
@@ -173,13 +171,11 @@ function update(tableContainer, scheduler) {
       rows.append("td").text(d => d.init.createTime >= scheduler.globalTick ? "NO" : "YES");
 
       headers.append("th").text("Finished");
-      rows.append("td").text(d => d.running.serviceTime === d.init.runTime  ? "YES" : "NO");
+      rows.append("td").text(d => d.running.serviceTime === d.init.runTime ? "YES" : "NO");
    }
-
 
    if (scheduler.simulationFinished) {
       container.append("h1").text(`Simulation finished after ${scheduler.globalTick} cycles`);
    }
 
 }
-;
